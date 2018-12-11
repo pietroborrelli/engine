@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:db="http://www.webratio.com/2006/WebML/Database" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="schema1.xsd" namespace="http://www.webratio.com/2006/WebML/Graph" />
+  <xs:import schemaLocation="schema2.xsd" namespace="http://www.webratio.com/2006/WebML/Database" />
+  <xs:element name="DataModel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element maxOccurs="unbounded" name="Entity">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="Attribute">
+                  <xs:complexType>
+                    <xs:attribute name="name" type="xs:string" use="required" />
+                    <xs:attribute name="id" type="xs:string" use="required" />
+                    <xs:attribute name="type" type="xs:string" use="required" />
+                    <xs:attribute name="key" type="xs:boolean" use="optional" />
+                    <xs:attribute ref="db:column" use="required" />
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute name="id" type="xs:string" use="required" />
+              <xs:attribute name="name" type="xs:string" use="required" />
+              <xs:attribute name="duration" type="xs:string" use="required" />
+              <xs:attribute ref="gr:x" use="required" />
+              <xs:attribute ref="gr:y" use="required" />
+              <xs:attribute ref="gr:hideAttributes" use="optional" />
+              <xs:attribute name="attributeOrder" type="xs:string" use="required" />
+              <xs:attribute ref="db:database" use="required" />
+              <xs:attribute ref="db:table" use="required" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element maxOccurs="unbounded" name="Relationship">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="RelationshipRole1">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element ref="db:JoinColumn" />
+                    </xs:sequence>
+                    <xs:attribute name="id" type="xs:string" use="required" />
+                    <xs:attribute name="name" type="xs:string" use="required" />
+                    <xs:attribute name="maxCard" type="xs:string" use="required" />
+                  </xs:complexType>
+                </xs:element>
+                <xs:element name="RelationshipRole2">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element ref="db:JoinColumn" />
+                    </xs:sequence>
+                    <xs:attribute name="id" type="xs:string" use="required" />
+                    <xs:attribute name="name" type="xs:string" use="required" />
+                    <xs:attribute name="maxCard" type="xs:string" use="required" />
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute name="id" type="xs:string" use="required" />
+              <xs:attribute name="name" type="xs:string" use="required" />
+              <xs:attribute name="sourceEntity" type="xs:string" use="required" />
+              <xs:attribute name="targetEntity" type="xs:string" use="required" />
+              <xs:attribute ref="db:database" use="required" />
+              <xs:attribute ref="db:table" use="required" />
+              <xs:attribute ref="gr:bendpoints" use="optional" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element ref="db:Database" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

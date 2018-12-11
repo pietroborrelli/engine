@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema xmlns:tns="http://www.webratio.com/2006/WebML/Database" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.webratio.com/2006/WebML/Database" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:attribute name="database" type="xs:string" />
+  <xs:attribute name="table" type="xs:string" />
+  <xs:attribute name="column" type="xs:string" />
+  <xs:element name="JoinColumn">
+    <xs:complexType>
+      <xs:attribute name="attribute" type="xs:string" use="required" />
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Database">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:string" use="required" />
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="type" type="xs:string" use="required" />
+      <xs:attribute name="url" type="xs:string" use="required" />
+      <xs:attribute name="cryptedPassword" type="xs:boolean" use="required" />
+      <xs:attribute name="password" type="xs:string" use="required" />
+      <xs:attribute name="username" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
