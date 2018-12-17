@@ -1,0 +1,97 @@
+<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv1#area1#page7" name="Reading" landmark="true" gr:x="1030" gr:y="220">
+  <ContentUnits>
+    <MultiMessageUnit id="sv1#area1#page7#mssu5" name="Reading Page" gr:x="90" gr:y="0">
+      <Message xml:space="preserve">CRUD operations on Register</Message>
+    </MultiMessageUnit>
+    <PowerIndexUnit id="sv1#area1#page7#pwu3" name="List" linkOrder="sv1#area1#page7#pwu3#ln1" gr:x="200" gr:y="85" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att7 ent3#att10 ent3#att9 ent3#att8">
+      <Link id="sv1#area1#page7#pwu3#ln1" name="Edit" to="sv1#area1#page7#enu3" type="normal" validate="true">
+        <LinkParameter id="sv1#area1#page7#pwu3#ln1#par1" name="oid_Key Condition [oid]" source="data[].ent3#att7" target="sv1#area1#page7#enu3.ent3#att7"/>
+        <LinkParameter id="sv1#area1#page7#pwu3#ln1#par2" name="RegisterToSmartMeter.oid_RegisterToSmartMeter - Preselection" source="data[].rel8#role16_ent1#att1" target="sv1#area1#page7#enu3#sfld1_presel"/>
+      </Link>
+    </PowerIndexUnit>
+    <SelectorUnit id="sv1#area1#page7#seu4" name="SelectorSmartMeter" gr:x="0" gr:y="85" entity="ent1">
+      <Link id="sv1#area1#page7#seu4#ln2" name="Flow17" to="sv1#area1#page7#enu3" type="transport" validate="true">
+        <LinkParameter id="sv1#area1#page7#seu4#ln2#par4" name="name_RegisterToSmartMeter [label]" source="ent1#att2Array" target="sv1#area1#page7#enu3#sfld1_label"/>
+        <LinkParameter id="sv1#area1#page7#seu4#ln2#par5" name="oid_RegisterToSmartMeter [output]" source="ent1#att1Array" target="sv1#area1#page7#enu3#sfld1_output"/>
+      </Link>
+    </SelectorUnit>
+    <EntryUnit id="sv1#area1#page7#enu3" name="Form" gr:x="105" gr:y="205" entity="ent3" linkOrder="sv1#area1#page7#enu3#ln15 sv1#area1#page7#enu3#ln16">
+      <Field id="sv1#area1#page7#enu3#fld2" name="oid" type="integer" modifiable="false" attribute="ent3#att7"/>
+      <Field id="sv1#area1#page7#enu3#fld3" name="date" type="timestamp" modifiable="true" attribute="ent3#att10"/>
+      <Field id="sv1#area1#page7#enu3#fld4" name="value" type="decimal" modifiable="true" attribute="ent3#att9"/>
+      <Field id="sv1#area1#page7#enu3#fld5" name="unit" type="string" modifiable="true" attribute="ent3#att8"/>
+      <SelectionField id="sv1#area1#page7#enu3#sfld1" name="SmartMeter" type="string" role="rel8#role16"/>
+      <Link id="sv1#area1#page7#enu3#ln15" name="Save" to="sv1#area1#miu5" type="normal" validate="true">
+        <LinkParameter id="sv1#area1#page7#enu3#ln15#par17" name="Key [oid]_Register Key" source="key.ent3#att7" target="sv1#area1#miu5.mov1#opm3#icu3#icp4"/>
+        <LinkParameter id="sv1#area1#page7#enu3#ln15#par21" name="Register Object_Register Object" source="entityBean" target="sv1#area1#miu5.mov1#opm3#icu3#icp5"/>
+      </Link>
+      <Link id="sv1#area1#page7#enu3#ln16" name="Delete" to="sv1#area1#miu6" type="normal" validate="true" gr:bendpoints="68,96,73,-89">
+        <LinkParameter id="sv1#area1#page7#enu3#ln16#par23" name="Key [oid]_Register Key" source="key.ent3#att7" target="sv1#area1#miu6.mov1#opm4#icu5#icp6"/>
+      </Link>
+    </EntryUnit>
+  </ContentUnits>
+  <layout:Grid containerType="grid">
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv1#area1#page7#mssu5"/>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv1#area1#page7#pwu3">
+          <layout:Attribute attribute="ent3#att7"/>
+          <layout:Attribute attribute="ent3#att10"/>
+          <layout:Attribute attribute="ent3#att9"/>
+          <layout:Attribute attribute="ent3#att8"/>
+          <layout:Link link="sv1#area1#page7#pwu3#ln1"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv1#area1#page7#enu3">
+          <layout:Field field="sv1#area1#page7#enu3#fld2"/>
+          <layout:Field field="sv1#area1#page7#enu3#fld3"/>
+          <layout:Field field="sv1#area1#page7#enu3#fld4"/>
+          <layout:Field field="sv1#area1#page7#enu3#fld5"/>
+          <layout:Field field="sv1#area1#page7#enu3#sfld1"/>
+          <layout:Link link="sv1#area1#page7#enu3#ln15"/>
+          <layout:Link link="sv1#area1#page7#enu3#ln16"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+  </layout:Grid>
+</Page>

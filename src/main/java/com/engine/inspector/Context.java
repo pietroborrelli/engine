@@ -5,6 +5,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 
 public class Context {
@@ -21,6 +22,10 @@ public class Context {
 
 	public Context(ViewComponentExtractor viewComponentExtractor) {
 		this.viewComponentExtractor=viewComponentExtractor;
+	}
+	
+	public Context(LinkExtractor linkExtractor) {
+		this.linkExtractor=linkExtractor;
 	}
 	
 	public ViewComponentExtractor getViewComponentExtractor() {
@@ -57,5 +62,9 @@ public class Context {
 	
 	public ViewComponent mapViewComponent(Node node) throws Exception {
 		return viewComponentExtractor.mapViewComponent(node);
+	}
+	
+	public InteractionFlow mapInteractionFlow(Node node)throws Exception {
+		return linkExtractor.mapInteractionFlow(node);
 	}
 }

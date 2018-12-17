@@ -1,11 +1,14 @@
 package com.engine.inspector;
 
+import org.w3c.dom.Node;
+
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 
-public abstract class LinkExtractor {
+public interface LinkExtractor {
 
-	private InteractionFlow extractSpecificLink(String link) {
-		return null;
-	}
+	public InteractionFlow extractSpecificLink(String link);
+
+	public InteractionFlow mapInteractionFlow(Node node) throws Exception;
 
 }

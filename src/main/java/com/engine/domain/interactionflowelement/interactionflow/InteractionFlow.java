@@ -9,6 +9,12 @@ public abstract class InteractionFlow {
 	private String id;
 
 	private String name;
+	
+	private String to;
+	
+	private String automaticCoupling;
+	
+	
 
 	private InteractionFlowElement targetInteractionFlowElement;
 	private InteractionFlowElement sourceInteractionFlowElement;
@@ -31,6 +37,20 @@ public abstract class InteractionFlow {
 		this.name = name;
 	}
 
+	public String getAutomaticCoupling() {
+		return automaticCoupling;
+	}
+	public void setAutomaticCoupling(String automaticCoupling) {
+		this.automaticCoupling = automaticCoupling;
+	}
+	
+	public String getTo() {
+		return to;
+	}
+	public void setTo(String to) {
+		this.to = to;
+	}
+	
 	public InteractionFlowElement getTargetInteractionFlowElement() {
 		return targetInteractionFlowElement;
 	}

@@ -4,4 +4,7 @@ import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 
 public abstract class NavigationFlow extends InteractionFlow {
 
+	
+	
+	
 }
