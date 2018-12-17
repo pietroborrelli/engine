@@ -16,15 +16,14 @@ import com.engine.mapper.datamodel.DataModel;
 
 public class FrontEndInspector {
 
-	static String VIEWCOMPONENT_LIST="PowerIndexUnit";
-	static String VIEWCOMPONENT_DETAIL="DataUnit";
-	static String VIEWCOMPONENT_FORM="EntryUnit";
-	
-	static String NAVIGATIONFLOW_LINK="Link";
-	static String NAVIGATIONFLOW_OKLINK="OKLink";
-	static String NAVIGATIONFLOW_KOLINK="KOLink";
-	
-	
+	static String VIEWCOMPONENT_LIST = "PowerIndexUnit";
+	static String VIEWCOMPONENT_DETAIL = "DataUnit";
+	static String VIEWCOMPONENT_FORM = "EntryUnit";
+
+	static String NAVIGATIONFLOW_LINK = "Link";
+	static String NAVIGATIONFLOW_OKLINK = "OKLink";
+	static String NAVIGATIONFLOW_KOLINK = "KOLink";
+
 	private DataModel dataModel;
 	private XPathUtil xPathUtil;
 	private Context context;
@@ -37,31 +36,28 @@ public class FrontEndInspector {
 
 	}
 
-	
 	public Page elaborateDocument() throws XPathExpressionException {
 
 		this.context = new Context(new PageExtractorImpl());
 		return new Page(context.extractPageName(getDocument()), context.extractPageId(getDocument()));
 	}
-	
-	
 
 	/**
 	 * @param document
 	 * @return the leaves view components in the page (detail, list and form
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public List<ViewComponent> findLeavesViewComponents() throws Exception {
-		//get nodes from document
+		// get nodes from document
 		List<Node> leavesNodes = getxPathUtil().findLeavesNodes(getDocument());
-		
-		//map leaves nodes with corresponding view components and return
+
+		// map leaves nodes with corresponding view components and return
 		return mapNodesIntoViewComponents(leavesNodes);
 	}
 
-	public void extractPaths(List<ViewComponent> leavesViewComponents){
-		//initialize stack of support to get all the paths
-		//setStack(new Stack<InteractionFlowElement>());
+	public void extractPaths(List<ViewComponent> leavesViewComponents) {
+		// initialize stack of support to get all the paths
+		// setStack(new Stack<InteractionFlowElement>());
 		for (ViewComponent leaf : leavesViewComponents) {
 			try {
 				traverse(leaf);
@@ -69,79 +65,114 @@ public class FrontEndInspector {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 	}
-	
+
 	/**
 	 * recursive function to explore the paths, only if in
+	 * 
 	 * @param node
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private void traverse(ViewComponent viewComponent) throws Exception {
-		
-		if (xPathUtil.isRoot(document,viewComponent)) { //sono arrivato al nodo radice, condizione 
+
+		if (xPathUtil.isRoot(document, viewComponent)) { // sono arrivato al nodo radice, condizione
 			return;
 		}
-		
-		viewComponent.setInInteractionFlows(mapNodesIntoInteractionFlow(xPathUtil.findIncomingInteractionFlowsOfViewComponent(document,viewComponent)));
-		viewComponent.setOutInteractionFlows(mapNodesIntoInteractionFlow(xPathUtil.findOutgoingInteractionFlowsOfViewComponent(document,viewComponent)));
-		
-		//
-		viewComponent.getInInteractionFlows().stream().forEach(in -> xPathUtil.findSourceOfInteractionFlow(document, in));
-		
-		
-//		for (InteractionFlow interactionFlow : viewComponent.getInInteractionFlows()) {
-//			if (xPathUtil.parentIsViewComponent)
-//			traverse(xPathUtil.findParentViewComponent)
-//		}
 
-		
-//		for (ViewComponent parent :)
-//			traverse(parent);
-		
+		viewComponent.setInInteractionFlows(mapNodesIntoInteractionFlow(
+				xPathUtil.findIncomingInteractionFlowsOfViewComponent(document, viewComponent)));
+		viewComponent.setOutInteractionFlows(mapNodesIntoInteractionFlow(
+				xPathUtil.findOutgoingInteractionFlowsOfViewComponent(document, viewComponent)));
+
+		//for each IN interaction flow get the source node from the document e mapped in application domain 
+		viewComponent.getInInteractionFlows().stream().forEach(in -> in.setSourceInteractionFlowElement(
+				mapNodeIntoViewComponent(xPathUtil.findSourceOfInteractionFlow(document, in))));
+
+		// for (InteractionFlow interactionFlow : viewComponent.getInInteractionFlows())
+		// {
+		// if (xPathUtil.parentIsViewComponent)
+		// traverse(xPathUtil.findParentViewComponent)
+		// }
+
+		// for (ViewComponent parent :)
+		// traverse(parent);
+
 		return;
-		
+
 	}
 
 	private List<InteractionFlow> mapNodesIntoInteractionFlow(List<Node> interactionFlowsNodes) throws Exception {
-		
+
 		List<InteractionFlow> interactionFlows = new ArrayList<InteractionFlow>();
-		for (Node node : interactionFlowsNodes ) {
-			if (node.getNodeName().equals(NAVIGATIONFLOW_LINK)){
-				this.context = new Context(new Link(dataModel)); 
+		for (Node node : interactionFlowsNodes) {
+			if (node.getNodeName().equals(NAVIGATIONFLOW_LINK)) {
+				this.context = new Context(new Link(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
 			}
-			if (node.getNodeName().equals(NAVIGATIONFLOW_OKLINK)){
+			if (node.getNodeName().equals(NAVIGATIONFLOW_OKLINK)) {
 				this.context = new Context(new OKLink(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
 			}
-			if (node.getNodeName().equals(NAVIGATIONFLOW_KOLINK)){
+			if (node.getNodeName().equals(NAVIGATIONFLOW_KOLINK)) {
 				this.context = new Context(new KOLink(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
-			} 
+			}
 		}
 		return interactionFlows;
 	}
 
-
+	/**
+	 * @param viewComponentNodes
+	 * @return list of view components mapped in application domain
+	 * @throws Exception
+	 */
 	public List<ViewComponent> mapNodesIntoViewComponents(List<Node> viewComponentNodes) throws Exception {
 		List<ViewComponent> viewComponents = new ArrayList<ViewComponent>();
-		for (Node node : viewComponentNodes ) {
-			if (node.getNodeName().equals(VIEWCOMPONENT_DETAIL)){
+		for (Node node : viewComponentNodes) {
+			if (node.getNodeName().equals(VIEWCOMPONENT_DETAIL)) {
 				this.context = new Context(new DataUnit(dataModel));
 				viewComponents.add(this.context.mapViewComponent(node));
 			}
-			if (node.getNodeName().equals(VIEWCOMPONENT_LIST)){
+			if (node.getNodeName().equals(VIEWCOMPONENT_LIST)) {
 				this.context = new Context(new PowerIndexUnit(dataModel));
 				viewComponents.add(this.context.mapViewComponent(node));
 			}
-			if (node.getNodeName().equals(VIEWCOMPONENT_FORM)){
+			if (node.getNodeName().equals(VIEWCOMPONENT_FORM)) {
 				this.context = new Context(new EntryUnit(dataModel));
 				viewComponents.add(this.context.mapViewComponent(node));
 			}
 		}
 		return viewComponents;
+	}
+
+	/**
+	 * @param viewComponentNode
+	 * @return a view component mapped in application domain
+	 * @throws Exception
+	 */
+	public ViewComponent mapNodeIntoViewComponent(Node viewComponentNode) {
+		try {
+			if (viewComponentNode.getNodeName().equals(VIEWCOMPONENT_DETAIL)) {
+				this.context = new Context(new DataUnit(dataModel));
+
+				return this.context.mapViewComponent(viewComponentNode);
+			}
+			if (viewComponentNode.getNodeName().equals(VIEWCOMPONENT_LIST)) {
+				this.context = new Context(new PowerIndexUnit(dataModel));
+				return this.context.mapViewComponent(viewComponentNode);
+			}
+			if (viewComponentNode.getNodeName().equals(VIEWCOMPONENT_FORM)) {
+				this.context = new Context(new EntryUnit(dataModel));
+				return this.context.mapViewComponent(viewComponentNode);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public DataModel getDataModel() {
@@ -160,7 +191,6 @@ public class FrontEndInspector {
 		this.context = context;
 	}
 
-
 	public XPathUtil getxPathUtil() {
 		return xPathUtil;
 	}
@@ -169,25 +199,22 @@ public class FrontEndInspector {
 		this.xPathUtil = xPathUtil;
 	}
 
-
 	public Document getDocument() {
 		return document;
 	}
-
 
 	public void setDocument(Document document) {
 		this.document = document;
 	}
 
-
-//	public Stack<InteractionFlowElement> getStack() {
-//		return stack;
-//	}
-//
-//
-//	public void setStack(Stack<InteractionFlowElement> stack) {
-//		this.stack = stack;
-//	}
-//
-//	
+	// public Stack<InteractionFlowElement> getStack() {
+	// return stack;
+	// }
+	//
+	//
+	// public void setStack(Stack<InteractionFlowElement> stack) {
+	// this.stack = stack;
+	// }
+	//
+	//
 }
