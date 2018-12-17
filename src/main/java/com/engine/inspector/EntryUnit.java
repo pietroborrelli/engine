@@ -206,4 +206,5 @@ public final class EntryUnit implements ViewComponentExtractor {
 		return fields;
 	}
 
+
 }

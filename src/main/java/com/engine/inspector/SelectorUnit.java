@@ -3,13 +3,11 @@ package com.engine.inspector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.engine.domain.enumeration.Ordering;
 import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
@@ -19,14 +17,14 @@ import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewCo
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
 import com.engine.mapper.datamodel.DataModel;
 
-public final class PowerIndexUnit implements ViewComponentExtractor {
+public final class SelectorUnit implements ViewComponentExtractor {
 
 	static String VIEWCOMPONENT_SORTABLE_ATTRIBUTE = "SortAttribute";
-	
+
 	private DataModelUtil dataModelUtil;
 	private ConditionalExpressionExtractor conditionalExpressionExtractor;
-	
-	public PowerIndexUnit(DataModel dataModel) {
+
+	public SelectorUnit(DataModel dataModel) {
 		this.dataModelUtil = new DataModelUtil(dataModel);
 		this.conditionalExpressionExtractor = new ConditionalExpressionExtractor();
 	}
@@ -109,20 +107,17 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 			list.getDisplayAttributes().stream().forEach(d -> d.setEntity(list.getEntity()));
 
 			// find existing sortable attributes
-			list.setSortAttributes(extractSortableAttributes(node, list));
-
+			list.setSortAttributes(findSortableAttributes(node, list));
 		}else {
+
 		throw new Exception("PROCEDURA INTERROTTA: Display attributes della lista " + list.getName() + "(con id: "
 				+ list.getId() + ") vuoti ");
 		}
 		
-		
 		list.setConditionalExpressions(getConditionalExpressionExtractor().extractConditionalExpressions(node));
-	    
-	    return list;
-	}
 
-	
+		return list;
+	}
 
 	/**
 	 * @param node
@@ -130,7 +125,7 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 	 * @return list of sortable attributes. Added only attributes that are
 	 *         displayable
 	 */
-	private ArrayList<Attribute> extractSortableAttributes(Node node, ListImpl list) {
+	private ArrayList<Attribute> findSortableAttributes(Node node, ListImpl list) {
 		
 		//array of sort attributes
 		ArrayList<Attribute> sortAttributes = new ArrayList<Attribute>();
@@ -181,8 +176,6 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 		return sortAttributes;
 	}
 
-
-
 	public ConditionalExpressionExtractor getConditionalExpressionExtractor() {
 		return conditionalExpressionExtractor;
 	}
@@ -190,4 +183,5 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 	public void setConditionalExpressionExtractor(ConditionalExpressionExtractor conditionalExpressionExtractor) {
 		this.conditionalExpressionExtractor = conditionalExpressionExtractor;
 	}
+	
 }

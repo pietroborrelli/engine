@@ -14,9 +14,12 @@ import com.engine.mapper.datamodel.DataModel;
 public final class DataUnit implements ViewComponentExtractor {
 
 	private DataModelUtil dataModelUtil;
+	private ConditionalExpressionExtractor conditionalExpressionExtractor;
+
 
 	public DataUnit(DataModel dataModel) {
 		this.dataModelUtil = new DataModelUtil(dataModel);
+		this.setConditionalExpressionExtractor(new ConditionalExpressionExtractor());
 	}
 
 	@Override
@@ -95,11 +98,22 @@ public final class DataUnit implements ViewComponentExtractor {
 		//set entity on attribute
 		detail.getDisplayAttributes().stream().forEach(d-> d.setEntity(detail.getEntity()));
 		
-		return detail;
+		
+		}else {
+			throw new Exception("PROCEDURA INTERROTTA: Display attributes del detail " + detail.getName() + "(con id: " + detail.getId() + ") vuoti ");
 		}
 		
-		throw new Exception("PROCEDURA INTERROTTA: Display attributes del detail " + detail.getName() + "(con id: " + detail.getId() + ") vuoti ");
+		detail.setConditionalExpressions(this.getConditionalExpressionExtractor().extractConditionalExpressions(node));
+		
+		return detail;
+	}
 
+	public ConditionalExpressionExtractor getConditionalExpressionExtractor() {
+		return conditionalExpressionExtractor;
+	}
+
+	public void setConditionalExpressionExtractor(ConditionalExpressionExtractor conditionalExpressionExtractor) {
+		this.conditionalExpressionExtractor = conditionalExpressionExtractor;
 	}
 
 }

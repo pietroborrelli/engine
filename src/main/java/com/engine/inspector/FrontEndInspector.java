@@ -87,8 +87,8 @@ public class FrontEndInspector {
 				xPathUtil.findOutgoingInteractionFlowsOfViewComponent(document, viewComponent)));
 
 		//for each IN interaction flow get the source node from the document e mapped in application domain 
-		viewComponent.getInInteractionFlows().stream().forEach(in -> in.setSourceInteractionFlowElement(
-				mapNodeIntoViewComponent(xPathUtil.findSourceOfInteractionFlow(document, in))));
+		//viewComponent.getInInteractionFlows().stream().forEach(in -> in.setSourceInteractionFlowElement(
+		//		mapNodeIntoViewComponent(xPathUtil.findSourceOfInteractionFlow(document, in))));
 
 		// for (InteractionFlow interactionFlow : viewComponent.getInInteractionFlows())
 		// {
@@ -138,6 +138,7 @@ public class FrontEndInspector {
 			if (node.getNodeName().equals(VIEWCOMPONENT_LIST)) {
 				this.context = new Context(new PowerIndexUnit(dataModel));
 				viewComponents.add(this.context.mapViewComponent(node));
+				
 			}
 			if (node.getNodeName().equals(VIEWCOMPONENT_FORM)) {
 				this.context = new Context(new EntryUnit(dataModel));

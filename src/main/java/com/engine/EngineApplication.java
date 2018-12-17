@@ -87,7 +87,6 @@ public class EngineApplication implements CommandLineRunner {
 				frontEndInspector.setDocument(document);
 				
 				Page page = frontEndInspector.elaborateDocument();
-				ArrayList<ArrayList<String>> listOfPaths= new ArrayList<ArrayList<String>>();
 				
 				List<ViewComponent> leavesViewComponents = frontEndInspector.findLeavesViewComponents();
 				

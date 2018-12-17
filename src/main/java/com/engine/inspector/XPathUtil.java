@@ -61,7 +61,6 @@ public class XPathUtil {
 		}
 		
 		//add leaves with outgoing arcs pointing actions but without outgoing arcs on view components
-		leavesNodes = new ArrayList<Node>();
 		nodes = (NodeList) getxPath().compile("//PowerIndexUnit[Link[contains(@to,'#miu')] and ( "
 																+ "not(Link[contains(@to,'#pwu')]) and "
 																+ "not(Link[contains(@to,'#enu')]) and "
@@ -91,7 +90,6 @@ public class XPathUtil {
 		}
 		
 		//add leaves with outgoing arcs pointing actions but without outgoing arcs on view components
-				leavesNodes = new ArrayList<Node>();
 				nodes = (NodeList) getxPath().compile("//DataUnit[Link[contains(@to,'#miu')] and ( "
 																+ "not(Link[contains(@to,'#pwu')]) and "
 																+ "not(Link[contains(@to,'#enu')]) and "
@@ -122,7 +120,6 @@ public class XPathUtil {
 		}
 		
 		//add leaves with outgoing arcs pointing actions but without outgoing arcs on view components
-		leavesNodes = new ArrayList<Node>();
 		nodes = (NodeList) getxPath().compile("//EntryUnit[Link[contains(@to,'#miu')] and ( "
 														+ "not(Link[contains(@to,'#pwu')]) and "
 														+ "not(Link[contains(@to,'#enu')]) and "
