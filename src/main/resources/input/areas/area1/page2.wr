@@ -1,9 +1,7 @@
 <Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" gr:x="0" gr:y="0" id="sv1#area4#page2" name="Master-Detail">
   <ContentUnits>
     <PowerIndexUnit gr:x="0" gr:y="0" id="sv1#area4#page2#pwu1" name="SmartMeter List" sortable="true" checkable="false" useCountQuery="false" entity="ent1" displayAttributes="ent1#att2 ent1#att25 ent1#att24 ent1#att26" linkOrder="sv1#area4#page2#pwu1#ln6 sv1#area4#page2#pwu1#ln50 sv1#area4#page2#pwu1#ln57">
-      <Link id="sv1#area4#page2#pwu1#ln6" name="Detail" to="sv1#area4#page2#dau2" type="normal" validate="true">
-        <LinkParameter id="sv1#area4#page2#pwu1#ln6#par30" name="oid_KeyCondition13 [oid]" source="data[].ent1#att1" target="sv1#area4#page2#dau2#su16#kcond13.ent1#att1"/>
-      </Link>
+      <Link id="sv1#area4#page2#pwu1#ln6" name="Detail" to="sv1#area4#page2#dau2" type="normal" validate="true"/>
       <Link id="sv1#area4#page2#pwu1#ln50" name="detail" to="sv1#area4#page2#pwu2" type="normal" validate="true">
         <LinkParameter id="sv1#area4#page2#pwu1#ln50#par31" name="oid_KeyCondition18 [oid]" source="data[].ent1#att1" target="sv1#area4#page2#pwu2#su21#kcond19.ent1#att1"/>
       </Link>
@@ -16,10 +14,13 @@
       <Link id="sv1#area4#page2#pwu1#ln63" name="Flow63" to="sv1#area4#page2#seu11" type="transport" validate="true">
         <LinkParameter id="sv1#area4#page2#pwu1#ln63#par80" name="oid_RoleCondition8 [oid]" source="data[].ent1#att1" target="sv1#area4#page2#seu11#su24#rcond8.ent1#att1"/>
       </Link>
+      <Selector id="sv1#area4#page2#pwu1#su20" defaultPolicy="fill" booleanOperator="and">
+        <RelationshipRoleCondition id="sv1#area4#page2#pwu1#su20#rcond1" name="RoleCondition1" predicate="in" implied="false"/>
+      </Selector>
     </PowerIndexUnit>
     <DataUnit gr:x="180" gr:y="25" id="sv1#area4#page2#dau2" name="SmartMeter Detail" entity="ent1" displayAttributes="ent1#att2 ent1#att25 ent1#att24 ent1#att26">
       <Selector id="sv1#area4#page2#dau2#su16" defaultPolicy="fill" booleanOperator="and">
-        <KeyCondition id="sv1#area4#page2#dau2#su16#kcond13" name="KeyCondition13" predicate="in" implied="false"/>
+        <RelationshipRoleCondition id="sv1#area4#page2#dau2#su16#rcond2" predicate="in" implied="false" name="KeyCondition13" role="rel4#role7"/>
       </Selector>
     </DataUnit>
     <PowerIndexUnit id="sv1#area4#page2#pwu2" entity="ent1" sortable="true" checkable="false" useCountQuery="false" gr:x="170" gr:y="165" name="SmartMeter Detail 2" displayAttributes="ent1#att2 ent1#att25">
@@ -29,14 +30,13 @@
       <SortAttribute attribute="ent1#att26" order="ascending"/>
       <SortAttribute attribute="ent1#att24" order="descending"/>
     </PowerIndexUnit>
-    <EntryUnit gr:x="260" gr:y="385" id="sv1#area4#page2#enu10" name="(entity based) SmartMeter form" entity="ent1" linkOrder="sv1#area4#page2#enu10#ln42">
+    <EntryUnit gr:x="260" gr:y="385" id="sv1#area4#page2#enu10" name="(entity based) SmartMeter form" entity="ent1">
       <Field id="sv1#area4#page2#enu10#fld38" name="name" type="string" modifiable="true" attribute="ent1#att2"/>
       <Field id="sv1#area4#page2#enu10#fld39" name="production_year" type="string" modifiable="true" attribute="ent1#att25"/>
       <Field id="sv1#area4#page2#enu10#fld40" name="make" type="string" modifiable="true" attribute="ent1#att24"/>
       <Field id="sv1#area4#page2#enu10#fld41" name="model" type="string" modifiable="true" attribute="ent1#att26"/>
       <SelectionField id="sv1#area4#page2#enu10#sfld20" name="SmartMeterToBuilding" type="string" role="rel4#role8"/>
       <MultiSelectionField id="sv1#area4#page2#enu10#msfld6" name="SmartMeterToRegister" type="string" role="rel8#role15"/>
-      <Link id="sv1#area4#page2#enu10#ln42" name="Flow42" to="sv1#area4#miu1" automaticCoupling="true" type="normal" validate="true"/>
     </EntryUnit>
     <SelectorUnit gr:x="65" gr:y="490" id="sv1#area4#page2#seu3" name="selector readings" entity="ent3">
       <Selector id="sv1#area4#page2#seu3#su23" defaultPolicy="fill" booleanOperator="and">
@@ -131,7 +131,6 @@
           <layout:Field field="sv1#area4#page2#enu10#fld41"/>
           <layout:Field field="sv1#area4#page2#enu10#sfld20"/>
           <layout:Field field="sv1#area4#page2#enu10#msfld6"/>
-          <layout:Link link="sv1#area4#page2#enu10#ln42"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>

@@ -26,7 +26,7 @@ public final class SelectorUnit implements ViewComponentExtractor {
 
 	public SelectorUnit(DataModel dataModel) {
 		this.dataModelUtil = new DataModelUtil(dataModel);
-		this.conditionalExpressionExtractor = new ConditionalExpressionExtractor();
+		this.conditionalExpressionExtractor = new ConditionalExpressionExtractor(dataModel);
 	}
 
 	@Override

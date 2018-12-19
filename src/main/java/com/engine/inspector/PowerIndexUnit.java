@@ -28,7 +28,7 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 	
 	public PowerIndexUnit(DataModel dataModel) {
 		this.dataModelUtil = new DataModelUtil(dataModel);
-		this.conditionalExpressionExtractor = new ConditionalExpressionExtractor();
+		this.conditionalExpressionExtractor = new ConditionalExpressionExtractor(dataModel);
 	}
 
 	@Override

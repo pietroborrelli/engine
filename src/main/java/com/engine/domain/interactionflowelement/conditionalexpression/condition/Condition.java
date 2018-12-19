@@ -1,14 +1,13 @@
 package com.engine.domain.interactionflowelement.conditionalexpression.condition;
 
-import com.engine.domain.enumeration.Predicate;
-
 public abstract class Condition {
 
 	private String id;
 
 	private String name;
 
-	private Predicate predicate;
+	private String predicate;
+
 
 	public String getId() {
 		return id;
@@ -26,11 +25,11 @@ public abstract class Condition {
 		this.name = name;
 	}
 
-	public Predicate getPredicate() {
+	public String getPredicate() {
 		return predicate;
 	}
 
-	public void setPredicate(Predicate predicate) {
+	public void setPredicate(String predicate) {
 		this.predicate = predicate;
 	}
 

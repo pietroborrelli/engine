@@ -2,10 +2,15 @@ package com.engine.inspector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 
+import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.Condition;
+import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
@@ -19,7 +24,7 @@ public final class DataUnit implements ViewComponentExtractor {
 
 	public DataUnit(DataModel dataModel) {
 		this.dataModelUtil = new DataModelUtil(dataModel);
-		this.setConditionalExpressionExtractor(new ConditionalExpressionExtractor());
+		this.setConditionalExpressionExtractor(new ConditionalExpressionExtractor(dataModel));
 	}
 
 	@Override
@@ -104,6 +109,7 @@ public final class DataUnit implements ViewComponentExtractor {
 		}
 		
 		detail.setConditionalExpressions(this.getConditionalExpressionExtractor().extractConditionalExpressions(node));
+		
 		
 		return detail;
 	}
