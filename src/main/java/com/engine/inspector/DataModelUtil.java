@@ -1,9 +1,11 @@
 package com.engine.inspector;
 
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.engine.mapper.datamodel.DataModel;
 import com.engine.mapper.datamodel.DataModel.Entity;
+import com.engine.mapper.datamodel.DataModel.Entity.Attribute;
 import com.engine.mapper.datamodel.DataModel.Relationship;
 import com.engine.mapper.datamodel.DataModel.Relationship.RelationshipRole1;
 import com.engine.mapper.datamodel.DataModel.Relationship.RelationshipRole2;
@@ -124,6 +126,22 @@ public class DataModelUtil {
 		return entity.getAttribute().stream().filter(an -> an.getId().equals(idDisplayAttribute))
 				.collect(Collectors.toList()).get(0).getType();
 	}
+	
+	/**
+	 * @param entity:
+	 *            used to access directly entity
+	 * @param attributeName:
+	 *            id of the attribute name
+	 * @return attribute ; null if no type is found in the entity
+	 */
+	public Attribute findAttributesByEntityAndId(String entityName, String attributeName){
+		
+		return findEntity(entityName).getAttribute().stream().filter(an -> an.getId().equals(attributeName))
+		.collect(Collectors.toList()).get(0);
+		
+		
+	}
+	
 
 	/**
 	 * @param entity
@@ -138,7 +156,7 @@ public class DataModelUtil {
 	}
 
 	/**
-	 * @param entity
+	 * @param relationship
 	 *            object extracted from the wr file
 	 * @return true if entity is instance of entity data model
 	 */

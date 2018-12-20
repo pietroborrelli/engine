@@ -1,7 +1,9 @@
 <Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" gr:x="0" gr:y="0" id="sv1#area4#page2" name="Master-Detail">
   <ContentUnits>
     <PowerIndexUnit gr:x="0" gr:y="0" id="sv1#area4#page2#pwu1" name="SmartMeter List" sortable="true" checkable="false" useCountQuery="false" entity="ent1" displayAttributes="ent1#att2 ent1#att25 ent1#att24 ent1#att26" linkOrder="sv1#area4#page2#pwu1#ln6 sv1#area4#page2#pwu1#ln50 sv1#area4#page2#pwu1#ln57">
-      <Link id="sv1#area4#page2#pwu1#ln6" name="Detail" to="sv1#area4#page2#dau2" type="normal" validate="true"/>
+      <Link id="sv1#area4#page2#pwu1#ln6" name="Detail" to="sv1#area4#page2#dau2" type="normal" validate="true">
+        <LinkParameter id="sv1#area4#page2#pwu1#ln6#par112" name="oid_KeyCondition13 [oid]" source="data[].ent1#att1" target="sv1#area4#page2#dau2#su16#rcond2.ent2#att4"/>
+      </Link>
       <Link id="sv1#area4#page2#pwu1#ln50" name="detail" to="sv1#area4#page2#pwu2" type="normal" validate="true">
         <LinkParameter id="sv1#area4#page2#pwu1#ln50#par31" name="oid_KeyCondition18 [oid]" source="data[].ent1#att1" target="sv1#area4#page2#pwu2#su21#kcond19.ent1#att1"/>
       </Link>
@@ -30,13 +32,20 @@
       <SortAttribute attribute="ent1#att26" order="ascending"/>
       <SortAttribute attribute="ent1#att24" order="descending"/>
     </PowerIndexUnit>
-    <EntryUnit gr:x="260" gr:y="385" id="sv1#area4#page2#enu10" name="(entity based) SmartMeter form" entity="ent1">
+    <EntryUnit gr:x="260" gr:y="385" id="sv1#area4#page2#enu10" name="(entity based) SmartMeter form" entity="ent1" linkOrder="sv1#area4#page2#enu10#ln65">
       <Field id="sv1#area4#page2#enu10#fld38" name="name" type="string" modifiable="true" attribute="ent1#att2"/>
       <Field id="sv1#area4#page2#enu10#fld39" name="production_year" type="string" modifiable="true" attribute="ent1#att25"/>
       <Field id="sv1#area4#page2#enu10#fld40" name="make" type="string" modifiable="true" attribute="ent1#att24"/>
       <Field id="sv1#area4#page2#enu10#fld41" name="model" type="string" modifiable="true" attribute="ent1#att26"/>
       <SelectionField id="sv1#area4#page2#enu10#sfld20" name="SmartMeterToBuilding" type="string" role="rel4#role8"/>
       <MultiSelectionField id="sv1#area4#page2#enu10#msfld6" name="SmartMeterToRegister" type="string" role="rel8#role15"/>
+      <Link id="sv1#area4#page2#enu10#ln65" name="Search" to="sv1#area4#page2#pwu4" type="normal" validate="true">
+        <LinkParameter id="sv1#area4#page2#enu10#ln65#par123" name="End Date_end date" source="sv1#area4#page2#enu10#fld24" target="sv1#area4#page2#pwu4#su22#acond9"/>
+        <LinkParameter id="sv1#area4#page2#enu10#ln65#par125" name="Start Date_start date" source="sv1#area4#page2#enu10#fld17" target="sv1#area4#page2#pwu4#su22#acond8"/>
+        <LinkParameter id="sv1#area4#page2#enu10#ln65#par126" name="SmartMeterToRegister_smartmeterCondition [oid]" source="key.ent1#att1" target="sv1#area4#page2#pwu4#su22#rcond9.ent1#att1"/>
+      </Link>
+      <Field id="sv1#area4#page2#enu10#fld17" name="start date" type="timestamp" modifiable="true"/>
+      <Field id="sv1#area4#page2#enu10#fld24" name="end date" type="timestamp" modifiable="true"/>
     </EntryUnit>
     <SelectorUnit gr:x="65" gr:y="490" id="sv1#area4#page2#seu3" name="selector readings" entity="ent3">
       <Selector id="sv1#area4#page2#seu3#su23" defaultPolicy="fill" booleanOperator="and">
@@ -56,6 +65,14 @@
         <RelationshipRoleCondition id="sv1#area4#page2#seu11#su24#rcond8" name="RoleCondition8" predicate="in" implied="false" role="rel4#role8"/>
       </Selector>
     </SelectorUnit>
+    <PowerIndexUnit id="sv1#area4#page2#pwu4" name="Readings" gr:showAllParts="false" gr:x="395" gr:y="85" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att7 ent3#att10 ent3#att9 ent3#att8">
+      <SortAttribute attribute="ent3#att10" order="descending"/>
+      <Selector id="sv1#area4#page2#pwu4#su22" defaultPolicy="fill" booleanOperator="and">
+        <RelationshipRoleCondition id="sv1#area4#page2#pwu4#su22#rcond9" name="smartmeterCondition" role="rel8#role15" predicate="in" implied="false"/>
+        <AttributesCondition id="sv1#area4#page2#pwu4#su22#acond8" name="start date" predicate="gteq" booleanOperator="or" implied="true" attributes="ent3#att10 ent3#att9"/>
+        <AttributesCondition id="sv1#area4#page2#pwu4#su22#acond9" name="end date" predicate="lteq" booleanOperator="or" implied="true" attributes="ent3#att10"/>
+      </Selector>
+    </PowerIndexUnit>
   </ContentUnits>
   <layout:Grid containerType="grid">
     <layout:Row>
@@ -125,12 +142,37 @@
     <layout:Row>
       <layout:Cell colspan="12">
         <layout:Unit unitId="sv1#area4#page2#enu10">
+          <layout:Link link="sv1#area4#page2#enu10#ln65"/>
           <layout:Field field="sv1#area4#page2#enu10#fld38"/>
           <layout:Field field="sv1#area4#page2#enu10#fld39"/>
           <layout:Field field="sv1#area4#page2#enu10#fld40"/>
           <layout:Field field="sv1#area4#page2#enu10#fld41"/>
           <layout:Field field="sv1#area4#page2#enu10#sfld20"/>
           <layout:Field field="sv1#area4#page2#enu10#msfld6"/>
+          <layout:Field field="sv1#area4#page2#enu10#fld17"/>
+          <layout:Field field="sv1#area4#page2#enu10#fld24"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv1#area4#page2#pwu4">
+          <layout:Attribute attribute="ent3#att7"/>
+          <layout:Attribute attribute="ent3#att10"/>
+          <layout:Attribute attribute="ent3#att9"/>
+          <layout:Attribute attribute="ent3#att8"/>
+          <layout:Link link="sv1#area4#page2#pwu4ent3#att10"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>
