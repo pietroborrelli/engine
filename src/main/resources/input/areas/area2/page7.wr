@@ -28,6 +28,7 @@
       <Link id="sv1#area1#page7#enu3#ln16" name="Delete" to="sv1#area1#miu6" type="normal" validate="true" gr:bendpoints="68,96,73,-89">
         <LinkParameter id="sv1#area1#page7#enu3#ln16#par23" name="Key [oid]_Register Key" source="key.ent3#att7" target="sv1#area1#miu6.mov1#opm4#icu5#icp6"/>
       </Link>
+      <Comment xml:space="preserve">tolto qui un link da form verso la pagina, copiare da altro</Comment>
     </EntryUnit>
   </ContentUnits>
   <layout:Grid containerType="grid">

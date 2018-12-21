@@ -1,18 +1,14 @@
 package com.engine.inspector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
 import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import com.engine.domain.enumeration.Ordering;
-import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.SelectorImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
 import com.engine.mapper.datamodel.DataModel;
@@ -41,7 +37,6 @@ public final class SelectorUnit implements ViewComponentExtractor {
 		return null;
 	}
 
-	// TODO
 	/*
 	 * @param node: raw node from the document
 	 * 
@@ -49,45 +44,40 @@ public final class SelectorUnit implements ViewComponentExtractor {
 	 */
 	@Override
 	public ViewComponent mapViewComponent(Node node) throws Exception {
-		ListImpl list = new ListImpl();
+		SelectorImpl selectorImpl = new SelectorImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);
 
 			// extract
 			System.out.println(attribute.getName() + ":" + attribute.getValue());
 			switch (attribute.getName()) {
-
-			case "displayAttributes": {
-				ArrayList<Attribute> displayAttributes = new ArrayList<Attribute>();
-				for (String idDisplayAttribute : Arrays.asList(attribute.getValue().split(" "))) {
-					if (idDisplayAttribute != null)
-						displayAttributes.add(new Attribute(idDisplayAttribute));
-					else {
-						System.out.println("--> scartato - Attenzione displayAttribute null\n");
-						break;
-					}
-				}
-				list.setDisplayAttributes(displayAttributes);
-				System.out.print("--> estratto\n");
-				break;
-			}
-
+			
 			case "entity": {
-				list.setEntity(dataModelUtil.findEntity(attribute.getNodeValue()));
-				if (list.getEntity() == null)
+				selectorImpl.setEntity(dataModelUtil.findEntity(attribute.getNodeValue()));
+				if (selectorImpl.getEntity() == null)
 					System.out.println("--> scartato - Attenzione entity null\n");
 				System.out.print("--> estratto\n");
 				break;
 			}
 
 			case "id": {
-				list.setId(attribute.getNodeValue());
+				selectorImpl.setId(attribute.getNodeValue());
 				System.out.print("--> estratto\n");
 				break;
 			}
 
 			case "name": {
-				list.setName(attribute.getNodeValue());
+				selectorImpl.setName(attribute.getNodeValue());
+				System.out.print("--> estratto\n");
+				break;
+			}
+			
+			case "distinctAttributes":{
+				String[] idAttributes = attribute.getNodeValue().split(" ") ;
+				selectorImpl.setAttributes(new HashMap<String,com.engine.mapper.datamodel.DataModel.Entity.Attribute>());
+				for (String key : idAttributes ) {
+					selectorImpl.getAttributes().put(key, null);
+				}
 				System.out.print("--> estratto\n");
 				break;
 			}
@@ -95,29 +85,10 @@ public final class SelectorUnit implements ViewComponentExtractor {
 
 		}
 
-		if (list.getDisplayAttributes() != null) {
-			// set names of attributes from entity
-			list.getDisplayAttributes().stream()
-					.forEach(d -> d.setName(dataModelUtil.findAttributeName(list.getEntity(), d.getId())));
-
-			// set types of attributes from entity
-			list.getDisplayAttributes().stream()
-					.forEach(d -> d.setType(dataModelUtil.findAttributeType(list.getEntity(), d.getId())));
-
-			// set entity on attribute
-			list.getDisplayAttributes().stream().forEach(d -> d.setEntity(list.getEntity()));
-
-			// find existing sortable attributes
-			list.setSortAttributes(findSortableAttributes(node, list));
-		}else {
-
-		throw new Exception("PROCEDURA INTERROTTA: Display attributes della lista " + list.getName() + "(con id: "
-				+ list.getId() + ") vuoti ");
-		}
+		selectorImpl.setConditionalExpressions(getConditionalExpressionExtractor().extractConditionalExpressions(node));
 		
-		list.setConditionalExpressions(getConditionalExpressionExtractor().extractConditionalExpressions(node));
-
-		return list;
+		
+		return selectorImpl;
 	}
 
 	/**

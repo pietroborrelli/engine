@@ -32,7 +32,7 @@
       <SortAttribute attribute="ent1#att26" order="ascending"/>
       <SortAttribute attribute="ent1#att24" order="descending"/>
     </PowerIndexUnit>
-    <EntryUnit gr:x="260" gr:y="385" id="sv1#area4#page2#enu10" name="(entity based) SmartMeter form" entity="ent1" linkOrder="sv1#area4#page2#enu10#ln65">
+    <EntryUnit gr:x="260" gr:y="385" id="sv1#area4#page2#enu10" name="(entity based) SmartMeter form" entity="ent1" linkOrder="sv1#area4#page2#enu10#ln65 sv1#area4#page2#enu10#ln66">
       <Field id="sv1#area4#page2#enu10#fld38" name="name" type="string" modifiable="true" attribute="ent1#att2"/>
       <Field id="sv1#area4#page2#enu10#fld39" name="production_year" type="string" modifiable="true" attribute="ent1#att25"/>
       <Field id="sv1#area4#page2#enu10#fld40" name="make" type="string" modifiable="true" attribute="ent1#att24"/>
@@ -46,6 +46,10 @@
       </Link>
       <Field id="sv1#area4#page2#enu10#fld17" name="start date" type="timestamp" modifiable="true"/>
       <Field id="sv1#area4#page2#enu10#fld24" name="end date" type="timestamp" modifiable="true"/>
+      <Link id="sv1#area4#page2#enu10#ln66" name="Flow66" to="sv1#area4#page2#seu13" type="normal" validate="true">
+        <LinkParameter id="sv1#area4#page2#enu10#ln66#par127" name="name_aaa" source="sv1#area4#page2#enu10#fld38" target="sv1#area4#page2#seu13#su25#acond10"/>
+        <LinkParameter id="sv1#area4#page2#enu10#ln66#par128" name="SmartMeterToRegister_ggg [oid]" source="sv1#area4#page2#enu10#msfld6" target="sv1#area4#page2#seu13#su25#rcond11.ent2#att4"/>
+      </Link>
     </EntryUnit>
     <SelectorUnit gr:x="65" gr:y="490" id="sv1#area4#page2#seu3" name="selector readings" entity="ent3">
       <Selector id="sv1#area4#page2#seu3#su23" defaultPolicy="fill" booleanOperator="and">
@@ -73,6 +77,12 @@
         <AttributesCondition id="sv1#area4#page2#pwu4#su22#acond9" name="end date" predicate="lteq" booleanOperator="or" implied="true" attributes="ent3#att10"/>
       </Selector>
     </PowerIndexUnit>
+    <SelectorUnit gr:x="320" gr:y="545" id="sv1#area4#page2#seu13" name="Selector13" entity="ent5">
+      <Selector id="sv1#area4#page2#seu13#su25" defaultPolicy="fill" booleanOperator="and">
+        <RelationshipRoleCondition id="sv1#area4#page2#seu13#su25#rcond11" name="ggg" role="rel6#role12" predicate="in" implied="false"/>
+        <AttributesCondition id="sv1#area4#page2#seu13#su25#acond10" name="aaa" predicate="eq" booleanOperator="or" implied="false" attributes="ent5#att20"/>
+      </Selector>
+    </SelectorUnit>
   </ContentUnits>
   <layout:Grid containerType="grid">
     <layout:Row>
@@ -142,7 +152,6 @@
     <layout:Row>
       <layout:Cell colspan="12">
         <layout:Unit unitId="sv1#area4#page2#enu10">
-          <layout:Link link="sv1#area4#page2#enu10#ln65"/>
           <layout:Field field="sv1#area4#page2#enu10#fld38"/>
           <layout:Field field="sv1#area4#page2#enu10#fld39"/>
           <layout:Field field="sv1#area4#page2#enu10#fld40"/>
@@ -151,6 +160,8 @@
           <layout:Field field="sv1#area4#page2#enu10#msfld6"/>
           <layout:Field field="sv1#area4#page2#enu10#fld17"/>
           <layout:Field field="sv1#area4#page2#enu10#fld24"/>
+          <layout:Link link="sv1#area4#page2#enu10#ln65"/>
+          <layout:Link link="sv1#area4#page2#enu10#ln66"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>
