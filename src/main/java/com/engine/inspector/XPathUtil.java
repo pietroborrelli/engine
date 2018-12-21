@@ -38,103 +38,162 @@ public class XPathUtil {
 
 	/**
 	 * @param document
-	 * @return list of leaves nodes (without outgoing arcs OR with outgoing arcs pointing on actions, but not to view components)
+	 * @return list of leaves nodes (without outgoing arcs OR with outgoing arcs
+	 *         pointing on actions, but not to view components)
 	 * @throws XPathExpressionException
 	 */
-	public List<Node> findLeavesNodes(Document document) throws XPathExpressionException {
+	public List<Node> findLeavesNodes(Document document) {
 
 		ArrayList<Node> leavesList = (ArrayList<Node>) findLeavesList(document);
 		ArrayList<Node> leavesDetail = (ArrayList<Node>) findLeavesDetail(document);
 		ArrayList<Node> leavesForm = (ArrayList<Node>) findLeavesForm(document);
+		ArrayList<Node> leavesSelector = (ArrayList<Node>) findLeavesSelector(document);
 
-		return Stream.of(leavesList, leavesDetail, leavesForm).flatMap(Collection::stream).collect(Collectors.toList());
+		return Stream.of(leavesList, leavesDetail, leavesForm, leavesSelector).flatMap(Collection::stream)
+				.collect(Collectors.toList());
 	}
 
-	public List<Node> findLeavesList(Document document) throws XPathExpressionException {
+	public List<Node> findLeavesList(Document document) {
 		List<Node> leavesNodes = new ArrayList<Node>();
-		NodeList nodes = (NodeList) getxPath().compile("//PowerIndexUnit[not(Link)]").evaluate(document,
-				XPathConstants.NODESET);
+		NodeList nodes = null;
+		try {
+			nodes = (NodeList) getxPath().compile("//PowerIndexUnit[not(Link)]").evaluate(document,
+					XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovata una foglia PowerIndexUnit");
 			leavesNodes.add(node);
 		}
-		
-		//add leaves with outgoing arcs pointing actions but without outgoing arcs on view components
-		nodes = (NodeList) getxPath().compile("//PowerIndexUnit[Link[contains(@to,'#miu')] and ( "
-																+ "not(Link[contains(@to,'#pwu')]) and "
-																+ "not(Link[contains(@to,'#enu')]) and "
-																+ "not(Link[contains(@to,'#dau')])"
-																+ " )"
-																+ "]") 
-													//+ "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
-				.evaluate(document,
-				XPathConstants.NODESET);
+
+		// add leaves with outgoing arcs pointing actions but without outgoing arcs on
+		// view components
+		try {
+			nodes = (NodeList) getxPath()
+					.compile("//PowerIndexUnit[Link[contains(@to,'#miu')] and ( "
+							+ "not(Link[contains(@to,'#pwu')]) and " + "not(Link[contains(@to,'#enu')]) and "
+							+ "not(Link[contains(@to,'#dau')])" + " )" + "]")
+					// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
+					.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovata una foglia PowerIndexUnit");
 			leavesNodes.add(node);
 		}
-		
+
 		return leavesNodes;
 	}
 
-	public List<Node> findLeavesDetail(Document document) throws XPathExpressionException {
+	public List<Node> findLeavesDetail(Document document) {
 		List<Node> leavesNodes = new ArrayList<Node>();
-		NodeList nodes = (NodeList) getxPath().compile("//DataUnit[not(Link)]").evaluate(document,
+		NodeList nodes = null;
+		try {
+		nodes = (NodeList) getxPath().compile("//DataUnit[not(Link)]").evaluate(document,
 				XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovata una foglia DataUnit");
 			leavesNodes.add(node);
 		}
-		
-		//add leaves with outgoing arcs pointing actions but without outgoing arcs on view components
-				nodes = (NodeList) getxPath().compile("//DataUnit[Link[contains(@to,'#miu')] and ( "
-																+ "not(Link[contains(@to,'#pwu')]) and "
-																+ "not(Link[contains(@to,'#enu')]) and "
-																+ "not(Link[contains(@to,'#dau')])"
-																+ " )"
-																+ "]") 
-															//+ "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
-						.evaluate(document,
-						XPathConstants.NODESET);
-				for (int i = 0; i < nodes.getLength(); i++) {
-					Node node = nodes.item(i);
-					System.out.println("Trovata una foglia DataUnit");
-					leavesNodes.add(node);
-				}
-				
+
+		// add leaves with outgoing arcs pointing actions but without outgoing arcs on
+		// view components
+		try {
+		nodes = (NodeList) getxPath()
+				.compile("//DataUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
+						+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
+				// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
+				.evaluate(document, XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			System.out.println("Trovata una foglia DataUnit");
+			leavesNodes.add(node);
+		}
+
 		return leavesNodes;
 	}
 
-	public List<Node> findLeavesForm(Document document) throws XPathExpressionException {
-		//add leaves without outgoing arcs
+	public List<Node> findLeavesForm(Document document) {
+		// add leaves without outgoing arcs
 		List<Node> leavesNodes = new ArrayList<Node>();
-		NodeList nodes = (NodeList) getxPath().compile("//EntryUnit[not(Link)]").evaluate(document,
+		NodeList nodes = null;
+		try {
+		nodes = (NodeList) getxPath().compile("//EntryUnit[not(Link)]").evaluate(document,
 				XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovata una foglia EntryUnit");
 			leavesNodes.add(node);
 		}
-		
-		//add leaves with outgoing arcs pointing actions but without outgoing arcs on view components
-		nodes = (NodeList) getxPath().compile("//EntryUnit[Link[contains(@to,'#miu')] and ( "
-														+ "not(Link[contains(@to,'#pwu')]) and "
-														+ "not(Link[contains(@to,'#enu')]) and "
-														+ "not(Link[contains(@to,'#dau')])"
-														+ " )"
-														+ "]") 
-													//+ "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
-				.evaluate(document,
-				XPathConstants.NODESET);
+
+		// add leaves with outgoing arcs pointing actions but without outgoing arcs on
+		// view components
+		try {
+		nodes = (NodeList) getxPath()
+				.compile("//EntryUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
+						+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
+				// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
+				.evaluate(document, XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovata una foglia EntryUnit");
 			leavesNodes.add(node);
 		}
-		
+
+		return leavesNodes;
+	}
+
+	public List<Node> findLeavesSelector(Document document) {
+		// add leaves without outgoing arcs
+		List<Node> leavesNodes = new ArrayList<Node>();
+		NodeList nodes = null;
+		try {
+		nodes = (NodeList) getxPath().compile("//SelectorUnit[not(Link)]").evaluate(document,
+				XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			System.out.println("Trovata una foglia SelectorUnit");
+			leavesNodes.add(node);
+		}
+
+		// add leaves with outgoing arcs pointing actions but without outgoing arcs on
+		// view components
+		try {
+		nodes = (NodeList) getxPath()
+				.compile("//SelectorUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
+						+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
+				// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
+				.evaluate(document, XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			System.out.println("Trovata una foglia SelectorUnit");
+			leavesNodes.add(node);
+		}
+
 		return leavesNodes;
 	}
 
@@ -168,26 +227,39 @@ public class XPathUtil {
 	}
 
 	public List<Node> findIncomingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent)
-			throws XPathExpressionException {
+			{
 		ArrayList<Node> incomingInteractionFlows = new ArrayList<Node>();
-		NodeList nodes = (NodeList) getxPath().compile("//Link[@to='" + viewComponent.getId() + "']").evaluate(document,
-				XPathConstants.NODESET);
+		NodeList nodes=null;
+		try {
+			nodes = (NodeList) getxPath().compile("//Link[@to='" + viewComponent.getId() + "']").evaluate(document,
+					XPathConstants.NODESET);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovato un link che punta a " + viewComponent.getId());
 			incomingInteractionFlows.add(node);
 		}
 
-		nodes = (NodeList) getxPath().compile("//OKLink[@to='" + viewComponent.getId() + "']").evaluate(document,
-				XPathConstants.NODESET);
+		try {
+			nodes = (NodeList) getxPath().compile("//OKLink[@to='" + viewComponent.getId() + "']").evaluate(document,
+					XPathConstants.NODESET);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovato un OK link che punta a " + viewComponent.getId());
 			incomingInteractionFlows.add(node);
 		}
 
-		nodes = (NodeList) getxPath().compile("//KOLink[@to='" + viewComponent.getId() + "']").evaluate(document,
-				XPathConstants.NODESET);
+		try {
+			nodes = (NodeList) getxPath().compile("//KOLink[@to='" + viewComponent.getId() + "']").evaluate(document,
+					XPathConstants.NODESET);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			System.out.println("Trovato un KO link che punta a " + viewComponent.getId());
@@ -198,7 +270,7 @@ public class XPathUtil {
 	}
 
 	public List<Node> findOutgoingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent)
-			throws XPathExpressionException {
+			{
 		ArrayList<Node> outgoingInteractionFlows = new ArrayList<Node>();
 		NodeList nodes;
 		try {
@@ -210,16 +282,16 @@ public class XPathUtil {
 				outgoingInteractionFlows.add(node);
 			}
 
-			nodes = (NodeList) getxPath().compile("//OKLink[contains(@id, '" + viewComponent.getId() + "')]").evaluate(document,
-					XPathConstants.NODESET);
+			nodes = (NodeList) getxPath().compile("//OKLink[contains(@id, '" + viewComponent.getId() + "')]")
+					.evaluate(document, XPathConstants.NODESET);
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Node node = nodes.item(i);
 				System.out.println("Trovato un OK link che esce da " + viewComponent.getId());
 				outgoingInteractionFlows.add(node);
 			}
 
-			nodes = (NodeList) getxPath().compile("//KOLink[contains(@id, '" + viewComponent.getId() + "')]").evaluate(document,
-					XPathConstants.NODESET);
+			nodes = (NodeList) getxPath().compile("//KOLink[contains(@id, '" + viewComponent.getId() + "')]")
+					.evaluate(document, XPathConstants.NODESET);
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Node node = nodes.item(i);
 				System.out.println("Trovato un KO link che esce da " + viewComponent.getId());
@@ -238,37 +310,42 @@ public class XPathUtil {
 	 * @return source node; null if there is no source
 	 */
 	public Node findSourceOfInteractionFlow(Document document, InteractionFlow interactionFlow) {
-		Node node = null ;
+		Node node = null;
 		try {
-			
-			//Ancestor list
-			node = (Node) getxPath().compile("//Link[@id='" + interactionFlow.getId() + "']/ancestor::PowerIndexUnit").evaluate(document,
-					XPathConstants.NODE);
+
+			// Ancestor list
+			node = (Node) getxPath().compile("//Link[@id='" + interactionFlow.getId() + "']/ancestor::PowerIndexUnit")
+					.evaluate(document, XPathConstants.NODE);
 			if (node != null)
-				return node; 
-			
-			//Ancestor detail
-			node = (Node) getxPath().compile("//Link[@id='" + interactionFlow.getId() + "']/ancestor::DataUnit").evaluate(document,
-					XPathConstants.NODE);
+				return node;
+
+			// Ancestor detail
+			node = (Node) getxPath().compile("//Link[@id='" + interactionFlow.getId() + "']/ancestor::DataUnit")
+					.evaluate(document, XPathConstants.NODE);
 			if (node != null)
-				return node; 
-			
-			//Ancestor form
-			node = (Node) getxPath().compile("//Link[@id='" + interactionFlow.getId() + "']/ancestor::EntryUnit").evaluate(document,
-					XPathConstants.NODE);
+				return node;
+
+			// Ancestor form
+			node = (Node) getxPath().compile("//Link[@id='" + interactionFlow.getId() + "']/ancestor::EntryUnit")
+					.evaluate(document, XPathConstants.NODE);
 			if (node != null)
-				return node; 
-			
+				return node;
+
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}
-		
+
 		return node;
 	}
-	
-	public Node findRelationshipRoleConditionByRole(String role, Document document) throws XPathExpressionException {
-		Node node = (Node) getxPath().compile("//RelationshipRoleCondition[@role=" + role + "]").evaluate(document,
+
+	public Node findRelationshipRoleConditionByRole(String role, Document document) {
+		Node node = null;
+		try{
+			node = (Node) getxPath().compile("//RelationshipRoleCondition[@role=" + role + "]").evaluate(document,
 				XPathConstants.NODE);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
 		return node;
 	}
 

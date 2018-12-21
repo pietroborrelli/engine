@@ -44,7 +44,7 @@ public final class DataUnit implements ViewComponentExtractor {
 	 * @return view component extracted from the node and data model
 	 */
 	@Override
-	public ViewComponent mapViewComponent(Node node) throws Exception {
+	public ViewComponent mapViewComponent(Node node) {
 		DetailImpl detail = new DetailImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);
@@ -105,7 +105,12 @@ public final class DataUnit implements ViewComponentExtractor {
 		
 		
 		}else {
-			throw new Exception("PROCEDURA INTERROTTA: Display attributes del detail " + detail.getName() + "(con id: " + detail.getId() + ") vuoti ");
+			try {
+				throw new Exception("PROCEDURA INTERROTTA: Display attributes del detail " + detail.getName() + "(con id: " + detail.getId() + ") vuoti ");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		detail.setConditionalExpressions(this.getConditionalExpressionExtractor().extractConditionalExpressions(node));

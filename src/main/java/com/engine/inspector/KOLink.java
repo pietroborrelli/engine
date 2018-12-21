@@ -23,7 +23,7 @@ public final class KOLink implements LinkExtractor {
 	}
 
 	@Override
-	public InteractionFlow mapInteractionFlow(Node node) throws Exception {
+	public InteractionFlow mapInteractionFlow(Node node)  {
 		KOLinkImpl koLinkImpl = new KOLinkImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);

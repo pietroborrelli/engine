@@ -32,7 +32,7 @@ public final class Link implements LinkExtractor {
 	 * or DataLink
 	 */
 	@Override
-	public InteractionFlow mapInteractionFlow(Node node) throws Exception {
+	public InteractionFlow mapInteractionFlow(Node node)  {
 		String to ="";
 		String automaticCoupling ="";
 		String type ="";
@@ -99,7 +99,13 @@ public final class Link implements LinkExtractor {
 			return dataLinkImpl;
 		}
 		
-		throw new Exception("PROCEDURA INTERROTTA: Trovato un link che non è ne data ne navigation:" + id);
+		try {
+			throw new Exception("PROCEDURA INTERROTTA: Trovato un link che non è ne data ne navigation:" + id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 
 	}
 

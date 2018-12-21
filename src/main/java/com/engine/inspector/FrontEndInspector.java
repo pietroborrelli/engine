@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -19,6 +17,7 @@ public class FrontEndInspector {
 	static String VIEWCOMPONENT_LIST = "PowerIndexUnit";
 	static String VIEWCOMPONENT_DETAIL = "DataUnit";
 	static String VIEWCOMPONENT_FORM = "EntryUnit";
+	static String VIEWCOMPONENT_SELECTOR = "SelectorUnit";
 
 	static String NAVIGATIONFLOW_LINK = "Link";
 	static String NAVIGATIONFLOW_OKLINK = "OKLink";
@@ -36,7 +35,7 @@ public class FrontEndInspector {
 
 	}
 
-	public Page elaborateDocument() throws XPathExpressionException {
+	public Page elaborateDocument() {
 
 		this.context = new Context(new PageExtractorImpl());
 		return new Page(context.extractPageName(getDocument()), context.extractPageId(getDocument()));
@@ -47,10 +46,9 @@ public class FrontEndInspector {
 	 * @return the leaves view components in the page (detail, list and form
 	 * @throws Exception
 	 */
-	public List<ViewComponent> findLeavesViewComponents() throws Exception {
+	public List<ViewComponent> findLeavesViewComponents()  {
 		// get nodes from document
 		List<Node> leavesNodes = getxPathUtil().findLeavesNodes(getDocument());
-
 		// map leaves nodes with corresponding view components and return
 		return mapNodesIntoViewComponents(leavesNodes);
 	}
@@ -75,7 +73,7 @@ public class FrontEndInspector {
 	 * @param node
 	 * @throws Exception
 	 */
-	private void traverse(ViewComponent viewComponent) throws Exception {
+	private void traverse(ViewComponent viewComponent){
 
 		if (xPathUtil.isRoot(document, viewComponent)) { // sono arrivato al nodo radice, condizione
 			return;
@@ -86,9 +84,12 @@ public class FrontEndInspector {
 		viewComponent.setOutInteractionFlows(mapNodesIntoInteractionFlow(
 				xPathUtil.findOutgoingInteractionFlowsOfViewComponent(document, viewComponent)));
 
-		//for each IN interaction flow get the source node from the document e mapped in application domain 
-		//viewComponent.getInInteractionFlows().stream().forEach(in -> in.setSourceInteractionFlowElement(
-		//		mapNodeIntoViewComponent(xPathUtil.findSourceOfInteractionFlow(document, in))));
+		// for each IN interaction flow get the source node from the document e mapped
+		// in application domain
+		// viewComponent.getInInteractionFlows().stream().forEach(in ->
+		// in.setSourceInteractionFlowElement(
+		// mapNodeIntoViewComponent(xPathUtil.findSourceOfInteractionFlow(document,
+		// in))));
 
 		// for (InteractionFlow interactionFlow : viewComponent.getInInteractionFlows())
 		// {
@@ -103,7 +104,7 @@ public class FrontEndInspector {
 
 	}
 
-	private List<InteractionFlow> mapNodesIntoInteractionFlow(List<Node> interactionFlowsNodes) throws Exception {
+	private List<InteractionFlow> mapNodesIntoInteractionFlow(List<Node> interactionFlowsNodes) {
 
 		List<InteractionFlow> interactionFlows = new ArrayList<InteractionFlow>();
 		for (Node node : interactionFlowsNodes) {
@@ -119,6 +120,7 @@ public class FrontEndInspector {
 				this.context = new Context(new KOLink(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
 			}
+
 		}
 		return interactionFlows;
 	}
@@ -128,7 +130,7 @@ public class FrontEndInspector {
 	 * @return list of view components mapped in application domain
 	 * @throws Exception
 	 */
-	public List<ViewComponent> mapNodesIntoViewComponents(List<Node> viewComponentNodes) throws Exception {
+	public List<ViewComponent> mapNodesIntoViewComponents(List<Node> viewComponentNodes) {
 		List<ViewComponent> viewComponents = new ArrayList<ViewComponent>();
 		for (Node node : viewComponentNodes) {
 			if (node.getNodeName().equals(VIEWCOMPONENT_DETAIL)) {
@@ -138,10 +140,14 @@ public class FrontEndInspector {
 			if (node.getNodeName().equals(VIEWCOMPONENT_LIST)) {
 				this.context = new Context(new PowerIndexUnit(dataModel));
 				viewComponents.add(this.context.mapViewComponent(node));
-				
+
 			}
 			if (node.getNodeName().equals(VIEWCOMPONENT_FORM)) {
 				this.context = new Context(new EntryUnit(dataModel));
+				viewComponents.add(this.context.mapViewComponent(node));
+			}
+			if (node.getNodeName().equals(VIEWCOMPONENT_SELECTOR)) {
+				this.context = new Context(new SelectorUnit(dataModel));
 				viewComponents.add(this.context.mapViewComponent(node));
 			}
 		}
@@ -150,7 +156,7 @@ public class FrontEndInspector {
 
 	/**
 	 * @param viewComponentNode
-	 * @return a view component mapped in application domain
+	 * @return a single view component mapped in application domain
 	 * @throws Exception
 	 */
 	public ViewComponent mapNodeIntoViewComponent(Node viewComponentNode) {
@@ -168,8 +174,11 @@ public class FrontEndInspector {
 				this.context = new Context(new EntryUnit(dataModel));
 				return this.context.mapViewComponent(viewComponentNode);
 			}
+			if (viewComponentNode.getNodeName().equals(VIEWCOMPONENT_SELECTOR)) {
+				this.context = new Context(new SelectorUnit(dataModel));
+				return this.context.mapViewComponent(viewComponentNode);
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -208,6 +217,14 @@ public class FrontEndInspector {
 		this.document = document;
 	}
 
+	/*
+	public List<ViewComponent> findViewComponents() {
+		// get nodes from document
+		List<Node> leavesNodes = getxPathUtil().findLeavesNodes(getDocument());
+		// map leaves nodes with corresponding view components and return
+		return mapNodesIntoViewComponents(leavesNodes);
+	}
+*/
 	// public Stack<InteractionFlowElement> getStack() {
 	// return stack;
 	// }

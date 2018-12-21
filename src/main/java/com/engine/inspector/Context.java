@@ -1,7 +1,5 @@
 package com.engine.inspector;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -15,19 +13,19 @@ public class Context {
 	private LinkExtractor linkExtractor;
 
 	private PageExtractor pageExtractor;
-	
+
 	public Context(PageExtractor pageExtractor) {
-		this.pageExtractor=pageExtractor;
+		this.pageExtractor = pageExtractor;
 	}
 
 	public Context(ViewComponentExtractor viewComponentExtractor) {
-		this.viewComponentExtractor=viewComponentExtractor;
+		this.viewComponentExtractor = viewComponentExtractor;
 	}
-	
+
 	public Context(LinkExtractor linkExtractor) {
-		this.linkExtractor=linkExtractor;
+		this.linkExtractor = linkExtractor;
 	}
-	
+
 	public ViewComponentExtractor getViewComponentExtractor() {
 		return viewComponentExtractor;
 	}
@@ -52,19 +50,19 @@ public class Context {
 		this.pageExtractor = pageExtractor;
 	}
 
-	public String extractPageName(Document document) throws XPathExpressionException {
+	public String extractPageName(Document document) {
 		return pageExtractor.extractPageName(document);
 	}
 
-	public String extractPageId(Document document) throws XPathExpressionException {
+	public String extractPageId(Document document) {
 		return pageExtractor.extractPageId(document);
 	}
-	
-	public ViewComponent mapViewComponent(Node node) throws Exception {
+
+	public ViewComponent mapViewComponent(Node node) {
 		return viewComponentExtractor.mapViewComponent(node);
 	}
-	
-	public InteractionFlow mapInteractionFlow(Node node)throws Exception {
+
+	public InteractionFlow mapInteractionFlow(Node node)  {
 		return linkExtractor.mapInteractionFlow(node);
 	}
 }

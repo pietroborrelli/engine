@@ -25,10 +25,14 @@ public final class PageExtractorImpl implements PageExtractor {
 	 * @return name of the page
 	 * @throws XPathExpressionException 
 	 */
-	public String extractPageName(Document document) throws XPathExpressionException {
-		
+	public String extractPageName(Document document)  {
+		Node node = null;
+		try {
 		XPathExpression expr = getxPath().compile("/Page/@name");
-		Node node = (Node) expr.evaluate(document, XPathConstants.NODE);
+		node = (Node) expr.evaluate(document, XPathConstants.NODE);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
 		if (node.getNodeValue() != null)
 			return node.getNodeValue();
 		else
@@ -41,9 +45,14 @@ public final class PageExtractorImpl implements PageExtractor {
 	 * @return name of the page
 	 * @throws XPathExpressionException
 	 */
-	public String extractPageId(Document document) throws XPathExpressionException {
+	public String extractPageId(Document document)  {
+		Node node = null;
+		try {
 		XPathExpression expr = getxPath().compile("/Page/@id");
-		Node node = (Node) expr.evaluate(document, XPathConstants.NODE);
+		node = (Node) expr.evaluate(document, XPathConstants.NODE);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
 		if (node.getNodeValue() != null)
 			return node.getNodeValue();
 		else

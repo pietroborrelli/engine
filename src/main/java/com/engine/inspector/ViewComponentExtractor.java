@@ -10,6 +10,6 @@ public interface ViewComponentExtractor {
 	
 	public ViewComponent extractNextViewComponent(String viewComponent);
 	
-	public ViewComponent mapViewComponent(Node node) throws Exception;
+	public ViewComponent mapViewComponent(Node node) ;
 	
 }

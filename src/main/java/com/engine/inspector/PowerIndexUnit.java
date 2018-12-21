@@ -2,18 +2,11 @@ package com.engine.inspector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.engine.domain.enumeration.Ordering;
-import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
@@ -49,7 +42,7 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 	 * @return view component extracted from the node and data model
 	 */
 	@Override
-	public ViewComponent mapViewComponent(Node node) throws Exception {
+	public ViewComponent mapViewComponent(Node node)  {
 		ListImpl list = new ListImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);
@@ -112,8 +105,13 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 			list.setSortAttributes(extractSortableAttributes(node, list));
 
 		}else {
-		throw new Exception("PROCEDURA INTERROTTA: Display attributes della lista " + list.getName() + "(con id: "
-				+ list.getId() + ") vuoti ");
+		try {
+			throw new Exception("PROCEDURA INTERROTTA: Display attributes della lista " + list.getName() + "(con id: "
+					+ list.getId() + ") vuoti ");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		}
 		
 		

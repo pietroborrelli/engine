@@ -45,7 +45,7 @@ public final class EntryUnit implements ViewComponentExtractor {
 	 * @return form-entity based extracted from the node and data model
 	 */
 	@Override
-	public ViewComponent mapViewComponent(Node node) throws Exception {
+	public ViewComponent mapViewComponent(Node node)  {
 		FormImpl form = new FormImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);

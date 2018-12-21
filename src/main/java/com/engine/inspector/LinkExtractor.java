@@ -9,6 +9,6 @@ public interface LinkExtractor {
 
 	public InteractionFlow extractSpecificLink(String link);
 
-	public InteractionFlow mapInteractionFlow(Node node) throws Exception;
+	public InteractionFlow mapInteractionFlow(Node node);
 
 }

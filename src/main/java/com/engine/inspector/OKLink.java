@@ -4,7 +4,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
-import com.engine.domain.interactionflowelement.interactionflow.navigationflow.LinkImpl;
 import com.engine.domain.interactionflowelement.interactionflow.navigationflow.OKLinkImpl;
 import com.engine.mapper.datamodel.DataModel;
 
@@ -23,7 +22,7 @@ public final class OKLink implements LinkExtractor {
 	}
 
 	@Override
-	public InteractionFlow mapInteractionFlow(Node node) throws Exception {
+	public InteractionFlow mapInteractionFlow(Node node) {
 		OKLinkImpl okLinkImpl = new OKLinkImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);

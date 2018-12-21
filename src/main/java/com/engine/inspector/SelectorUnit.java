@@ -43,7 +43,7 @@ public final class SelectorUnit implements ViewComponentExtractor {
 	 * @return view component extracted from the node and data model
 	 */
 	@Override
-	public ViewComponent mapViewComponent(Node node) throws Exception {
+	public ViewComponent mapViewComponent(Node node)  {
 		SelectorImpl selectorImpl = new SelectorImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);
