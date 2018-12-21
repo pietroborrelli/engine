@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +13,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Area;
@@ -89,7 +86,7 @@ public class EngineApplication implements CommandLineRunner {
 				Page page = frontEndInspector.elaborateDocument();
 				
 				List<ViewComponent> leavesViewComponents = frontEndInspector.findLeavesViewComponents();
-				
+				List<ViewComponent> viewComponents = frontEndInspector.findViewComponents();
 				frontEndInspector.extractPaths(leavesViewComponents);
 				
 				pages.add(page);

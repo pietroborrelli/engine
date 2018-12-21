@@ -40,7 +40,6 @@ public class XPathUtil {
 	 * @param document
 	 * @return list of leaves nodes (without outgoing arcs OR with outgoing arcs
 	 *         pointing on actions, but not to view components)
-	 * @throws XPathExpressionException
 	 */
 	public List<Node> findLeavesNodes(Document document) {
 
@@ -197,12 +196,118 @@ public class XPathUtil {
 		return leavesNodes;
 	}
 
+	//TODO find all Nodes
+	/**
+	 * @param document
+	 * @return list of all nodes (without outgoing arcs OR with outgoing arcs
+	 *         pointing on actions, but not to view components)
+	 */
+	public List<Node> findAllNodes(Document document) {
+
+		ArrayList<Node> nodesList = (ArrayList<Node>) findNodesList(document);
+		ArrayList<Node> nodesDetail = (ArrayList<Node>) findNodesDetail(document);
+		ArrayList<Node> nodesForm = (ArrayList<Node>) findNodesForm(document);
+		ArrayList<Node> nodesSelector = (ArrayList<Node>) findNodesSelector(document);
+
+		return Stream.of(nodesList, nodesDetail, nodesForm, nodesSelector).flatMap(Collection::stream)
+				.collect(Collectors.toList());
+	}
+	
+	
+
+	/**
+	 * @param document
+	 * @return list of all list nodes
+	 */
+	public List<Node> findNodesList(Document document) {
+		List<Node> nodesList = new ArrayList<Node>();
+		NodeList nodes = null;
+		try {
+			nodes = (NodeList) getxPath().compile("//PowerIndexUnit").evaluate(document,
+					XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			System.out.println("Trovato un PowerIndexUnit");
+			nodesList.add(node);
+		}
+
+		return nodesList;
+	}
+
+	/**
+	 * @param document
+	 * @return list of all detail nodes
+	 */
+	public List<Node> findNodesDetail(Document document) {
+		List<Node> detailNodes = new ArrayList<Node>();
+		NodeList nodes = null;
+		try {
+		nodes = (NodeList) getxPath().compile("//DataUnit").evaluate(document,
+				XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			System.out.println("Trovato un DataUnit");
+			detailNodes.add(node);
+		}
+
+		return detailNodes;
+	}
+
+	/**
+	 * @param document
+	 * @return list of all form nodes
+	 */
+	public List<Node> findNodesForm(Document document) {
+		List<Node> formNodes = new ArrayList<Node>();
+		NodeList nodes = null;
+		try {
+		nodes = (NodeList) getxPath().compile("//EntryUnit").evaluate(document,
+				XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			System.out.println("Trovato un EntryUnit");
+			formNodes.add(node);
+		}
+		return formNodes;
+	}
+
+	/**
+	 * @param document
+	 * @return list of all selector nodes
+	 */
+	public List<Node> findNodesSelector(Document document) {
+		List<Node> selectorNodes = new ArrayList<Node>();
+		NodeList nodes = null;
+		try {
+		nodes = (NodeList) getxPath().compile("//SelectorUnit").evaluate(document,
+				XPathConstants.NODESET);
+		}catch(XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			System.out.println("Trovato un SelectorUnit");
+			selectorNodes.add(node);
+		}
+
+		return selectorNodes;
+	}
+	
 	/**
 	 * 
 	 * @param document
 	 * @param viewComponent
 	 * @return true if viewcomponent is root, otherwise false
-	 * @throws XPathExpressionException
 	 */
 	public Boolean isRoot(Document document, ViewComponent viewComponent) {
 		NodeList linkNodes = null;

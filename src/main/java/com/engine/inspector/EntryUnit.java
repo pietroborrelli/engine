@@ -149,16 +149,18 @@ public final class EntryUnit implements ViewComponentExtractor {
 				FieldImpl field = new FieldImpl(id, name, type);
 
 				Attribute entityAttribute = new Attribute();
-				entityAttribute.setId(attributeId);
-				// set name of attribute from entity
-				entityAttribute.setName(dataModelUtil.findAttributeName(form.getEntity(), entityAttribute.getId()));
-
-				// set type of attribute from entity
-				entityAttribute.setType(dataModelUtil.findAttributeType(form.getEntity(), entityAttribute.getId()));
-
-				// set entity on attribute
-				entityAttribute.setEntity(form.getEntity());
-
+				//set attribute id if has reference to attribute of entity
+				if (!attributeId.isEmpty()) {
+					entityAttribute.setId(attributeId);
+					// set name of attribute from entity
+					entityAttribute.setName(dataModelUtil.findAttributeName(form.getEntity(), entityAttribute.getId()));
+	
+					// set type of attribute from entity
+					entityAttribute.setType(dataModelUtil.findAttributeType(form.getEntity(), entityAttribute.getId()));
+	
+					// set entity on attribute
+					entityAttribute.setEntity(form.getEntity());
+				}
 				field.setAttribute(entityAttribute);
 
 				fields.add(field);

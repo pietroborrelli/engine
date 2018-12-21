@@ -46,11 +46,12 @@ public class FrontEndInspector {
 	 * @return the leaves view components in the page (detail, list and form
 	 * @throws Exception
 	 */
-	public List<ViewComponent> findLeavesViewComponents()  {
+	public List<ViewComponent> findLeavesViewComponents() {
 		// get nodes from document
 		List<Node> leavesNodes = getxPathUtil().findLeavesNodes(getDocument());
 		// map leaves nodes with corresponding view components and return
 		return mapNodesIntoViewComponents(leavesNodes);
+
 	}
 
 	public void extractPaths(List<ViewComponent> leavesViewComponents) {
@@ -73,16 +74,11 @@ public class FrontEndInspector {
 	 * @param node
 	 * @throws Exception
 	 */
-	private void traverse(ViewComponent viewComponent){
+	private void traverse(ViewComponent viewComponent) {
 
 		if (xPathUtil.isRoot(document, viewComponent)) { // sono arrivato al nodo radice, condizione
 			return;
 		}
-
-		viewComponent.setInInteractionFlows(mapNodesIntoInteractionFlow(
-				xPathUtil.findIncomingInteractionFlowsOfViewComponent(document, viewComponent)));
-		viewComponent.setOutInteractionFlows(mapNodesIntoInteractionFlow(
-				xPathUtil.findOutgoingInteractionFlowsOfViewComponent(document, viewComponent)));
 
 		// for each IN interaction flow get the source node from the document e mapped
 		// in application domain
@@ -128,7 +124,6 @@ public class FrontEndInspector {
 	/**
 	 * @param viewComponentNodes
 	 * @return list of view components mapped in application domain
-	 * @throws Exception
 	 */
 	public List<ViewComponent> mapNodesIntoViewComponents(List<Node> viewComponentNodes) {
 		List<ViewComponent> viewComponents = new ArrayList<ViewComponent>();
@@ -157,7 +152,6 @@ public class FrontEndInspector {
 	/**
 	 * @param viewComponentNode
 	 * @return a single view component mapped in application domain
-	 * @throws Exception
 	 */
 	public ViewComponent mapNodeIntoViewComponent(Node viewComponentNode) {
 		try {
@@ -217,14 +211,22 @@ public class FrontEndInspector {
 		this.document = document;
 	}
 
-	/*
 	public List<ViewComponent> findViewComponents() {
 		// get nodes from document
-		List<Node> leavesNodes = getxPathUtil().findLeavesNodes(getDocument());
+		List<Node> nodes = getxPathUtil().findAllNodes(getDocument());
 		// map leaves nodes with corresponding view components and return
-		return mapNodesIntoViewComponents(leavesNodes);
+		List<ViewComponent> viewComponents = mapNodesIntoViewComponents(nodes);
+
+		for (ViewComponent viewComponent : viewComponents) {
+			viewComponent.setInInteractionFlows(mapNodesIntoInteractionFlow(
+					xPathUtil.findIncomingInteractionFlowsOfViewComponent(document, viewComponent)));
+			viewComponent.setOutInteractionFlows(mapNodesIntoInteractionFlow(
+					xPathUtil.findOutgoingInteractionFlowsOfViewComponent(document, viewComponent)));
+		}
+
+		return viewComponents;
 	}
-*/
+
 	// public Stack<InteractionFlowElement> getStack() {
 	// return stack;
 	// }

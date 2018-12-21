@@ -109,7 +109,7 @@ public class DataModelUtil {
 	 * @return name of the attribute ; null if no name is found
 	 */
 	public String findAttributeName(Entity entity, String idDisplayAttribute) {
-
+//System.out.println(entity.getName()+"--"+idDisplayAttribute);
 		return entity.getAttribute().stream().filter(an -> an.getId().equals(idDisplayAttribute))
 				.collect(Collectors.toList()).get(0).getName();
 
