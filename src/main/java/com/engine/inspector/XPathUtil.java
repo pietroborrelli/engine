@@ -93,9 +93,8 @@ public class XPathUtil {
 		List<Node> leavesNodes = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
-		nodes = (NodeList) getxPath().compile("//DataUnit[not(Link)]").evaluate(document,
-				XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath().compile("//DataUnit[not(Link)]").evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -107,12 +106,12 @@ public class XPathUtil {
 		// add leaves with outgoing arcs pointing actions but without outgoing arcs on
 		// view components
 		try {
-		nodes = (NodeList) getxPath()
-				.compile("//DataUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
-						+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
-				// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
-				.evaluate(document, XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath()
+					.compile("//DataUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
+							+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
+					// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
+					.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -129,9 +128,8 @@ public class XPathUtil {
 		List<Node> leavesNodes = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
-		nodes = (NodeList) getxPath().compile("//EntryUnit[not(Link)]").evaluate(document,
-				XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath().compile("//EntryUnit[not(Link)]").evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -143,12 +141,12 @@ public class XPathUtil {
 		// add leaves with outgoing arcs pointing actions but without outgoing arcs on
 		// view components
 		try {
-		nodes = (NodeList) getxPath()
-				.compile("//EntryUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
-						+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
-				// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
-				.evaluate(document, XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath()
+					.compile("//EntryUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
+							+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
+					// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
+					.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -165,9 +163,9 @@ public class XPathUtil {
 		List<Node> leavesNodes = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
-		nodes = (NodeList) getxPath().compile("//SelectorUnit[not(Link)]").evaluate(document,
-				XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath().compile("//SelectorUnit[not(Link)]").evaluate(document,
+					XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -179,12 +177,12 @@ public class XPathUtil {
 		// add leaves with outgoing arcs pointing actions but without outgoing arcs on
 		// view components
 		try {
-		nodes = (NodeList) getxPath()
-				.compile("//SelectorUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
-						+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
-				// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
-				.evaluate(document, XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath()
+					.compile("//SelectorUnit[Link[contains(@to,'#miu')] and ( " + "not(Link[contains(@to,'#pwu')]) and "
+							+ "not(Link[contains(@to,'#enu')]) and " + "not(Link[contains(@to,'#dau')])" + " )" + "]")
+					// + "descendant::Link[contains(@to,'#miu') and not[contains(@to,'#enu')]]]")
+					.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -196,7 +194,7 @@ public class XPathUtil {
 		return leavesNodes;
 	}
 
-	//TODO find all Nodes
+	// TODO find all Nodes
 	/**
 	 * @param document
 	 * @return list of all nodes (without outgoing arcs OR with outgoing arcs
@@ -212,8 +210,6 @@ public class XPathUtil {
 		return Stream.of(nodesList, nodesDetail, nodesForm, nodesSelector).flatMap(Collection::stream)
 				.collect(Collectors.toList());
 	}
-	
-	
 
 	/**
 	 * @param document
@@ -223,8 +219,7 @@ public class XPathUtil {
 		List<Node> nodesList = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
-			nodes = (NodeList) getxPath().compile("//PowerIndexUnit").evaluate(document,
-					XPathConstants.NODESET);
+			nodes = (NodeList) getxPath().compile("//PowerIndexUnit").evaluate(document, XPathConstants.NODESET);
 		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
@@ -246,9 +241,8 @@ public class XPathUtil {
 		List<Node> detailNodes = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
-		nodes = (NodeList) getxPath().compile("//DataUnit").evaluate(document,
-				XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath().compile("//DataUnit").evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -268,9 +262,8 @@ public class XPathUtil {
 		List<Node> formNodes = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
-		nodes = (NodeList) getxPath().compile("//EntryUnit").evaluate(document,
-				XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath().compile("//EntryUnit").evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -289,9 +282,8 @@ public class XPathUtil {
 		List<Node> selectorNodes = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
-		nodes = (NodeList) getxPath().compile("//SelectorUnit").evaluate(document,
-				XPathConstants.NODESET);
-		}catch(XPathExpressionException xe) {
+			nodes = (NodeList) getxPath().compile("//SelectorUnit").evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -302,7 +294,7 @@ public class XPathUtil {
 
 		return selectorNodes;
 	}
-	
+
 	/**
 	 * 
 	 * @param document
@@ -331,10 +323,9 @@ public class XPathUtil {
 			return false;
 	}
 
-	public List<Node> findIncomingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent)
-			{
+	public List<Node> findIncomingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent) {
 		ArrayList<Node> incomingInteractionFlows = new ArrayList<Node>();
-		NodeList nodes=null;
+		NodeList nodes = null;
 		try {
 			nodes = (NodeList) getxPath().compile("//Link[@to='" + viewComponent.getId() + "']").evaluate(document,
 					XPathConstants.NODESET);
@@ -374,8 +365,7 @@ public class XPathUtil {
 		return incomingInteractionFlows;
 	}
 
-	public List<Node> findOutgoingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent)
-			{
+	public List<Node> findOutgoingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent) {
 		ArrayList<Node> outgoingInteractionFlows = new ArrayList<Node>();
 		NodeList nodes;
 		try {
@@ -436,6 +426,14 @@ public class XPathUtil {
 			if (node != null)
 				return node;
 
+			// Ancestor selector
+			node = (Node) getxPath().compile("//Link[@id='" + interactionFlow.getId() + "']/ancestor::SelectorUnit")
+					.evaluate(document, XPathConstants.NODE);
+			if (node != null)
+				return node;
+			
+			// TODO : add here source action
+
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}
@@ -443,12 +441,54 @@ public class XPathUtil {
 		return node;
 	}
 
+	/**
+	 * @param document
+	 * @param interactionFlow
+	 * @return target node; null if there is no source
+	 */
+	public Node findTargetOfInteractionFlow(Document document, InteractionFlow interactionFlow) {
+		Node node = null;
+		try {
+
+			// Ancestor list
+			node = (Node) getxPath().compile("//PowerIndexUnit[@id='" + interactionFlow.getTo() + "']")
+					.evaluate(document, XPathConstants.NODE);
+			if (node != null)
+				return node;
+
+			// Ancestor detail
+			node = (Node) getxPath().compile("//DataUnit[@id='" + interactionFlow.getTo() + "']")
+					.evaluate(document, XPathConstants.NODE);
+			if (node != null)
+				return node;
+
+			// Ancestor form
+			node = (Node) getxPath().compile("//EntryUnit[@id='" + interactionFlow.getTo() + "']")
+					.evaluate(document, XPathConstants.NODE);
+			if (node != null)
+				return node;
+
+			// Ancestor selector
+			node = (Node) getxPath().compile("//SelectorUnit[@id='" + interactionFlow.getTo() + "']")
+					.evaluate(document, XPathConstants.NODE);
+			if (node != null)
+				return node;
+			
+			// TODO : add here source action
+
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+
+		return node;
+	}
+	
 	public Node findRelationshipRoleConditionByRole(String role, Document document) {
 		Node node = null;
-		try{
+		try {
 			node = (Node) getxPath().compile("//RelationshipRoleCondition[@role=" + role + "]").evaluate(document,
-				XPathConstants.NODE);
-		}catch(XPathExpressionException xe) {
+					XPathConstants.NODE);
+		} catch (XPathExpressionException xe) {
 			xe.printStackTrace();
 		}
 		return node;

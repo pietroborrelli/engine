@@ -7,6 +7,7 @@ import java.util.Stack;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Page;
@@ -104,19 +105,31 @@ public class FrontEndInspector {
 
 		List<InteractionFlow> interactionFlows = new ArrayList<InteractionFlow>();
 		for (Node node : interactionFlowsNodes) {
+			Boolean found = false;
 			if (node.getNodeName().equals(NAVIGATIONFLOW_LINK)) {
 				this.context = new Context(new Link(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
+				found = true;
 			}
 			if (node.getNodeName().equals(NAVIGATIONFLOW_OKLINK)) {
 				this.context = new Context(new OKLink(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
+				found = true;
 			}
 			if (node.getNodeName().equals(NAVIGATIONFLOW_KOLINK)) {
 				this.context = new Context(new KOLink(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
+				found = true;
 			}
-
+			if (found) {
+				interactionFlows.get(interactionFlows.size()-1).setSourceInteractionFlowElement(
+						mapNodeIntoInteractionFlowElement(xPathUtil.findSourceOfInteractionFlow( getDocument(),
+								interactionFlows.get(interactionFlows.size()-1))));
+				
+				interactionFlows.get(interactionFlows.size()-1).setTargetInteractionFlowElement(
+						mapNodeIntoInteractionFlowElement(xPathUtil.findTargetOfInteractionFlow( getDocument(),
+								interactionFlows.get(interactionFlows.size()-1))));
+			}
 		}
 		return interactionFlows;
 	}
@@ -172,6 +185,39 @@ public class FrontEndInspector {
 				this.context = new Context(new SelectorUnit(dataModel));
 				return this.context.mapViewComponent(viewComponentNode);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param interaction
+	 *            flow element. May be a view component or an action
+	 * @return a single view component mapped in application domain
+	 */
+	public InteractionFlowElement mapNodeIntoInteractionFlowElement(Node interactionFlowElement) {
+		try {
+			if (interactionFlowElement.getNodeName().equals(VIEWCOMPONENT_DETAIL)) {
+				this.context = new Context(new DataUnit(dataModel));
+
+				return this.context.mapViewComponent(interactionFlowElement);
+			}
+			if (interactionFlowElement.getNodeName().equals(VIEWCOMPONENT_LIST)) {
+				this.context = new Context(new PowerIndexUnit(dataModel));
+				return this.context.mapViewComponent(interactionFlowElement);
+			}
+			if (interactionFlowElement.getNodeName().equals(VIEWCOMPONENT_FORM)) {
+				this.context = new Context(new EntryUnit(dataModel));
+				return this.context.mapViewComponent(interactionFlowElement);
+			}
+			if (interactionFlowElement.getNodeName().equals(VIEWCOMPONENT_SELECTOR)) {
+				this.context = new Context(new SelectorUnit(dataModel));
+				return this.context.mapViewComponent(interactionFlowElement);
+			}
+			// TODO : add here action to found source and target of a link
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
