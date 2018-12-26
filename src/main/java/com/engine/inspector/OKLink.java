@@ -1,8 +1,11 @@
 package com.engine.inspector;
 
+import java.util.List;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 
+import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.interactionflow.navigationflow.OKLinkImpl;
 import com.engine.mapper.datamodel.DataModel;
@@ -60,6 +63,12 @@ public final class OKLink implements LinkExtractor {
 
 		return okLinkImpl;
 		
+	}
+
+	@Override
+	public List<BindingParameter> mapBindingParameter(Node node) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

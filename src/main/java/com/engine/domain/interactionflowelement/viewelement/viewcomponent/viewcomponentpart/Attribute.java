@@ -7,6 +7,7 @@ public class Attribute extends ViewComponentPart {
 
 	private Entity entity;
 	private Ordering ordering;
+	private Boolean key;
 	
 	public Attribute(String id) {
 		setId(id);
@@ -30,6 +31,14 @@ public class Attribute extends ViewComponentPart {
 
 	public void setOrdering(Ordering ordering) {
 		this.ordering = ordering;
+	}
+
+	public Boolean isKey() {
+		return key;
+	}
+
+	public void setKey(Boolean key) {
+		this.key = key;
 	}
 
 }

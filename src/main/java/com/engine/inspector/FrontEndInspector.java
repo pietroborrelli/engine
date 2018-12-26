@@ -2,14 +2,20 @@ package com.engine.inspector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.engine.domain.enumeration.Ordering;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
+import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.ViewComponentPart;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Page;
 import com.engine.mapper.datamodel.DataModel;
 
@@ -25,6 +31,7 @@ public class FrontEndInspector {
 	static String NAVIGATIONFLOW_KOLINK = "KOLink";
 
 	private DataModel dataModel;
+	private DataModelUtil dataModelUtil;
 	private XPathUtil xPathUtil;
 	private Context context;
 	private Document document;
@@ -33,6 +40,7 @@ public class FrontEndInspector {
 	public FrontEndInspector(DataModel dataModel) {
 		this.setxPathUtil(new XPathUtil());
 		this.dataModel = dataModel;
+		this.dataModelUtil = new DataModelUtil(dataModel);
 
 	}
 
@@ -108,7 +116,13 @@ public class FrontEndInspector {
 			Boolean found = false;
 			if (node.getNodeName().equals(NAVIGATIONFLOW_LINK)) {
 				this.context = new Context(new Link(dataModel));
-				interactionFlows.add(this.context.mapInteractionFlow(node));
+				InteractionFlow interactionFlow = this.context.mapInteractionFlow(node);
+				
+				for (BindingParameter bindingParameter : interactionFlow.getBindingParameter()) {
+					bindingParameter.setTargets(findTargetsOfBindingParameter(bindingParameter,getDocument()));
+				}
+				
+				interactionFlows.add(interactionFlow);
 				found = true;
 			}
 			if (node.getNodeName().equals(NAVIGATIONFLOW_OKLINK)) {
@@ -122,16 +136,102 @@ public class FrontEndInspector {
 				found = true;
 			}
 			if (found) {
-				interactionFlows.get(interactionFlows.size()-1).setSourceInteractionFlowElement(
-						mapNodeIntoInteractionFlowElement(xPathUtil.findSourceOfInteractionFlow( getDocument(),
-								interactionFlows.get(interactionFlows.size()-1))));
-				
-				interactionFlows.get(interactionFlows.size()-1).setTargetInteractionFlowElement(
-						mapNodeIntoInteractionFlowElement(xPathUtil.findTargetOfInteractionFlow( getDocument(),
-								interactionFlows.get(interactionFlows.size()-1))));
+				interactionFlows.get(interactionFlows.size() - 1).setSourceInteractionFlowElement(
+						mapNodeIntoInteractionFlowElement(xPathUtil.findSourceOfInteractionFlow(getDocument(),
+								interactionFlows.get(interactionFlows.size() - 1))));
+
+				interactionFlows.get(interactionFlows.size() - 1).setTargetInteractionFlowElement(
+						mapNodeIntoInteractionFlowElement(xPathUtil.findTargetOfInteractionFlow(getDocument(),
+								interactionFlows.get(interactionFlows.size() - 1))));
 			}
 		}
 		return interactionFlows;
+	}
+
+	/**
+	 * @param interactionFlow
+	 * @param document
+	 * @return an update binding parameter list with source ViewComponentParts
+	 */
+	private List<ViewComponentPart> findTargetsOfBindingParameter(BindingParameter bindingParameter, Document document) {
+
+		List<ViewComponentPart> viewComponentParts = new ArrayList<ViewComponentPart>();
+
+			Attribute attribute = new Attribute();
+
+			// kcond / rcond cases, looking for attribute
+			if (bindingParameter.getTargetId().contains("ent")) {
+				bindingParameter.setTargetId(
+						bindingParameter.getTargetId().substring(bindingParameter.getTargetId().lastIndexOf("ent")));
+
+				if (bindingParameter.getTargetId().contains("Array"))
+					bindingParameter.setTargetId(bindingParameter.getTargetId().substring(0,
+							bindingParameter.getTargetId().lastIndexOf("Array")));
+				// è passato un entita a un action ... escludo
+				// TODO binding parameter su action
+				if (bindingParameter.getTargetId().equals("entityBean"))
+					return null;
+
+				attribute.setEntity(dataModelUtil.findEntity(
+						bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("#"))));
+				attribute.setId(bindingParameter.getTargetId());
+				attribute.setName(
+						dataModelUtil.findAttributeName(attribute.getEntity(), bindingParameter.getTargetId()));
+				attribute.setType(
+						dataModelUtil.findAttributeType(attribute.getEntity(), bindingParameter.getTargetId()));
+				attribute.setKey(true);
+
+				viewComponentParts.add(attribute);
+				
+				return viewComponentParts;
+
+			}
+
+			// acond case, looks for attribute
+			if (bindingParameter.getTargetId().contains("acond")) {
+
+				AttributesConditionE attributesConditionExtractor = new AttributesConditionE();
+				AttributesCondition attributesCondition = new AttributesCondition();
+
+				attributesCondition = (AttributesCondition) attributesConditionExtractor.mapCondition(
+						xPathUtil.findAttributesConditionById(bindingParameter.getTargetId(), getDocument()));
+
+				for (Map.Entry<String, com.engine.mapper.datamodel.DataModel.Entity.Attribute> entry : attributesCondition
+						.getAttributes().entrySet()) {
+					String key = entry.getKey();
+
+					Attribute attributeApplication = new Attribute();
+
+					attributeApplication.setEntity(dataModelUtil.findEntity(key.substring(0, key.lastIndexOf("#"))));
+					attributeApplication.setId(key);
+					attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), key));
+					attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), key));
+					attributeApplication.setKey(true);
+					// candidate to be sort key of NOAM
+					if (attributesCondition.getPredicate().equals("lteq")
+							|| attributesCondition.getPredicate().equals("lt"))
+						attributeApplication.setOrdering(Ordering.ASCENDING);
+					if (attributesCondition.getPredicate().equals("gteq")
+							|| attributesCondition.getPredicate().equals("gt"))
+						attributeApplication.setOrdering(Ordering.DESCENDING);
+
+					viewComponentParts.add(attributeApplication);
+				}
+
+				return viewComponentParts;
+			}
+
+			// fields cases
+			// if (terminalValue.contains("fld")) // field case
+			// terminalValue =
+			// sourceOrTargetValue.substring(sourceOrTargetValue.lastIndexOf("#") + 1);
+
+			// EntryUnit entryUnitExtractor = new
+			// EntryUnit(this.dataModelUtil.getDataModel());
+			// entryUnitExtractor.
+
+		
+		return null;
 	}
 
 	/**
@@ -271,6 +371,14 @@ public class FrontEndInspector {
 		}
 
 		return viewComponents;
+	}
+
+	public DataModelUtil getDataModelUtil() {
+		return dataModelUtil;
+	}
+
+	public void setDataModelUtil(DataModelUtil dataModelUtil) {
+		this.dataModelUtil = dataModelUtil;
 	}
 
 	// public Stack<InteractionFlowElement> getStack() {

@@ -1,6 +1,7 @@
 package com.engine.domain.interactionflowelement.interactionflow;
 
-import com.engine.domain.interactionflowelement.conditionalexpression.condition.Condition;
+import java.util.List;
+
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.ViewComponentPart;
 
 public class BindingParameter {
@@ -9,9 +10,13 @@ public class BindingParameter {
 
 	private String name;
 
-	private Condition target;
+	private String targetId;
+	//list because target may be an attributes conditions -> multiple attributes
+	private List<ViewComponentPart> targets;
 
-	private ViewComponentPart source;
+	private String sourceId;
+	//list because source may be an attributes conditions -> multiple attributes
+	private List<ViewComponentPart> sources;
 
 	public String getId() {
 		return id;
@@ -29,20 +34,36 @@ public class BindingParameter {
 		this.name = name;
 	}
 
-	public Condition getTarget() {
-		return target;
+	public String getTargetId() {
+		return targetId;
 	}
 
-	public void setTarget(Condition target) {
-		this.target = target;
+	public void setTargetId(String targetId) {
+		this.targetId = targetId;
 	}
 
-	public ViewComponentPart getSource() {
-		return source;
+	public String getSourceId() {
+		return sourceId;
 	}
 
-	public void setSource(ViewComponentPart source) {
-		this.source = source;
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	public List<ViewComponentPart> getTargets() {
+		return targets;
+	}
+
+	public void setTargets(List<ViewComponentPart> targets) {
+		this.targets = targets;
+	}
+
+	public List<ViewComponentPart> getSources() {
+		return sources;
+	}
+
+	public void setSources(List<ViewComponentPart> sources) {
+		this.sources = sources;
 	}
 
 }

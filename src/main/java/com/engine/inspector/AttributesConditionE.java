@@ -64,5 +64,6 @@ public class AttributesConditionE implements ConditionExtractor {
 		
 		return attributesCondition;
 	}
+
 	
 }

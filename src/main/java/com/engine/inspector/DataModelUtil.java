@@ -167,6 +167,14 @@ public class DataModelUtil {
 			return false;
 	}
 
+	public DataModel getDataModel() {
+		return dataModel;
+	}
+
+	public void setDataModel(DataModel dataModel) {
+		this.dataModel = dataModel;
+	}
+
 
 
 }

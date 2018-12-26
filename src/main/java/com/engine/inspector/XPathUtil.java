@@ -494,4 +494,15 @@ public class XPathUtil {
 		return node;
 	}
 
+	public Node findAttributesConditionById(String attributesConditionId,Document document) {
+		Node node = null;
+		try {
+			node = (Node) getxPath().compile("//AttributesCondition[@id='" + attributesConditionId + "']").evaluate(document,
+					XPathConstants.NODE);
+		} catch (XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		return node;		
+	}
+
 }
