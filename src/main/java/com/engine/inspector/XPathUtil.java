@@ -505,4 +505,25 @@ public class XPathUtil {
 		return node;		
 	}
 
+	public Node findFieldById(String fieldType, String fieldId, Document document) {
+		
+		if (fieldId.contains("_label")) 
+			fieldId=fieldId.substring(0,fieldId.lastIndexOf("_label"));
+		
+		if (fieldId.contains("_output")) 
+			fieldId=fieldId.substring(0,fieldId.lastIndexOf("_output"));
+		
+		if (fieldId.contains("_presel")) 
+			fieldId=fieldId.substring(0,fieldId.lastIndexOf("_presel"));
+		
+		Node node = null;
+		try {
+			node = (Node) getxPath().compile("//"+fieldType+"[@id='" + fieldId + "']").evaluate(document,
+					XPathConstants.NODE);
+		} catch (XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		return node;	
+	}
+
 }

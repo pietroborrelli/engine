@@ -21,6 +21,9 @@ public final class EntryUnit implements ViewComponentExtractor {
 	static String FORM_SELECTION_FIELD = "SelectionField";
 	static String FORM_MULTI_SELECTION_FIELD = "MultiSelectionField";
 
+	static String FORM_FIELD_SHORT = "fld";
+	static String FORM_SELECTION_FIELD_SHORT = "sfld";
+	static String FORM_MULTI_SELECTION_FIELD_SHORT = "msfld";
 	private DataModelUtil dataModelUtil;
 
 	public EntryUnit(DataModel dataModel) {
@@ -45,7 +48,7 @@ public final class EntryUnit implements ViewComponentExtractor {
 	 * @return form-entity based extracted from the node and data model
 	 */
 	@Override
-	public ViewComponent mapViewComponent(Node node)  {
+	public ViewComponent mapViewComponent(Node node) {
 		FormImpl form = new FormImpl();
 		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
 			Attr attribute = (Attr) node.getAttributes().item(attributeCount);
@@ -77,7 +80,7 @@ public final class EntryUnit implements ViewComponentExtractor {
 
 		}
 
-		form.setFields(findFields(node, form));
+		form.setFields(findFields(node));
 
 		return form;
 	}
@@ -87,7 +90,7 @@ public final class EntryUnit implements ViewComponentExtractor {
 	 * @param form
 	 * @return fields,selection fields and multi selection fields bound to the form
 	 */
-	private ArrayList<Field> findFields(Node node, FormImpl form) {
+	public ArrayList<Field> findFields(Node node) {
 
 		ArrayList<Field> fields = new ArrayList<Field>();
 
@@ -149,17 +152,22 @@ public final class EntryUnit implements ViewComponentExtractor {
 				FieldImpl field = new FieldImpl(id, name, type);
 
 				Attribute entityAttribute = new Attribute();
-				//set attribute id if has reference to attribute of entity
+				// set attribute id if has reference to attribute of entity
 				if (!attributeId.isEmpty()) {
 					entityAttribute.setId(attributeId);
 					// set name of attribute from entity
-					entityAttribute.setName(dataModelUtil.findAttributeName(form.getEntity(), entityAttribute.getId()));
-	
+					entityAttribute.setName(dataModelUtil.findAttributeName(
+							dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))),
+							entityAttribute.getId()));
+
 					// set type of attribute from entity
-					entityAttribute.setType(dataModelUtil.findAttributeType(form.getEntity(), entityAttribute.getId()));
-	
+					entityAttribute.setType(dataModelUtil.findAttributeType(
+							dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))),
+							entityAttribute.getId()));
+
 					// set entity on attribute
-					entityAttribute.setEntity(form.getEntity());
+					entityAttribute.setEntity(
+							dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))));
 				}
 				field.setAttribute(entityAttribute);
 
@@ -208,5 +216,152 @@ public final class EntryUnit implements ViewComponentExtractor {
 		return fields;
 	}
 
+	/**
+	 * @param fieldId
+	 * @return node name of the field
+	 */
+	public String getFieldType(String fieldId) {
+
+		String fieldIdShort = fieldId.substring(fieldId.lastIndexOf("#") + 1);
+
+		if (fieldIdShort.contains("_label"))
+			fieldIdShort = fieldIdShort.substring(0, fieldIdShort.lastIndexOf("_label"));
+
+		if (fieldIdShort.contains("_output"))
+			fieldIdShort = fieldIdShort.substring(0, fieldIdShort.lastIndexOf("_output"));
+		
+		if (fieldIdShort.contains("_presel"))
+			fieldIdShort = fieldIdShort.substring(0, fieldIdShort.lastIndexOf("_presel"));
+		
+		if (fieldIdShort.startsWith(FORM_FIELD_SHORT)) {
+
+			return "Field";
+
+		}
+
+		if (fieldIdShort.startsWith(FORM_SELECTION_FIELD_SHORT)) {
+
+			return "SelectionField";
+
+		}
+
+		if (fieldIdShort.startsWith(FORM_MULTI_SELECTION_FIELD_SHORT)) {
+
+			return "MultiSelectionField";
+		}
+
+		return null;
+	}
+
+	public Field mapField(Node node) {
+
+		String id = "";
+		String name = "";
+		String type = "";
+		String attributeId = "";
+		String roleId = "";
+
+		for (int attributeCount = 0; attributeCount < node.getAttributes().getLength(); attributeCount++) {
+			Attr attribute = (Attr) node.getAttributes().item(attributeCount);
+
+			switch (attribute.getName()) {
+
+			case "id": {
+				id = attribute.getValue();
+				break;
+			}
+
+			case "name": {
+				name = attribute.getValue();
+				break;
+			}
+
+			case "type": {
+				type = attribute.getValue();
+				break;
+			}
+
+			case "attribute": {
+				attributeId = attribute.getValue();
+				break;
+			}
+
+			case "role": {
+				roleId = attribute.getValue();
+				break;
+			}
+
+			}
+
+		}
+		// custom actions for each fields
+
+		if (node.getNodeName().equals(FORM_FIELD)) {
+			System.out.println("Trovato FIELD ");
+
+			FieldImpl field = new FieldImpl(id, name, type);
+
+			Attribute entityAttribute = new Attribute();
+			// set attribute id if has reference to attribute of entity
+			if (!attributeId.isEmpty()) {
+				entityAttribute.setId(attributeId);
+				// set name of attribute from entity
+				entityAttribute.setName(dataModelUtil.findAttributeName(
+						dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))),
+						entityAttribute.getId()));
+
+				// set type of attribute from entity
+				entityAttribute.setType(dataModelUtil.findAttributeType(
+						dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))),
+						entityAttribute.getId()));
+
+				// set entity on attribute
+				entityAttribute
+						.setEntity(dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))));
+			}
+			field.setAttribute(entityAttribute);
+
+			return field;
+
+		}
+
+		if (node.getNodeName().equals(FORM_SELECTION_FIELD)) {
+			System.out.println("Trovato SELECTION FIELD ");
+			SelectionFieldImpl selectionField = new SelectionFieldImpl(id, name, type);
+			if (roleId != "") {
+				// get relationship, predicate and name left empty
+				RelationshipRoleCondition relationshipRoleCondition = new RelationshipRoleCondition();
+				relationshipRoleCondition.setId(roleId);
+				relationshipRoleCondition
+						.setRelationship(dataModelUtil.findRelationship(roleId.substring(0, roleId.indexOf("#"))));
+
+				selectionField.setRelationshipRoleCondition(relationshipRoleCondition);
+
+				return selectionField;
+
+			}
+
+		}
+
+		if (node.getNodeName().equals(FORM_MULTI_SELECTION_FIELD)) {
+			System.out.println("Trovato MULTI SELECTION FIELD ");
+
+			MultipleSelectionFieldImpl multipleSelectionField = new MultipleSelectionFieldImpl(id, name, type);
+			if (roleId != "") {
+				// get relationship, predicate and name left empty
+				RelationshipRoleCondition relationshipRoleCondition = new RelationshipRoleCondition();
+				relationshipRoleCondition.setId(roleId);
+				relationshipRoleCondition
+						.setRelationship(dataModelUtil.findRelationship(roleId.substring(0, roleId.indexOf("#"))));
+
+				multipleSelectionField.setRelationshipRoleCondition(relationshipRoleCondition);
+
+				return multipleSelectionField;
+
+			}
+		}
+
+		return null;
+	}
 
 }

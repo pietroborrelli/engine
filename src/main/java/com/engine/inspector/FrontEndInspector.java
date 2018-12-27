@@ -16,6 +16,10 @@ import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.ViewComponentPart;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.Field;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.FieldImpl;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.MultipleSelectionFieldImpl;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.SelectionFieldImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Page;
 import com.engine.mapper.datamodel.DataModel;
 
@@ -117,11 +121,12 @@ public class FrontEndInspector {
 			if (node.getNodeName().equals(NAVIGATIONFLOW_LINK)) {
 				this.context = new Context(new Link(dataModel));
 				InteractionFlow interactionFlow = this.context.mapInteractionFlow(node);
-				
+
 				for (BindingParameter bindingParameter : interactionFlow.getBindingParameter()) {
-					bindingParameter.setTargets(findTargetsOfBindingParameter(bindingParameter,getDocument()));
+					bindingParameter.setTargets(findTargetsOfBindingParameter(bindingParameter, getDocument()));
+					bindingParameter.setSources(findSourcesOfBindingParameter(bindingParameter, getDocument()));
 				}
-				
+
 				interactionFlows.add(interactionFlow);
 				found = true;
 			}
@@ -153,87 +158,282 @@ public class FrontEndInspector {
 	 * @param document
 	 * @return an update binding parameter list with source ViewComponentParts
 	 */
-	private List<ViewComponentPart> findTargetsOfBindingParameter(BindingParameter bindingParameter, Document document) {
+	private List<ViewComponentPart> findTargetsOfBindingParameter(BindingParameter bindingParameter,
+			Document document) {
 
 		List<ViewComponentPart> viewComponentParts = new ArrayList<ViewComponentPart>();
 
-			Attribute attribute = new Attribute();
+		Attribute attribute = new Attribute();
 
-			// kcond / rcond cases, looking for attribute
-			if (bindingParameter.getTargetId().contains("ent")) {
-				bindingParameter.setTargetId(
-						bindingParameter.getTargetId().substring(bindingParameter.getTargetId().lastIndexOf("ent")));
+		// kcond / rcond cases, looking for attribute
+		if (bindingParameter.getTargetId().contains("ent")) {
+			bindingParameter.setTargetId(
+					bindingParameter.getTargetId().substring(bindingParameter.getTargetId().lastIndexOf("ent")));
 
-				if (bindingParameter.getTargetId().contains("Array"))
-					bindingParameter.setTargetId(bindingParameter.getTargetId().substring(0,
-							bindingParameter.getTargetId().lastIndexOf("Array")));
-				// è passato un entita a un action ... escludo
-				// TODO binding parameter su action
-				if (bindingParameter.getTargetId().equals("entityBean"))
-					return null;
+			if (bindingParameter.getTargetId().contains("Array"))
+				bindingParameter.setTargetId(bindingParameter.getTargetId().substring(0,
+						bindingParameter.getTargetId().lastIndexOf("Array")));
+			// è passato un entita a un action ... escludo
+			// TODO binding parameter su action
+			if (bindingParameter.getTargetId().equals("entityBean"))
+				return null;
 
-				attribute.setEntity(dataModelUtil.findEntity(
-						bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("#"))));
-				attribute.setId(bindingParameter.getTargetId());
-				attribute.setName(
-						dataModelUtil.findAttributeName(attribute.getEntity(), bindingParameter.getTargetId()));
-				attribute.setType(
-						dataModelUtil.findAttributeType(attribute.getEntity(), bindingParameter.getTargetId()));
-				attribute.setKey(true);
+			attribute.setEntity(dataModelUtil.findEntity(
+					bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("#"))));
+			attribute.setId(bindingParameter.getTargetId());
+			attribute.setName(dataModelUtil.findAttributeName(attribute.getEntity(), bindingParameter.getTargetId()));
+			attribute.setType(dataModelUtil.findAttributeType(attribute.getEntity(), bindingParameter.getTargetId()));
+			attribute.setKey(true);
 
-				viewComponentParts.add(attribute);
+			viewComponentParts.add(attribute);
+
+			return viewComponentParts;
+
+		}
+
+		// acond case, looks for attribute
+		if (bindingParameter.getTargetId().contains("acond")) {
+
+			AttributesConditionE attributesConditionExtractor = new AttributesConditionE();
+			AttributesCondition attributesCondition = new AttributesCondition();
+
+			attributesCondition = (AttributesCondition) attributesConditionExtractor
+					.mapCondition(xPathUtil.findAttributesConditionById(bindingParameter.getTargetId(), getDocument()));
+
+			for (Map.Entry<String, com.engine.mapper.datamodel.DataModel.Entity.Attribute> entry : attributesCondition
+					.getAttributes().entrySet()) {
+				String key = entry.getKey();
+
+				Attribute attributeApplication = new Attribute();
+
+				attributeApplication.setEntity(dataModelUtil.findEntity(key.substring(0, key.lastIndexOf("#"))));
+				attributeApplication.setId(key);
+				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), key));
+				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), key));
+				attributeApplication.setKey(true);
+				// candidate to be sort key of NOAM
+				if (attributesCondition.getPredicate().equals("lteq")
+						|| attributesCondition.getPredicate().equals("lt"))
+					attributeApplication.setOrdering(Ordering.ASCENDING);
+				if (attributesCondition.getPredicate().equals("gteq")
+						|| attributesCondition.getPredicate().equals("gt"))
+					attributeApplication.setOrdering(Ordering.DESCENDING);
+
+				viewComponentParts.add(attributeApplication);
+			}
+
+			return viewComponentParts;
+		}
+
+		// fields cases
+		if (bindingParameter.getTargetId().contains("fld")) {
+			EntryUnit entryUnitExtractor = new EntryUnit(getDataModel());
+
+			Field field = (Field) entryUnitExtractor
+					.mapField(xPathUtil.findFieldById(entryUnitExtractor.getFieldType(bindingParameter.getTargetId()),
+							bindingParameter.getTargetId(), getDocument()));
+
+			if (field instanceof FieldImpl)
+				viewComponentParts.add(((FieldImpl) field).getAttribute());
+
+			if (field instanceof SelectionFieldImpl) {
+				Attribute selectionFieldAttribute;
 				
-				return viewComponentParts;
+				//search on relationshiprole1
+				if (dataModelUtil.findRelationshipRole1(
+						((SelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
+					selectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole1(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
+				else //search on relationshiprole1
+					selectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole2(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
 
+				selectionFieldAttribute.setEntity(dataModelUtil.findEntity(selectionFieldAttribute.getId().substring(0,
+						selectionFieldAttribute.getId().lastIndexOf("#"))));
+				selectionFieldAttribute.setName(dataModelUtil.findAttributeName(selectionFieldAttribute.getEntity(),
+						selectionFieldAttribute.getId()));
+				selectionFieldAttribute.setType(dataModelUtil.findAttributeType(selectionFieldAttribute.getEntity(),
+						selectionFieldAttribute.getId()));
+				selectionFieldAttribute.setKey(true);
+				
+				viewComponentParts.add(selectionFieldAttribute);
 			}
+			
+			if (field instanceof MultipleSelectionFieldImpl) {
+				Attribute multipleSelectionFieldAttribute;
+				
+				//search on relationshiprole1
+				if (dataModelUtil.findRelationshipRole1(
+						((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
+					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole1(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
+				else //search on relationshiprole1
+					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole2(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
 
-			// acond case, looks for attribute
-			if (bindingParameter.getTargetId().contains("acond")) {
-
-				AttributesConditionE attributesConditionExtractor = new AttributesConditionE();
-				AttributesCondition attributesCondition = new AttributesCondition();
-
-				attributesCondition = (AttributesCondition) attributesConditionExtractor.mapCondition(
-						xPathUtil.findAttributesConditionById(bindingParameter.getTargetId(), getDocument()));
-
-				for (Map.Entry<String, com.engine.mapper.datamodel.DataModel.Entity.Attribute> entry : attributesCondition
-						.getAttributes().entrySet()) {
-					String key = entry.getKey();
-
-					Attribute attributeApplication = new Attribute();
-
-					attributeApplication.setEntity(dataModelUtil.findEntity(key.substring(0, key.lastIndexOf("#"))));
-					attributeApplication.setId(key);
-					attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), key));
-					attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), key));
-					attributeApplication.setKey(true);
-					// candidate to be sort key of NOAM
-					if (attributesCondition.getPredicate().equals("lteq")
-							|| attributesCondition.getPredicate().equals("lt"))
-						attributeApplication.setOrdering(Ordering.ASCENDING);
-					if (attributesCondition.getPredicate().equals("gteq")
-							|| attributesCondition.getPredicate().equals("gt"))
-						attributeApplication.setOrdering(Ordering.DESCENDING);
-
-					viewComponentParts.add(attributeApplication);
-				}
-
-				return viewComponentParts;
+				multipleSelectionFieldAttribute.setEntity(dataModelUtil.findEntity(multipleSelectionFieldAttribute.getId().substring(0,
+						multipleSelectionFieldAttribute.getId().lastIndexOf("#"))));
+				multipleSelectionFieldAttribute.setName(dataModelUtil.findAttributeName(multipleSelectionFieldAttribute.getEntity(),
+						multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setType(dataModelUtil.findAttributeType(multipleSelectionFieldAttribute.getEntity(),
+						multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setKey(true);
+				
+				viewComponentParts.add(multipleSelectionFieldAttribute);
 			}
+			
+			
+			return viewComponentParts;
+		}
 
-			// fields cases
-			// if (terminalValue.contains("fld")) // field case
-			// terminalValue =
-			// sourceOrTargetValue.substring(sourceOrTargetValue.lastIndexOf("#") + 1);
-
-			// EntryUnit entryUnitExtractor = new
-			// EntryUnit(this.dataModelUtil.getDataModel());
-			// entryUnitExtractor.
-
-		
 		return null;
 	}
 
+	
+	/**
+	 * @param interactionFlow
+	 * @param document
+	 * @return an update binding parameter list with source ViewComponentParts
+	 */
+	private List<ViewComponentPart> findSourcesOfBindingParameter(BindingParameter bindingParameter,
+			Document document) {
+
+		List<ViewComponentPart> viewComponentParts = new ArrayList<ViewComponentPart>();
+
+		Attribute attribute = new Attribute();
+
+		// kcond / rcond cases, looking for attribute
+		if (bindingParameter.getSourceId().contains("ent")) {
+			bindingParameter.setSourceId(
+					bindingParameter.getSourceId().substring(bindingParameter.getSourceId().lastIndexOf("ent")));
+
+			if (bindingParameter.getSourceId().contains("Array"))
+				bindingParameter.setSourceId(bindingParameter.getSourceId().substring(0,
+						bindingParameter.getSourceId().lastIndexOf("Array")));
+			// è passato un entita a un action ... escludo
+			// TODO binding parameter su action
+			if (bindingParameter.getSourceId().equals("entityBean"))
+				return null;
+
+			attribute.setEntity(dataModelUtil.findEntity(
+					bindingParameter.getSourceId().substring(0, bindingParameter.getSourceId().lastIndexOf("#"))));
+			attribute.setId(bindingParameter.getSourceId());
+			attribute.setName(dataModelUtil.findAttributeName(attribute.getEntity(), bindingParameter.getSourceId()));
+			attribute.setType(dataModelUtil.findAttributeType(attribute.getEntity(), bindingParameter.getSourceId()));
+			attribute.setKey(true);
+
+			viewComponentParts.add(attribute);
+
+			return viewComponentParts;
+
+		}
+
+		// acond case, looks for attribute
+		if (bindingParameter.getSourceId().contains("acond")) {
+
+			AttributesConditionE attributesConditionExtractor = new AttributesConditionE();
+			AttributesCondition attributesCondition = new AttributesCondition();
+
+			attributesCondition = (AttributesCondition) attributesConditionExtractor
+					.mapCondition(xPathUtil.findAttributesConditionById(bindingParameter.getSourceId(), getDocument()));
+
+			for (Map.Entry<String, com.engine.mapper.datamodel.DataModel.Entity.Attribute> entry : attributesCondition
+					.getAttributes().entrySet()) {
+				String key = entry.getKey();
+
+				Attribute attributeApplication = new Attribute();
+
+				attributeApplication.setEntity(dataModelUtil.findEntity(key.substring(0, key.lastIndexOf("#"))));
+				attributeApplication.setId(key);
+				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), key));
+				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), key));
+				attributeApplication.setKey(true);
+				// candidate to be sort key of NOAM
+				if (attributesCondition.getPredicate().equals("lteq")
+						|| attributesCondition.getPredicate().equals("lt"))
+					attributeApplication.setOrdering(Ordering.ASCENDING);
+				if (attributesCondition.getPredicate().equals("gteq")
+						|| attributesCondition.getPredicate().equals("gt"))
+					attributeApplication.setOrdering(Ordering.DESCENDING);
+
+				viewComponentParts.add(attributeApplication);
+			}
+
+			return viewComponentParts;
+		}
+
+		// fields cases
+		if (bindingParameter.getSourceId().contains("fld")) {
+			EntryUnit entryUnitExtractor = new EntryUnit(getDataModel());
+
+			Field field = (Field) entryUnitExtractor
+					.mapField(xPathUtil.findFieldById(entryUnitExtractor.getFieldType(bindingParameter.getSourceId()),
+							bindingParameter.getSourceId(), getDocument()));
+
+			if (field instanceof FieldImpl)
+				viewComponentParts.add(((FieldImpl) field).getAttribute());
+
+			if (field instanceof SelectionFieldImpl) {
+				Attribute selectionFieldAttribute;
+				
+				//search on relationshiprole1
+				if (dataModelUtil.findRelationshipRole1(
+						((SelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
+					selectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole1(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
+				else //search on relationshiprole1
+					selectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole2(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
+
+				selectionFieldAttribute.setEntity(dataModelUtil.findEntity(selectionFieldAttribute.getId().substring(0,
+						selectionFieldAttribute.getId().lastIndexOf("#"))));
+				selectionFieldAttribute.setName(dataModelUtil.findAttributeName(selectionFieldAttribute.getEntity(),
+						selectionFieldAttribute.getId()));
+				selectionFieldAttribute.setType(dataModelUtil.findAttributeType(selectionFieldAttribute.getEntity(),
+						selectionFieldAttribute.getId()));
+				selectionFieldAttribute.setKey(true);
+				
+				viewComponentParts.add(selectionFieldAttribute);
+			}
+			
+			if (field instanceof MultipleSelectionFieldImpl) {
+				Attribute multipleSelectionFieldAttribute;
+				
+				//search on relationshiprole1
+				if (dataModelUtil.findRelationshipRole1(
+						((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
+					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole1(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
+				else //search on relationshiprole1
+					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
+							.findRelationshipRole2(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.getJoinColumn().getAttribute());
+
+				multipleSelectionFieldAttribute.setEntity(dataModelUtil.findEntity(multipleSelectionFieldAttribute.getId().substring(0,
+						multipleSelectionFieldAttribute.getId().lastIndexOf("#"))));
+				multipleSelectionFieldAttribute.setName(dataModelUtil.findAttributeName(multipleSelectionFieldAttribute.getEntity(),
+						multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setType(dataModelUtil.findAttributeType(multipleSelectionFieldAttribute.getEntity(),
+						multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setKey(true);
+				
+				viewComponentParts.add(multipleSelectionFieldAttribute);
+			}
+			
+			
+			return viewComponentParts;
+		}
+
+		return null;
+	}
+	
 	/**
 	 * @param viewComponentNodes
 	 * @return list of view components mapped in application domain
