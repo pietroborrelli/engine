@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 
@@ -323,7 +324,7 @@ public class XPathUtil {
 			return false;
 	}
 
-	public List<Node> findIncomingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent) {
+	public List<Node> findIncomingInteractionFlowsOfViewComponent(Document document, InteractionFlowElement viewComponent) {
 		ArrayList<Node> incomingInteractionFlows = new ArrayList<Node>();
 		NodeList nodes = null;
 		try {
@@ -365,7 +366,7 @@ public class XPathUtil {
 		return incomingInteractionFlows;
 	}
 
-	public List<Node> findOutgoingInteractionFlowsOfViewComponent(Document document, ViewComponent viewComponent) {
+	public List<Node> findOutgoingInteractionFlowsOfViewComponent(Document document, InteractionFlowElement viewComponent) {
 		ArrayList<Node> outgoingInteractionFlows = new ArrayList<Node>();
 		NodeList nodes;
 		try {

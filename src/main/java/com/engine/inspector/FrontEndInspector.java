@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -13,6 +14,7 @@ import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
 import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.ViewComponentPart;
@@ -34,17 +36,21 @@ public class FrontEndInspector {
 	static String NAVIGATIONFLOW_OKLINK = "OKLink";
 	static String NAVIGATIONFLOW_KOLINK = "KOLink";
 
+	static Integer countPath = 1;
+
 	private DataModel dataModel;
 	private DataModelUtil dataModelUtil;
 	private XPathUtil xPathUtil;
 	private Context context;
 	private Document document;
-	private Stack<ViewComponent> stack;
+	private Stack<InteractionFlowElement> stack;
+	private List<InteractionFlowElement> viewComponents;
 
 	public FrontEndInspector(DataModel dataModel) {
 		this.setxPathUtil(new XPathUtil());
 		this.dataModel = dataModel;
 		this.dataModelUtil = new DataModelUtil(dataModel);
+		this.stack = new Stack<InteractionFlowElement>();
 
 	}
 
@@ -59,7 +65,7 @@ public class FrontEndInspector {
 	 * @return the leaves view components in the page (detail, list and form
 	 * @throws Exception
 	 */
-	public List<ViewComponent> findLeavesViewComponents() {
+	public List<InteractionFlowElement> findLeavesViewComponents() {
 		// get nodes from document
 		List<Node> leavesNodes = getxPathUtil().findLeavesNodes(getDocument());
 		// map leaves nodes with corresponding view components and return
@@ -67,50 +73,79 @@ public class FrontEndInspector {
 
 	}
 
-	public void extractPaths(List<ViewComponent> leavesViewComponents) {
-		// initialize stack of support to get all the paths
-		// setStack(new Stack<InteractionFlowElement>());
-		for (ViewComponent leaf : leavesViewComponents) {
-			try {
-				traverse(leaf);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public void extractPaths(List<InteractionFlowElement> viewComponents) {
 
+		this.setViewComponents(viewComponents);
+		List<InteractionFlowElement> nodeViewComponents = new ArrayList<InteractionFlowElement>();
+		viewComponents.stream().forEach(vc -> {
+			if (vc.getIsRoot())
+				nodeViewComponents.add(vc);
+		});
+
+		if (nodeViewComponents.isEmpty()) {
+			System.err.println("Non ho trovato view component ROOT!");
+			// return null;
 		}
+		System.out.println("----------- CALCOLO DEI PERCORSI -------------");
+
+		for (InteractionFlowElement nodeViewComponent : nodeViewComponents) {
+			countPath=1;
+			getStack().push(nodeViewComponent);
+			traverse(nodeViewComponent);
+			getStack().pop();
+		}
+		
+		// TODO salvataggio dei percorsi e rimozione di duplicati.
+		
+		
 	}
 
 	/**
-	 * recursive function to explore the paths, only if in
+	 * recursive function to explore the paths
 	 * 
 	 * @param node
 	 * @throws Exception
 	 */
-	private void traverse(ViewComponent viewComponent) {
-
-		if (xPathUtil.isRoot(document, viewComponent)) { // sono arrivato al nodo radice, condizione
+	private void traverse(InteractionFlowElement interactionFlowElement) {
+		System.out.println(interactionFlowElement.getId());
+		if (interactionFlowElement.getOutInteractionFlows().isEmpty() ) { // sono arrivato al nodo foglia
+			printPath(getStack());
 			return;
 		}
 
 		// for each IN interaction flow get the source node from the document e mapped
 		// in application domain
-		// viewComponent.getInInteractionFlows().stream().forEach(in ->
-		// in.setSourceInteractionFlowElement(
-		// mapNodeIntoViewComponent(xPathUtil.findSourceOfInteractionFlow(document,
-		// in))));
+		for (InteractionFlow outInteractionFlow : interactionFlowElement.getOutInteractionFlows()) {
 
-		// for (InteractionFlow interactionFlow : viewComponent.getInInteractionFlows())
-		// {
-		// if (xPathUtil.parentIsViewComponent)
-		// traverse(xPathUtil.findParentViewComponent)
-		// }
+			// condition added for actions which are temporary null.. to be removed when actions are implemented
+			if (outInteractionFlow.getTargetInteractionFlowElement() != null) {
 
-		// for (ViewComponent parent :)
-		// traverse(parent);
+				getStack().push(getViewComponents().stream()
+						.filter(vc -> vc.getId().equals(outInteractionFlow.getTargetInteractionFlowElement().getId()))
+						.collect(Collectors.toList()).get(0));
 
-		return;
+				traverse(getViewComponents().stream()
+						.filter(vc -> vc.getId().equals(outInteractionFlow.getTargetInteractionFlowElement().getId()))
+						.collect(Collectors.toList()).get(0));
+				
+				// condition added for actions which are temporary null.. to be removed when actions are implemented
+				if (outInteractionFlow.getTargetInteractionFlowElement() != null) 
+					getStack().pop();
 
+			}else { //handled elements != view components
+				//may produce duplicate paths according with the outgoing arcs
+				printPath(getStack());
+			}
+		}
+
+	}
+
+	private void printPath(Stack<InteractionFlowElement> stackTemp) {
+		System.out.println("Percorso n." + countPath);
+		stackTemp.forEach(k -> {
+			System.out.println("" + k);
+		});
+		countPath++;
 	}
 
 	private List<InteractionFlow> mapNodesIntoInteractionFlow(List<Node> interactionFlowsNodes) {
@@ -238,14 +273,14 @@ public class FrontEndInspector {
 
 			if (field instanceof SelectionFieldImpl) {
 				Attribute selectionFieldAttribute;
-				
-				//search on relationshiprole1
+
+				// search on relationshiprole1
 				if (dataModelUtil.findRelationshipRole1(
 						((SelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
 					selectionFieldAttribute = new Attribute(dataModelUtil
 							.findRelationshipRole1(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
-				else //search on relationshiprole1
+				else // search on relationshiprole1
 					selectionFieldAttribute = new Attribute(dataModelUtil
 							.findRelationshipRole2(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
@@ -257,43 +292,43 @@ public class FrontEndInspector {
 				selectionFieldAttribute.setType(dataModelUtil.findAttributeType(selectionFieldAttribute.getEntity(),
 						selectionFieldAttribute.getId()));
 				selectionFieldAttribute.setKey(true);
-				
+
 				viewComponentParts.add(selectionFieldAttribute);
 			}
-			
+
 			if (field instanceof MultipleSelectionFieldImpl) {
 				Attribute multipleSelectionFieldAttribute;
-				
-				//search on relationshiprole1
+
+				// search on relationshiprole1
 				if (dataModelUtil.findRelationshipRole1(
 						((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
 					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
-							.findRelationshipRole1(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.findRelationshipRole1(
+									((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
-				else //search on relationshiprole1
+				else // search on relationshiprole1
 					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
-							.findRelationshipRole2(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.findRelationshipRole2(
+									((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
 
-				multipleSelectionFieldAttribute.setEntity(dataModelUtil.findEntity(multipleSelectionFieldAttribute.getId().substring(0,
-						multipleSelectionFieldAttribute.getId().lastIndexOf("#"))));
-				multipleSelectionFieldAttribute.setName(dataModelUtil.findAttributeName(multipleSelectionFieldAttribute.getEntity(),
-						multipleSelectionFieldAttribute.getId()));
-				multipleSelectionFieldAttribute.setType(dataModelUtil.findAttributeType(multipleSelectionFieldAttribute.getEntity(),
-						multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setEntity(dataModelUtil.findEntity(multipleSelectionFieldAttribute
+						.getId().substring(0, multipleSelectionFieldAttribute.getId().lastIndexOf("#"))));
+				multipleSelectionFieldAttribute.setName(dataModelUtil.findAttributeName(
+						multipleSelectionFieldAttribute.getEntity(), multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setType(dataModelUtil.findAttributeType(
+						multipleSelectionFieldAttribute.getEntity(), multipleSelectionFieldAttribute.getId()));
 				multipleSelectionFieldAttribute.setKey(true);
-				
+
 				viewComponentParts.add(multipleSelectionFieldAttribute);
 			}
-			
-			
+
 			return viewComponentParts;
 		}
 
 		return null;
 	}
 
-	
 	/**
 	 * @param interactionFlow
 	 * @param document
@@ -379,14 +414,14 @@ public class FrontEndInspector {
 
 			if (field instanceof SelectionFieldImpl) {
 				Attribute selectionFieldAttribute;
-				
-				//search on relationshiprole1
+
+				// search on relationshiprole1
 				if (dataModelUtil.findRelationshipRole1(
 						((SelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
 					selectionFieldAttribute = new Attribute(dataModelUtil
 							.findRelationshipRole1(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
-				else //search on relationshiprole1
+				else // search on relationshiprole1
 					selectionFieldAttribute = new Attribute(dataModelUtil
 							.findRelationshipRole2(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
@@ -398,48 +433,49 @@ public class FrontEndInspector {
 				selectionFieldAttribute.setType(dataModelUtil.findAttributeType(selectionFieldAttribute.getEntity(),
 						selectionFieldAttribute.getId()));
 				selectionFieldAttribute.setKey(true);
-				
+
 				viewComponentParts.add(selectionFieldAttribute);
 			}
-			
+
 			if (field instanceof MultipleSelectionFieldImpl) {
 				Attribute multipleSelectionFieldAttribute;
-				
-				//search on relationshiprole1
+
+				// search on relationshiprole1
 				if (dataModelUtil.findRelationshipRole1(
 						((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
 					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
-							.findRelationshipRole1(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.findRelationshipRole1(
+									((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
-				else //search on relationshiprole1
+				else // search on relationshiprole1
 					multipleSelectionFieldAttribute = new Attribute(dataModelUtil
-							.findRelationshipRole2(((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
+							.findRelationshipRole2(
+									((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
 
-				multipleSelectionFieldAttribute.setEntity(dataModelUtil.findEntity(multipleSelectionFieldAttribute.getId().substring(0,
-						multipleSelectionFieldAttribute.getId().lastIndexOf("#"))));
-				multipleSelectionFieldAttribute.setName(dataModelUtil.findAttributeName(multipleSelectionFieldAttribute.getEntity(),
-						multipleSelectionFieldAttribute.getId()));
-				multipleSelectionFieldAttribute.setType(dataModelUtil.findAttributeType(multipleSelectionFieldAttribute.getEntity(),
-						multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setEntity(dataModelUtil.findEntity(multipleSelectionFieldAttribute
+						.getId().substring(0, multipleSelectionFieldAttribute.getId().lastIndexOf("#"))));
+				multipleSelectionFieldAttribute.setName(dataModelUtil.findAttributeName(
+						multipleSelectionFieldAttribute.getEntity(), multipleSelectionFieldAttribute.getId()));
+				multipleSelectionFieldAttribute.setType(dataModelUtil.findAttributeType(
+						multipleSelectionFieldAttribute.getEntity(), multipleSelectionFieldAttribute.getId()));
 				multipleSelectionFieldAttribute.setKey(true);
-				
+
 				viewComponentParts.add(multipleSelectionFieldAttribute);
 			}
-			
-			
+
 			return viewComponentParts;
 		}
 
 		return null;
 	}
-	
+
 	/**
 	 * @param viewComponentNodes
 	 * @return list of view components mapped in application domain
 	 */
-	public List<ViewComponent> mapNodesIntoViewComponents(List<Node> viewComponentNodes) {
-		List<ViewComponent> viewComponents = new ArrayList<ViewComponent>();
+	public List<InteractionFlowElement> mapNodesIntoViewComponents(List<Node> viewComponentNodes) {
+		List<InteractionFlowElement> viewComponents = new ArrayList<InteractionFlowElement>();
 		for (Node node : viewComponentNodes) {
 			if (node.getNodeName().equals(VIEWCOMPONENT_DETAIL)) {
 				this.context = new Context(new DataUnit(dataModel));
@@ -557,17 +593,21 @@ public class FrontEndInspector {
 		this.document = document;
 	}
 
-	public List<ViewComponent> findViewComponents() {
+	public List<InteractionFlowElement> findViewComponents() {
 		// get nodes from document
 		List<Node> nodes = getxPathUtil().findAllNodes(getDocument());
 		// map leaves nodes with corresponding view components and return
-		List<ViewComponent> viewComponents = mapNodesIntoViewComponents(nodes);
+		List<InteractionFlowElement> viewComponents = mapNodesIntoViewComponents(nodes);
 
-		for (ViewComponent viewComponent : viewComponents) {
+		// update view components with in and out interaction flows
+		for (InteractionFlowElement viewComponent : viewComponents) {
 			viewComponent.setInInteractionFlows(mapNodesIntoInteractionFlow(
 					xPathUtil.findIncomingInteractionFlowsOfViewComponent(document, viewComponent)));
 			viewComponent.setOutInteractionFlows(mapNodesIntoInteractionFlow(
 					xPathUtil.findOutgoingInteractionFlowsOfViewComponent(document, viewComponent)));
+			// check if view component is candidate to be root
+			if (viewComponent.getInInteractionFlows().isEmpty())
+				viewComponent.setIsRoot(true);
 		}
 
 		return viewComponents;
@@ -579,6 +619,22 @@ public class FrontEndInspector {
 
 	public void setDataModelUtil(DataModelUtil dataModelUtil) {
 		this.dataModelUtil = dataModelUtil;
+	}
+
+	public List<InteractionFlowElement> getViewComponents() {
+		return viewComponents;
+	}
+
+	public void setViewComponents(List<InteractionFlowElement> viewComponents) {
+		this.viewComponents = viewComponents;
+	}
+
+	public Stack<InteractionFlowElement> getStack() {
+		return stack;
+	}
+
+	public void setStack(Stack<InteractionFlowElement> stack) {
+		this.stack = stack;
 	}
 
 	// public Stack<InteractionFlowElement> getStack() {

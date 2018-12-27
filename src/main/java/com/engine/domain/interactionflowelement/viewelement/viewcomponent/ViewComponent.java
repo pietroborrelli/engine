@@ -10,6 +10,8 @@ public abstract class ViewComponent extends ViewElement {
 
 	private Entity entity;
 
+
+	
 	private ArrayList<ViewComponentPart> viewComponentParts;
 
 	public Entity getEntity() {
@@ -27,5 +29,7 @@ public abstract class ViewComponent extends ViewElement {
 	public void setViewComponentParts(ArrayList<ViewComponentPart> viewComponentParts) {
 		this.viewComponentParts = viewComponentParts;
 	}
+
+
 
 }

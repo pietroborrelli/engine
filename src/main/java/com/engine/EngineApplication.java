@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 
+import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Area;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Page;
@@ -85,9 +86,9 @@ public class EngineApplication implements CommandLineRunner {
 				
 				Page page = frontEndInspector.elaborateDocument();
 				
-				List<ViewComponent> leavesViewComponents = frontEndInspector.findLeavesViewComponents();
-				List<ViewComponent> viewComponents = frontEndInspector.findViewComponents();
-				frontEndInspector.extractPaths(leavesViewComponents);
+				//List<ViewComponent> leavesViewComponents = frontEndInspector.findLeavesViewComponents();
+				List<InteractionFlowElement> viewComponents = frontEndInspector.findViewComponents();
+				frontEndInspector.extractPaths(viewComponents);
 				
 				pages.add(page);
 				// findPatterns(page);
