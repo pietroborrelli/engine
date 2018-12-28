@@ -9,6 +9,10 @@ public abstract class InteractionFlowElement {
 	private String id;
 
 	private String name;
+	
+	private List<InteractionFlow> outInteractionFlows;
+
+	private List<InteractionFlow> inInteractionFlows;
 
 	public String getId() {
 		return id;
@@ -25,10 +29,6 @@ public abstract class InteractionFlowElement {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	private List<InteractionFlow> outInteractionFlows;
-
-	private List<InteractionFlow> inInteractionFlows;
 
 	public List<InteractionFlow> getOutInteractionFlows() {
 		return outInteractionFlows;
@@ -54,4 +54,5 @@ public abstract class InteractionFlowElement {
 		this.isRoot = isRoot;
 	}
 
+	
 }

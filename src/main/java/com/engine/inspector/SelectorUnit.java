@@ -76,7 +76,7 @@ public final class SelectorUnit implements ViewComponentExtractor {
 				String[] idAttributes = attribute.getNodeValue().split(" ") ;
 				selectorImpl.setAttributes(new HashMap<String,com.engine.mapper.datamodel.DataModel.Entity.Attribute>());
 				for (String key : idAttributes ) {
-					selectorImpl.getAttributes().put(key, null);
+					selectorImpl.getAttributes().put(key, dataModelUtil.findAttributesByEntityAndId(key.substring(0,key.lastIndexOf("#")), key));
 				}
 				System.out.print("--> estratto\n");
 				break;

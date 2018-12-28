@@ -14,14 +14,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 
+import com.engine.domain.abstractmodel.Collection;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Area;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Page;
+import com.engine.domain.wrapper.Path;
 import com.engine.inspector.FrontEndInspector;
 import com.engine.mapper.datamodel.DataModel;
 import com.engine.service.AreaService;
 import com.engine.service.DataModelService;
+import com.engine.service.NoAmService;
 import com.engine.service.PageService;
 
 @Configuration
@@ -31,6 +33,7 @@ public class EngineApplication implements CommandLineRunner {
 	private DataModelService dataModelService;
 	private AreaService areaService;
 	private PageService pageService;
+	private NoAmService noAmService;
 
 	@Value("${input.path.datamodel}")
 	private String inputPathDataModel;
@@ -40,10 +43,11 @@ public class EngineApplication implements CommandLineRunner {
 	private String inputPathAbstractModel;
 
 	@Autowired
-	public EngineApplication(DataModelService dataModelService, AreaService areaService, PageService pageService) {
+	public EngineApplication(DataModelService dataModelService, AreaService areaService, PageService pageService, NoAmService noAmService) {
 		this.dataModelService = dataModelService;
 		this.areaService = areaService;
 		this.pageService = pageService;
+		this.noAmService = noAmService;
 	}
 
 	public static void main(String[] args) {
@@ -88,7 +92,8 @@ public class EngineApplication implements CommandLineRunner {
 				
 				//List<ViewComponent> leavesViewComponents = frontEndInspector.findLeavesViewComponents();
 				List<InteractionFlowElement> viewComponents = frontEndInspector.findViewComponents();
-				frontEndInspector.extractPaths(viewComponents);
+				List<Path> paths = frontEndInspector.extractPaths(viewComponents);
+				List<Collection> collections = noAmService.computeAbstractModelsByPaths(paths);
 				
 				pages.add(page);
 				// findPatterns(page);

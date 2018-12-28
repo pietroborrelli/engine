@@ -14,7 +14,6 @@ import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
 import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.ViewComponentPart;
@@ -23,6 +22,7 @@ import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewco
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.MultipleSelectionFieldImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.SelectionFieldImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Page;
+import com.engine.domain.wrapper.Path;
 import com.engine.mapper.datamodel.DataModel;
 
 public class FrontEndInspector {
@@ -36,7 +36,7 @@ public class FrontEndInspector {
 	static String NAVIGATIONFLOW_OKLINK = "OKLink";
 	static String NAVIGATIONFLOW_KOLINK = "KOLink";
 
-	static Integer countPath = 1;
+	static Integer countPath = 0;
 
 	private DataModel dataModel;
 	private DataModelUtil dataModelUtil;
@@ -44,7 +44,12 @@ public class FrontEndInspector {
 	private Context context;
 	private Document document;
 	private Stack<InteractionFlowElement> stack;
+	
+	/*
+	 * support lists for traversing
+	 */
 	private List<InteractionFlowElement> viewComponents;
+	private List<Path> paths;
 
 	public FrontEndInspector(DataModel dataModel) {
 		this.setxPathUtil(new XPathUtil());
@@ -73,9 +78,11 @@ public class FrontEndInspector {
 
 	}
 
-	public void extractPaths(List<InteractionFlowElement> viewComponents) {
+	public List<Path> extractPaths(List<InteractionFlowElement> viewComponents) {
 
 		this.setViewComponents(viewComponents);
+		this.setPaths(new ArrayList<Path>());
+		
 		List<InteractionFlowElement> nodeViewComponents = new ArrayList<InteractionFlowElement>();
 		viewComponents.stream().forEach(vc -> {
 			if (vc.getIsRoot())
@@ -86,7 +93,8 @@ public class FrontEndInspector {
 			System.err.println("Non ho trovato view component ROOT!");
 			// return null;
 		}
-		System.out.println("----------- CALCOLO DEI PERCORSI -------------");
+		
+		System.out.println("----------- CALCOLO PERCORSI -------------");
 
 		for (InteractionFlowElement nodeViewComponent : nodeViewComponents) {
 			countPath=1;
@@ -95,9 +103,25 @@ public class FrontEndInspector {
 			getStack().pop();
 		}
 		
-		// TODO salvataggio dei percorsi e rimozione di duplicati.
+		return removeDuplicates(getPaths());
 		
 		
+	}
+
+	private List<Path> removeDuplicates(List<Path> paths2) {
+		
+		Boolean equals = true;
+		
+		for (Path x : getPaths()) {
+			
+			for (Path x2 : paths2) {
+			
+				if (!x.equals(x2))
+					equals=false;
+			
+			}
+		}
+		return paths2;
 	}
 
 	/**
@@ -110,6 +134,7 @@ public class FrontEndInspector {
 		System.out.println(interactionFlowElement.getId());
 		if (interactionFlowElement.getOutInteractionFlows().isEmpty() ) { // sono arrivato al nodo foglia
 			printPath(getStack());
+			savePath(getStack());
 			return;
 		}
 
@@ -135,9 +160,22 @@ public class FrontEndInspector {
 			}else { //handled elements != view components
 				//may produce duplicate paths according with the outgoing arcs
 				printPath(getStack());
+				savePath(getStack());
 			}
 		}
 
+	}
+
+	private void savePath(Stack<InteractionFlowElement> stackTemp) {
+		
+		List <InteractionFlowElement> interactionFlowElements = new ArrayList<InteractionFlowElement>();
+		
+		stackTemp.forEach(k -> {
+			interactionFlowElements.add(k);
+		});
+		
+		getPaths().add(new Path(countPath,interactionFlowElements));
+		
 	}
 
 	private void printPath(Stack<InteractionFlowElement> stackTemp) {
@@ -635,6 +673,14 @@ public class FrontEndInspector {
 
 	public void setStack(Stack<InteractionFlowElement> stack) {
 		this.stack = stack;
+	}
+
+	public List<Path> getPaths() {
+		return paths;
+	}
+
+	public void setPaths(List<Path> paths) {
+		this.paths = paths;
 	}
 
 	// public Stack<InteractionFlowElement> getStack() {
