@@ -5,13 +5,12 @@ public class PartitionKey {
 	private String id;
 	private String name;
 	private String type;
-	private String referenceAttributeEntity;
+	private String entity;
 
 	// id contains reference to attribute of entity
 	public PartitionKey(String id) {
 		super();
 		this.id = id;
-		this.referenceAttributeEntity=id.substring(id.lastIndexOf(".") + 1);
 	}
 
 	public String getName() {
@@ -30,14 +29,6 @@ public class PartitionKey {
 		this.id = id;
 	}
 
-	public String getReferenceAttributeEntity() {
-		return referenceAttributeEntity;
-	}
-
-	public void setReferenceAttributeEntity(String referenceAttributeEntity) {
-		this.referenceAttributeEntity = referenceAttributeEntity;
-	}
-
 	@Override
 	public String toString() {
 		return "PartitionKey [name=" + name + "]";
@@ -49,6 +40,57 @@ public class PartitionKey {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getEntity() {
+		return entity;
+	}
+
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((entity == null) ? 0 : entity.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PartitionKey other = (PartitionKey) obj;
+		if (entity == null) {
+			if (other.entity != null)
+				return false;
+		} else if (!entity.equals(other.entity))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
 	}
 	
 }

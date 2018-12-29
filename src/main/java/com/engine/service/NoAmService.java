@@ -11,6 +11,6 @@ public interface NoAmService {
 
 	List<Collection> computeAbstractModelsByPaths(List<Path> paths);
 	Collection createCollection();
-	Block createBlock(Path Path);
+	Block createBlock(Path path, List<Entry> entries);
 	List<Entry> createEntries (Path path);
 }

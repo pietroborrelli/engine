@@ -2,13 +2,19 @@ package com.engine.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.engine.domain.abstractmodel.Block;
 import com.engine.domain.abstractmodel.Collection;
 import com.engine.domain.abstractmodel.Entry;
+import com.engine.domain.abstractmodel.PartitionKey;
+import com.engine.domain.abstractmodel.PrimaryKey;
+import com.engine.domain.abstractmodel.SortKey;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
+import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
+import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.FormImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
@@ -24,14 +30,18 @@ public class NoAmServiceImpl implements NoAmService {
 	@Override
 	public List<Collection> computeAbstractModelsByPaths(List<Path> paths) {
 
+		System.out.println("---------CREAZIONE DEL NO AM---------");
+
 		List<Entry> entries = new ArrayList<Entry>();
+		Block block = new Block();
 
 		for (Path path : paths) {
 
 			entries = createEntries(path);
 			System.out.println(entries.size() + " entries");
 
-			//block = createBlock(path);
+			block = createBlock(path, entries);
+			System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
 		}
 
 		return null;
@@ -44,8 +54,112 @@ public class NoAmServiceImpl implements NoAmService {
 	}
 
 	@Override
-	public Block createBlock(Path Path) {
-		// TODO Auto-generated method stub
+	public Block createBlock(Path path, List<Entry> entries) {
+
+		Block block = new Block();
+		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
+		List<SortKey> sortKeys = new ArrayList<SortKey>();
+		PrimaryKey primaryKey = new PrimaryKey(partitionKeys, sortKeys);
+
+		System.out.println("Estrazione delle chiavi su percorso n." + path.getIdPath());
+
+		// get all partition keys
+		for (int i = 0; i < path.getInteractionFlowElements().size(); i++) {
+			InteractionFlowElement current = path.getInteractionFlowElements().get(i);
+			InteractionFlowElement next = null;
+
+			if ((i + 1) < path.getInteractionFlowElements().size())
+				next = path.getInteractionFlowElements().get(i + 1);
+
+			if (retrievePartitionKey(current, next) != null)
+				partitionKeys.addAll(retrievePartitionKey(current, next));
+		}
+		
+		partitionKeys=partitionKeys.stream().distinct().collect(Collectors.toList());
+		
+		// TODO get all sort keys
+
+		// TODO update partition key list by removing duplicates from sort keys
+
+		//removed duplicates on partition list
+		primaryKey.setPartitionKeys(partitionKeys.stream().distinct().collect(Collectors.toList()));
+
+		block.setKey(primaryKey);
+		block.setEntries(entries);
+
+		return block;
+	}
+
+	/**
+	 * @param ife:
+	 *            interaction flow element from which extract attribute(s)
+	 * @return partition key computed from the source of the binding parameter; if
+	 *         the source is null means that is a field of a form which has not an
+	 *         attribute set.
+	 *         Retrieved firstly all the sources of the binding parameter and then all the targets.
+	 *         Are generated duplicates
+	 *         Return null if there is no binding parameter
+	 */
+	private List<PartitionKey> retrievePartitionKey(InteractionFlowElement ife, InteractionFlowElement nextIfe) {
+
+		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
+
+		for (InteractionFlow outInteractionFlow : ife.getOutInteractionFlows()) {
+
+			// looks for the right pointing link to the next interaction flow element; if
+			// nextIfe is null, a leaf is reached
+			if (nextIfe == null || outInteractionFlow.getTo().equals(nextIfe.getId())) {
+
+				for (BindingParameter bindingParameter : outInteractionFlow.getBindingParameter()) {
+
+					// TODO remove this condition when handle actions
+					if (bindingParameter.getSources() == null || bindingParameter.getTargets() == null)
+						return null;
+
+					// get all sources of binding parameters
+					for (int x = 0; x < bindingParameter.getSources().size(); x++) {
+
+						if (bindingParameter.getSources().get(x) instanceof Attribute) {
+							Attribute sourceAttribute = (Attribute) bindingParameter.getSources().get(x);
+
+							if (sourceAttribute.getId() != null) {
+								PartitionKey partitionKey = new PartitionKey(sourceAttribute.getId());
+								partitionKey.setName(sourceAttribute.getName());
+								partitionKey.setType(sourceAttribute.getType());
+								partitionKey.setEntity(sourceAttribute.getEntity().getName());
+
+								partitionKeys.add(partitionKey);
+
+							}
+						}
+					}
+
+					// get all targets of binding parameters
+					for (int y = 0; y < bindingParameter.getTargets().size(); y++) {
+
+						if (bindingParameter.getTargets().get(y) instanceof Attribute) {
+							Attribute targetAttribute = (Attribute) bindingParameter.getTargets().get(y);
+
+							if (targetAttribute.getId() != null) {
+								if (bindingParameter.getTargets().get(y) instanceof Attribute) {
+									PartitionKey partitionKey = new PartitionKey(targetAttribute.getId());
+									partitionKey.setName(targetAttribute.getName());
+									partitionKey.setType(targetAttribute.getType());
+									partitionKey.setEntity(targetAttribute.getEntity().getName());
+
+									partitionKeys.add(partitionKey);
+								}
+							}
+
+						}
+
+					}
+
+				}
+				return partitionKeys;
+			}
+		}
+
 		return null;
 	}
 
@@ -90,8 +204,8 @@ public class NoAmServiceImpl implements NoAmService {
 				entry.setName(((FieldImpl) field).getAttribute().getName());
 				entry.setType(((FieldImpl) field).getAttribute().getType());
 				entry.setEntityName(((FieldImpl) field).getAttribute().getEntity().getName());
-			
-			entries.add(entry);
+
+				entries.add(entry);
 			}
 		}
 		return entries;
