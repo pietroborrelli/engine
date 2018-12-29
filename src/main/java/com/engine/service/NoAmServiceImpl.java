@@ -42,6 +42,7 @@ public class NoAmServiceImpl implements NoAmService {
 
 			block = createBlock(path, entries);
 			System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
+			System.out.println(block.getKey().getSortKeys().size() + " sort keys");
 		}
 
 		return null;
@@ -71,18 +72,27 @@ public class NoAmServiceImpl implements NoAmService {
 			if ((i + 1) < path.getInteractionFlowElements().size())
 				next = path.getInteractionFlowElements().get(i + 1);
 
-			if (retrievePartitionKey(current, next) != null)
+			if (retrievePartitionKey(current, next) != null) 
 				partitionKeys.addAll(retrievePartitionKey(current, next));
+			
 		}
+
+		// removed duplicates on partition list
+		partitionKeys = partitionKeys.stream().distinct().collect(Collectors.toList());
+
+		// get all sort keys
+		for (int s = 0; s < path.getInteractionFlowElements().size(); s++) 
+			sortKeys.addAll(retrieveSortKey(path.getInteractionFlowElements().get(s),partitionKeys));
 		
-		partitionKeys=partitionKeys.stream().distinct().collect(Collectors.toList());
+		// removed duplicates on sort list
+		sortKeys = sortKeys.stream().distinct().collect(Collectors.toList());
 		
-		// TODO get all sort keys
+
 
 		// TODO update partition key list by removing duplicates from sort keys
 
-		//removed duplicates on partition list
-		primaryKey.setPartitionKeys(partitionKeys.stream().distinct().collect(Collectors.toList()));
+		primaryKey.setPartitionKeys(partitionKeys);
+		primaryKey.setSortKeys(sortKeys);
 
 		block.setKey(primaryKey);
 		block.setEntries(entries);
@@ -91,14 +101,62 @@ public class NoAmServiceImpl implements NoAmService {
 	}
 
 	/**
+	 * @param interactionFlowElement
+	 * @param partitionKeys
+	 * @return sort keys according with the type of the view component 
+	 */
+	private List<SortKey> retrieveSortKey(InteractionFlowElement interactionFlowElement,
+			List<PartitionKey> partitionKeys) {
+		
+		List<SortKey> sortKeys = new ArrayList<SortKey>();
+		
+		// 1. In case is LIST
+		// get sort attributes if already in the group of the partition keys 
+		if (interactionFlowElement instanceof ListImpl) {
+
+			for (Attribute sortAttribute : ((ListImpl) interactionFlowElement).getSortAttributes()) {
+				//if is specified an ordering over the partition keys
+				if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
+				
+					SortKey sortKey = new SortKey(sortAttribute.getId());
+					sortKey.setName(sortAttribute.getName());
+					sortKey.setType(sortAttribute.getType());
+					sortKey.setEntity(sortAttribute.getEntity().getName());
+					sortKey.setOrdering(sortAttribute.getOrdering());
+					
+					sortKeys.add(sortKey);
+				}
+			}
+			
+		// get condition attributes
+		
+		}
+
+		// In case is SELECTOR get sort attributes and condition attributes
+		if (interactionFlowElement instanceof SelectorImpl) {
+			((SelectorImpl) interactionFlowElement).getSortAttributes();
+		}
+
+		return sortKeys;
+	}
+
+	private Boolean partitionKeysHaveSortAttribute(List<PartitionKey> partitionKeys, Attribute sortAttribute) {
+		Boolean found = false;
+		for (PartitionKey partitionKey : partitionKeys) {
+			if (partitionKey.getId().equals(sortAttribute.getId()))
+				found = true;
+		}
+		return found;
+	}
+
+	/**
 	 * @param ife:
 	 *            interaction flow element from which extract attribute(s)
 	 * @return partition key computed from the source of the binding parameter; if
 	 *         the source is null means that is a field of a form which has not an
-	 *         attribute set.
-	 *         Retrieved firstly all the sources of the binding parameter and then all the targets.
-	 *         Are generated duplicates
-	 *         Return null if there is no binding parameter
+	 *         attribute set. Retrieved firstly all the sources of the binding
+	 *         parameter and then all the targets. Are generated duplicates Return
+	 *         null if there is no binding parameter
 	 */
 	private List<PartitionKey> retrievePartitionKey(InteractionFlowElement ife, InteractionFlowElement nextIfe) {
 
