@@ -10,7 +10,7 @@ import com.engine.domain.wrapper.Path;
 public interface NoAmService {
 
 	List<Collection> computeAbstractModelsByPaths(List<Path> paths);
-	Collection createCollection();
 	Block createBlock(Path path, List<Entry> entries);
 	List<Entry> createEntries (Path path);
+	Collection createCollection(Path path, Block block, List<Entry> entries);
 }

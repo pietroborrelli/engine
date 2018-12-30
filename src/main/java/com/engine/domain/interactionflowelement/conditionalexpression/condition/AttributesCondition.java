@@ -1,14 +1,12 @@
 package com.engine.domain.interactionflowelement.conditionalexpression.condition;
 
-import java.util.HashMap;
-
-import com.engine.mapper.datamodel.DataModel.Entity.Attribute;
+import java.util.List;
 
 
 public final class AttributesCondition extends Condition {
 
 	private String booleanOperator;
-	private HashMap<String,Attribute> attributes;
+	private List<WrapperAttribute> attributes;
 
 	public String getBooleanOperator() {
 		return booleanOperator;
@@ -18,12 +16,13 @@ public final class AttributesCondition extends Condition {
 		this.booleanOperator = booleanOperator;
 	}
 
-	public HashMap<String,Attribute>  getAttributes() {
+	public List<WrapperAttribute> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(HashMap<String,Attribute> attributes) {
+	public void setAttributes(List<WrapperAttribute> attributes) {
 		this.attributes = attributes;
 	}
+
 
 }

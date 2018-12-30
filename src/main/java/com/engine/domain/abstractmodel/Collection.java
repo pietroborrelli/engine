@@ -1,18 +1,14 @@
 package com.engine.domain.abstractmodel;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class Collection {
 
-	public static final AtomicInteger next = new AtomicInteger(0);
 	
 	private Integer id;
 	private String name;
 	private Block block;
 	
-	public Collection() {
-		//auto increment avoid duplicate if two or more collections have same name
-		this.id=next.incrementAndGet();
+	public Collection(Integer id) {
+		this.id = id;
 		this.block = new Block();
 	}
 

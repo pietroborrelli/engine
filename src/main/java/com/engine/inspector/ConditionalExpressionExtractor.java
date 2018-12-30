@@ -94,11 +94,17 @@ public class ConditionalExpressionExtractor {
 						System.out.println("Found a " + ATTRIBUTES_CONDITION);
 						this.conditionExtractor = new AttributesConditionE();
 						AttributesCondition temp = (AttributesCondition) conditionExtractor.mapCondition(condition);
-						// temp.setAttributes(dataModelUtil.);
-						temp.getAttributes().entrySet().stream()
-								.forEach(e -> e.setValue(dataModelUtil.findAttributesByEntityAndId(e.getKey().substring(
-										0, e.getKey().lastIndexOf("#")),
-										e.getKey())));
+
+						// set attribute of the data model
+						if (temp.getAttributes() != null) {
+							temp.getAttributes().stream()
+									.forEach(e -> e.setAttribute(dataModelUtil.findAttributesByEntityAndId(
+											e.getId().substring(0, e.getId().lastIndexOf("#")), e.getId())));
+
+							// set entity of the data model
+							temp.getAttributes().stream().forEach(e -> e.setEntity(
+									dataModelUtil.findEntity(e.getId().substring(0, e.getId().lastIndexOf("#")))));
+						}
 						conditions.add(temp);
 					}
 					if (condition.getNodeType() == Node.ELEMENT_NODE
@@ -107,7 +113,7 @@ public class ConditionalExpressionExtractor {
 						this.conditionExtractor = new RelationshipRoleConditionE();
 						RelationshipRoleCondition temp = (RelationshipRoleCondition) conditionExtractor
 								.mapCondition(condition);
-						if (temp.getRole()!=null)
+						if (temp.getRole() != null)
 							temp.setRelationship(dataModelUtil
 									.findRelationship(temp.getRole().substring(0, temp.getRole().indexOf("#"))));
 						temp.setRelationshipRole1(dataModelUtil.findRelationshipRole1(temp.getRole()));

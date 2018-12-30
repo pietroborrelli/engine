@@ -1,7 +1,9 @@
 package com.engine.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +14,12 @@ import com.engine.domain.abstractmodel.Entry;
 import com.engine.domain.abstractmodel.PartitionKey;
 import com.engine.domain.abstractmodel.PrimaryKey;
 import com.engine.domain.abstractmodel.SortKey;
+import com.engine.domain.enumeration.Ordering;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
+import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.Condition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
@@ -30,27 +37,27 @@ public class NoAmServiceImpl implements NoAmService {
 	@Override
 	public List<Collection> computeAbstractModelsByPaths(List<Path> paths) {
 
-		System.out.println("---------CREAZIONE DEL NO AM---------");
-
-		List<Entry> entries = new ArrayList<Entry>();
-		Block block = new Block();
+		System.out.println("--------- CREAZIONE DEL NO AM ---------");
 
 		for (Path path : paths) {
 
-			entries = createEntries(path);
+			List<Entry> entries = createEntries(path);
 			System.out.println(entries.size() + " entries");
 
-			block = createBlock(path, entries);
+			Block block = createBlock(path, entries);
 			System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
 			System.out.println(block.getKey().getSortKeys().size() + " sort keys");
+			
+			Collection collection = createCollection(path,block,entries);
 		}
 
 		return null;
 	}
 
 	@Override
-	public Collection createCollection() {
-		// TODO Auto-generated method stub
+	public Collection createCollection(Path path, Block block, List<Entry> entries) {
+		//get leaf node as name of the collection
+		
 		return null;
 	}
 
@@ -72,25 +79,24 @@ public class NoAmServiceImpl implements NoAmService {
 			if ((i + 1) < path.getInteractionFlowElements().size())
 				next = path.getInteractionFlowElements().get(i + 1);
 
-			if (retrievePartitionKey(current, next) != null) 
+			if (retrievePartitionKey(current, next) != null)
 				partitionKeys.addAll(retrievePartitionKey(current, next));
-			
+
 		}
 
 		// removed duplicates on partition list
 		partitionKeys = partitionKeys.stream().distinct().collect(Collectors.toList());
 
 		// get all sort keys
-		for (int s = 0; s < path.getInteractionFlowElements().size(); s++) 
-			sortKeys.addAll(retrieveSortKey(path.getInteractionFlowElements().get(s),partitionKeys));
-		
+		for (int s = 0; s < path.getInteractionFlowElements().size(); s++)
+			sortKeys.addAll(retrieveSortKey(path.getInteractionFlowElements().get(s), partitionKeys));
+
 		// removed duplicates on sort list
 		sortKeys = sortKeys.stream().distinct().collect(Collectors.toList());
+
+		// update partition key list by removing duplicates from sort keys
+		partitionKeys = removeDuplicatesFromPartitionKeys(partitionKeys,sortKeys);
 		
-
-
-		// TODO update partition key list by removing duplicates from sort keys
-
 		primaryKey.setPartitionKeys(partitionKeys);
 		primaryKey.setSortKeys(sortKeys);
 
@@ -101,45 +107,191 @@ public class NoAmServiceImpl implements NoAmService {
 	}
 
 	/**
+	 * @param partitionKeys
+	 * @param sortKeys
+	 * @return new partition keys list without keys that are already candidates to be sort keys
+	 */
+	private List<PartitionKey> removeDuplicatesFromPartitionKeys(List<PartitionKey> partitionKeys,
+			List<SortKey> sortKeys) {
+		
+		List<PartitionKey> tempPartitionKeys = new ArrayList<PartitionKey>(partitionKeys);
+		
+		for (PartitionKey partitionKey : tempPartitionKeys ) {
+			for (SortKey sortKey : sortKeys) {
+				
+				if (partitionKey.getId().equals(sortKey.getId()))
+					partitionKeys.remove(partitionKey);
+			}
+		}
+		
+		return partitionKeys;
+	}
+
+	/**
 	 * @param interactionFlowElement
 	 * @param partitionKeys
-	 * @return sort keys according with the type of the view component 
+	 * @return sort keys according with the type of the view component
 	 */
 	private List<SortKey> retrieveSortKey(InteractionFlowElement interactionFlowElement,
 			List<PartitionKey> partitionKeys) {
-		
+
 		List<SortKey> sortKeys = new ArrayList<SortKey>();
-		
+
 		// 1. In case is LIST
-		// get sort attributes if already in the group of the partition keys 
 		if (interactionFlowElement instanceof ListImpl) {
 
-			for (Attribute sortAttribute : ((ListImpl) interactionFlowElement).getSortAttributes()) {
-				//if is specified an ordering over the partition keys
-				if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
-				
-					SortKey sortKey = new SortKey(sortAttribute.getId());
-					sortKey.setName(sortAttribute.getName());
-					sortKey.setType(sortAttribute.getType());
-					sortKey.setEntity(sortAttribute.getEntity().getName());
-					sortKey.setOrdering(sortAttribute.getOrdering());
-					
-					sortKeys.add(sortKey);
+			if (((ListImpl) interactionFlowElement).getSortAttributes() != null) {
+				// get sort attributes if already in the group of the partition keys
+				for (Attribute sortAttribute : ((ListImpl) interactionFlowElement).getSortAttributes()) {
+					// if has been specified an ordering over the partition keys or attributes
+					// conditions
+					if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
+						SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
+						sortKeys.add(sortKey);
+					}
 				}
 			}
-			
-		// get condition attributes
-		
+			// get attributes of attributes conditions if already in the group of the
+			// partition keys
+			for (ConditionalExpression conditionalExpression : ((ListImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+				for (Condition condition : conditionalExpression.getConditions()) {
+
+					if (condition instanceof AttributesCondition) {
+						AttributesCondition attributesCondition = (AttributesCondition) condition;
+						if (attributesCondition.getAttributes() != null) {
+							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
+
+								if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+										attributesCondition)) {
+									SortKey sortKey = extractSortKeyFromDataModel(attributesCondition,
+											wrapperAttribute);
+									sortKeys.add(sortKey);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 
-		// In case is SELECTOR get sort attributes and condition attributes
+		// 2. In case is SELECTOR
 		if (interactionFlowElement instanceof SelectorImpl) {
-			((SelectorImpl) interactionFlowElement).getSortAttributes();
+
+			if (((SelectorImpl) interactionFlowElement).getSortAttributes() != null) {
+				// get sort attributes if already in the group of the partition keys
+				for (Attribute sortAttribute : ((SelectorImpl) interactionFlowElement).getSortAttributes()) {
+					// if has been specified an ordering over the partition keys or attributes
+					// conditions
+					if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
+						SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
+						sortKeys.add(sortKey);
+					}
+				}
+			}
+			// get attributes of attributes conditions if already in the group of the
+			// partition keys
+			for (ConditionalExpression conditionalExpression : ((SelectorImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+				for (Condition condition : conditionalExpression.getConditions()) {
+
+					if (condition instanceof AttributesCondition) {
+						AttributesCondition attributesCondition = (AttributesCondition) condition;
+						if (attributesCondition.getAttributes() != null) {
+							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
+
+								if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+										attributesCondition)) {
+									SortKey sortKey = extractSortKeyFromDataModel(attributesCondition,
+											wrapperAttribute);
+									sortKeys.add(sortKey);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 3. In case is DETAIL
+		if (interactionFlowElement instanceof DetailImpl) {
+
+			// get attributes of attributes conditions if already in the group of the
+			// partition keys
+			for (ConditionalExpression conditionalExpression : ((DetailImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+				for (Condition condition : conditionalExpression.getConditions()) {
+
+					if (condition instanceof AttributesCondition) {
+						AttributesCondition attributesCondition = (AttributesCondition) condition;
+						for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
+
+							if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+									attributesCondition)) {
+								SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
+								sortKeys.add(sortKey);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		return sortKeys;
 	}
 
+	private SortKey extractSortKeyFromApplicationModel(Attribute attribute) {
+		SortKey sortKey = new SortKey(attribute.getId());
+		sortKey.setName(attribute.getName());
+		sortKey.setType(attribute.getType());
+		sortKey.setEntity(attribute.getEntity().getName());
+		sortKey.setOrdering(attribute.getOrdering());
+		return sortKey;
+	}
+
+	private SortKey extractSortKeyFromDataModel(AttributesCondition attributesCondition,
+			WrapperAttribute wrapperAttribute) {
+		SortKey sortKey = new SortKey(wrapperAttribute.getId());
+		sortKey.setName(wrapperAttribute.getAttribute().getName());
+		sortKey.setType(wrapperAttribute.getAttribute().getType());
+		sortKey.setEntity(wrapperAttribute.getEntity().getName());
+
+		if (attributesCondition.getPredicate().equals("lt") || attributesCondition.getPredicate().equals("lteq"))
+			sortKey.setOrdering(Ordering.ASCENDING);
+		if (attributesCondition.getPredicate().equals("gt") || attributesCondition.getPredicate().equals("gteq"))
+			sortKey.setOrdering(Ordering.DESCENDING);
+
+		return sortKey;
+	}
+
+	/**
+	 * @param partitionKeys
+	 * @param wrapperAttribute
+	 * @param attributesCondition
+	 * @return true if the attribute of the attributes condition is already present
+	 *         in the partition keys group and for which is specified an ordering in
+	 *         the predicate, otherwise false
+	 */
+	private boolean partitionKeysHaveAttributeConditions(List<PartitionKey> partitionKeys,
+			WrapperAttribute wrapperAttribute, AttributesCondition attributesCondition) {
+		Boolean found = false;
+		for (PartitionKey partitionKey : partitionKeys) {
+			if (partitionKey.getId().equals(wrapperAttribute.getId())
+					&& (attributesCondition.getPredicate().equals("lt")
+							|| attributesCondition.getPredicate().equals("lteq")
+							|| attributesCondition.getPredicate().equals("gt")
+							|| attributesCondition.getPredicate().equals("gteq")))
+				found = true;
+		}
+		return found;
+	}
+
+	/**
+	 * @param partitionKeys
+	 * @param sortAttribute
+	 * @return true if the sort attribute is already present in the partition keys
+	 *         group, otherwise false
+	 */
 	private Boolean partitionKeysHaveSortAttribute(List<PartitionKey> partitionKeys, Attribute sortAttribute) {
 		Boolean found = false;
 		for (PartitionKey partitionKey : partitionKeys) {

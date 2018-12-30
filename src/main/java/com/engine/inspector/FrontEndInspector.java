@@ -2,7 +2,6 @@ package com.engine.inspector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -12,6 +11,7 @@ import org.w3c.dom.Node;
 import com.engine.domain.enumeration.Ordering;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ViewComponent;
@@ -273,16 +273,14 @@ public class FrontEndInspector {
 			attributesCondition = (AttributesCondition) attributesConditionExtractor
 					.mapCondition(xPathUtil.findAttributesConditionById(bindingParameter.getTargetId(), getDocument()));
 
-			for (Map.Entry<String, com.engine.mapper.datamodel.DataModel.Entity.Attribute> entry : attributesCondition
-					.getAttributes().entrySet()) {
-				String key = entry.getKey();
+			for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
 				Attribute attributeApplication = new Attribute();
 
-				attributeApplication.setEntity(dataModelUtil.findEntity(key.substring(0, key.lastIndexOf("#"))));
-				attributeApplication.setId(key);
-				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), key));
-				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), key));
+				attributeApplication.setEntity(dataModelUtil.findEntity(wrapperAttribute.getId().substring(0, wrapperAttribute.getId().lastIndexOf("#"))));
+				attributeApplication.setId(wrapperAttribute.getId());
+				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), wrapperAttribute.getId()));
+				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), wrapperAttribute.getId()));
 				attributeApplication.setKey(true);
 				// candidate to be sort key of NOAM
 				if (attributesCondition.getPredicate().equals("lteq")
@@ -414,16 +412,14 @@ public class FrontEndInspector {
 			attributesCondition = (AttributesCondition) attributesConditionExtractor
 					.mapCondition(xPathUtil.findAttributesConditionById(bindingParameter.getSourceId(), getDocument()));
 
-			for (Map.Entry<String, com.engine.mapper.datamodel.DataModel.Entity.Attribute> entry : attributesCondition
-					.getAttributes().entrySet()) {
-				String key = entry.getKey();
+			for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
 				Attribute attributeApplication = new Attribute();
 
-				attributeApplication.setEntity(dataModelUtil.findEntity(key.substring(0, key.lastIndexOf("#"))));
-				attributeApplication.setId(key);
-				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), key));
-				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), key));
+				attributeApplication.setEntity(dataModelUtil.findEntity(wrapperAttribute.getId().substring(0, wrapperAttribute.getId().lastIndexOf("#"))));
+				attributeApplication.setId(wrapperAttribute.getId());
+				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), wrapperAttribute.getId()));
+				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), wrapperAttribute.getId()));
 				attributeApplication.setKey(true);
 				// candidate to be sort key of NOAM
 				if (attributesCondition.getPredicate().equals("lteq")

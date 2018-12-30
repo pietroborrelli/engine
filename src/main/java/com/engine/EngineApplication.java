@@ -87,7 +87,6 @@ public class EngineApplication implements CommandLineRunner {
 			for (Document document : documents) {
 				//set document on which frontEndInspector will work
 				frontEndInspector.setDocument(document);
-				
 				Page page = frontEndInspector.elaborateDocument();
 				
 				//List<ViewComponent> leavesViewComponents = frontEndInspector.findLeavesViewComponents();
