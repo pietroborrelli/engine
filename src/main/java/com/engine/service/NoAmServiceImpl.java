@@ -36,7 +36,8 @@ public class NoAmServiceImpl implements NoAmService {
 
 	@Override
 	public List<Collection> computeAbstractModelsByPaths(List<Path> paths) {
-
+		
+		List<Collection> collections = new ArrayList<Collection>();
 		System.out.println("--------- CREAZIONE DEL NO AM ---------");
 
 		for (Path path : paths) {
@@ -49,16 +50,24 @@ public class NoAmServiceImpl implements NoAmService {
 			System.out.println(block.getKey().getSortKeys().size() + " sort keys");
 			
 			Collection collection = createCollection(path,block,entries);
+			
+			collections.add(collection);
 		}
 
-		return null;
+		return collections;
 	}
 
 	@Override
 	public Collection createCollection(Path path, Block block, List<Entry> entries) {
+		Collection collection = new Collection (path.getIdPath());
 		//get leaf node as name of the collection
+		for (InteractionFlowElement interactionFlowElement : path.getInteractionFlowElements()) {
+			if (interactionFlowElement.getOutInteractionFlows() == null || interactionFlowElement.getOutInteractionFlows().isEmpty())
+				collection.setName(interactionFlowElement.getName());
+		}
+		collection.setBlock(block);
 		
-		return null;
+		return collection;
 	}
 
 	@Override
