@@ -178,6 +178,14 @@ public final class Link implements LinkExtractor {
 		return bindingParameters;
 	}
 
+	public DataModelUtil getDataModelUtil() {
+		return dataModelUtil;
+	}
+
+	public void setDataModelUtil(DataModelUtil dataModelUtil) {
+		this.dataModelUtil = dataModelUtil;
+	}
+
 	
 
 }

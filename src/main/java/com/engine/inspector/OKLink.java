@@ -71,4 +71,12 @@ public final class OKLink implements LinkExtractor {
 		return null;
 	}
 
+	public DataModel getDataModel() {
+		return dataModel;
+	}
+
+	public void setDataModel(DataModel dataModel) {
+		this.dataModel = dataModel;
+	}
+
 }

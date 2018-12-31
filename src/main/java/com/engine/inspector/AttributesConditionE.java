@@ -1,14 +1,12 @@
 package com.engine.inspector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.Condition;
-import com.engine.domain.interactionflowelement.conditionalexpression.condition.KeyCondition;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 
 public class AttributesConditionE implements ConditionExtractor {

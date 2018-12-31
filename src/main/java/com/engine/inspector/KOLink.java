@@ -8,7 +8,6 @@ import org.w3c.dom.Node;
 import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
 import com.engine.domain.interactionflowelement.interactionflow.navigationflow.KOLinkImpl;
-import com.engine.domain.interactionflowelement.interactionflow.navigationflow.OKLinkImpl;
 import com.engine.mapper.datamodel.DataModel;
 
 public final class KOLink implements LinkExtractor {
@@ -70,6 +69,14 @@ public final class KOLink implements LinkExtractor {
 	public List<BindingParameter> mapBindingParameter(Node node) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public DataModelUtil getDataModelUtil() {
+		return dataModelUtil;
+	}
+
+	public void setDataModelUtil(DataModelUtil dataModelUtil) {
+		this.dataModelUtil = dataModelUtil;
 	}
 
 }
