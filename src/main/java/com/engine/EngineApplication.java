@@ -111,8 +111,9 @@ public class EngineApplication implements CommandLineRunner {
 				List<InteractionFlowElement> viewComponents = frontEndInspector.findViewComponents();
 				List<Path> paths = frontEndInspector.extractPaths(viewComponents);
 				List<Collection> collections = noAmService.computeAbstractModelsByPaths(paths);
+				collections = noAmService.optimizeReadingAccessPaths(collections);
 
-				generatePhysicalModel(collections,area.getName());
+				generateModels(collections,area.getName());
 
 				pages.add(page);
 
@@ -144,7 +145,7 @@ public class EngineApplication implements CommandLineRunner {
 		}
 	}
 
-	public void generatePhysicalModel(List<Collection> collections, String area) {
+	public void generateModels(List<Collection> collections, String area) {
 
 		//create output folder according with the area
 		new File(outputPathPhysicalModel+area+"/").mkdirs();
@@ -153,9 +154,9 @@ public class EngineApplication implements CommandLineRunner {
 		for (Collection collection : collections) {
 
 			// print noAM
-			output.print(collection,area);
+			output.printAbstractModel(collection,area);
 			// print Physical Implementation
-			output.printScript(collection, area,  parser.buildPhysicalModel(collection));
+			output.printPhysicalModel(collection, area,  parser.buildPhysicalModel(collection));
 
 		}
 	}

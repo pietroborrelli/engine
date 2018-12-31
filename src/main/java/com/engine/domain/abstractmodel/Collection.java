@@ -1,11 +1,14 @@
 package com.engine.domain.abstractmodel;
 
+import com.engine.domain.wrapper.Path;
+
 public class Collection {
 
 	
 	private Integer id;
 	private String name;
 	private Block block;
+	private Path path;
 	
 	public Collection(Integer id) {
 		this.id = id;
@@ -39,6 +42,14 @@ public class Collection {
 	@Override
 	public String toString() {
 		return "Collection [name=" + name + "]";
+	}
+
+	public Path getPath() {
+		return path;
+	}
+
+	public void setPath(Path path) {
+		this.path = path;
 	}
 	
 	

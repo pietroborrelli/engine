@@ -1,7 +1,10 @@
 package com.engine.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -34,7 +37,7 @@ public class NoAmServiceImpl implements NoAmService {
 
 	@Override
 	public List<Collection> computeAbstractModelsByPaths(List<Path> paths) {
-		
+
 		List<Collection> collections = new ArrayList<Collection>();
 		System.out.println("--------- CREAZIONE DEL NO AM ---------");
 
@@ -46,9 +49,9 @@ public class NoAmServiceImpl implements NoAmService {
 			Block block = createBlock(path, entries);
 			System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
 			System.out.println(block.getKey().getSortKeys().size() + " sort keys");
-			
-			Collection collection = createCollection(path,block,entries);
-			
+
+			Collection collection = createCollection(path, block, entries);
+
 			collections.add(collection);
 		}
 
@@ -57,14 +60,16 @@ public class NoAmServiceImpl implements NoAmService {
 
 	@Override
 	public Collection createCollection(Path path, Block block, List<Entry> entries) {
-		Collection collection = new Collection (path.getIdPath());
-		//get leaf node as name of the collection
+		Collection collection = new Collection(path.getIdPath());
+		collection.setPath(path);
+		// get leaf node as name of the collection
 		for (InteractionFlowElement interactionFlowElement : path.getInteractionFlowElements()) {
-			if (interactionFlowElement.getOutInteractionFlows() == null || interactionFlowElement.getOutInteractionFlows().isEmpty())
+			if (interactionFlowElement.getOutInteractionFlows() == null
+					|| interactionFlowElement.getOutInteractionFlows().isEmpty())
 				collection.setName(interactionFlowElement.getName());
 		}
 		collection.setBlock(block);
-		
+
 		return collection;
 	}
 
@@ -102,8 +107,11 @@ public class NoAmServiceImpl implements NoAmService {
 		sortKeys = sortKeys.stream().distinct().collect(Collectors.toList());
 
 		// update partition key list by removing duplicates from sort keys
-		partitionKeys = removeDuplicatesFromPartitionKeys(partitionKeys,sortKeys);
-		
+		partitionKeys = removeDuplicatesFromPartitionKeys(partitionKeys, sortKeys);
+
+		// update sort keys by removing duplicates keys with different ordering
+		sortKeys = removeDuplicatesFromSortKeys(sortKeys);
+
 		primaryKey.setPartitionKeys(partitionKeys);
 		primaryKey.setSortKeys(sortKeys);
 
@@ -114,23 +122,48 @@ public class NoAmServiceImpl implements NoAmService {
 	}
 
 	/**
+	 * @param sortKeys
+	 * @return new sort keys without duplicate sort keys that differ only for
+	 *         ordering. given priority to DESC order
+	 */
+	private List<SortKey> removeDuplicatesFromSortKeys(List<SortKey> sortKeys) {
+
+		List<SortKey> tempSortKeys = new ArrayList<SortKey>(sortKeys);
+
+		for (int i = 0; i < tempSortKeys.size() - 1; i++) {
+
+			if (tempSortKeys.get(i).getId().equals(tempSortKeys.get(i + 1).getId())) {
+
+				if (tempSortKeys.get(i).getOrdering().equals(Ordering.ASCENDING))
+					sortKeys.remove(tempSortKeys.get(i));
+				else
+					sortKeys.remove(tempSortKeys.get(i + 1));
+			}
+
+		}
+
+		return sortKeys;
+	}
+
+	/**
 	 * @param partitionKeys
 	 * @param sortKeys
-	 * @return new partition keys list without keys that are already candidates to be sort keys
+	 * @return new partition keys list without keys that are already candidates to
+	 *         be sort keys
 	 */
 	private List<PartitionKey> removeDuplicatesFromPartitionKeys(List<PartitionKey> partitionKeys,
 			List<SortKey> sortKeys) {
-		
+
 		List<PartitionKey> tempPartitionKeys = new ArrayList<PartitionKey>(partitionKeys);
-		
-		for (PartitionKey partitionKey : tempPartitionKeys ) {
+
+		for (PartitionKey partitionKey : tempPartitionKeys) {
 			for (SortKey sortKey : sortKeys) {
-				
+
 				if (partitionKey.getId().equals(sortKey.getId()))
 					partitionKeys.remove(partitionKey);
 			}
 		}
-		
+
 		return partitionKeys;
 	}
 
@@ -421,6 +454,7 @@ public class NoAmServiceImpl implements NoAmService {
 				entry.setName(((FieldImpl) field).getAttribute().getName());
 				entry.setType(((FieldImpl) field).getAttribute().getType());
 				entry.setEntityName(((FieldImpl) field).getAttribute().getEntity().getName());
+				entry.setInteractionFlowElementName(formImpl.getId());
 
 				entries.add(entry);
 			}
@@ -444,6 +478,7 @@ public class NoAmServiceImpl implements NoAmService {
 			entry.setId(displayAttribute.getId());
 			entry.setName(displayAttribute.getName());
 			entry.setType(displayAttribute.getType());
+			entry.setInteractionFlowElementName(listImpl.getId());
 
 			if (displayAttribute.getEntity() != null)
 				entry.setEntityName(displayAttribute.getEntity().getName());
@@ -469,6 +504,7 @@ public class NoAmServiceImpl implements NoAmService {
 			entry.setId(displayAttribute.getId());
 			entry.setName(displayAttribute.getName());
 			entry.setType(displayAttribute.getType());
+			entry.setInteractionFlowElementName(detailImpl.getId());
 
 			if (displayAttribute.getEntity() != null)
 				entry.setEntityName(displayAttribute.getEntity().getName());
@@ -494,6 +530,7 @@ public class NoAmServiceImpl implements NoAmService {
 			entry.setId(attribute.getId());
 			entry.setName(attribute.getName());
 			entry.setType(attribute.getType());
+			entry.setInteractionFlowElementName(selectorImpl.getId());
 
 			if (selectorImpl.getEntity() != null)
 				entry.setEntityName(selectorImpl.getEntity().getName());
@@ -502,5 +539,80 @@ public class NoAmServiceImpl implements NoAmService {
 
 		}
 		return entries;
+	}
+
+	/* 
+	 * @param collections to evaluate
+	 * @return new collection with field aggregated.
+	 * For each collection are grouped all the fields by interaction flow element id. Then they are compared one by one and aggregated all the fields
+	 * that brings more than one field related to the same entity
+	 */
+	@Override
+	public List<Collection> optimizeReadingAccessPaths(List<Collection> collections) {
+
+		for (Collection collection : collections) {
+
+			Map<String, List<Entry>> entriesGrouped = collection.getBlock().getEntries().stream()
+					.collect(Collectors.groupingBy(w -> w.getInteractionFlowElementName()));
+
+			Map<String, List<Entry>> entriesGroupedTemp = new HashMap<String, List<Entry>>(entriesGrouped);
+
+			for (Map.Entry<String, List<Entry>> e : entriesGrouped.entrySet()) {
+
+				List<Entry> aggregateEntries = new ArrayList<Entry>();
+				for (Map.Entry<String, List<Entry>> e2 : entriesGroupedTemp.entrySet()) {
+
+					if (!e.getKey().equals(e2.getKey())) {
+
+						for (Entry entry : e.getValue()) {
+							for (Entry entry2 : e2.getValue()) {
+								if (entry.getId().equals(entry2.getId()) && !aggregateHasBeenAlreadyAdded(entry,aggregateEntries))
+									aggregateEntries.add(entry);
+							}
+						}
+
+					}
+				}
+				
+				// must be found at least 2 aggregated elements between interaction flow elements
+				if (aggregateEntries.size() > 1) {
+					Entry aggregateEntry = new Entry(aggregateEntries);
+					List<Entry> entryTemp = new ArrayList<Entry>(collection.getBlock().getEntries());
+
+					for (Entry entry : entryTemp) {
+						for (Entry entry2 : aggregateEntries) {
+							if (entry.getId().equals(entry2.getId())) {
+								collection.getBlock().getEntries().remove(entry);
+							}
+						}
+					}
+					if (!aggregateHasBeenAlreadyAdded(aggregateEntry, collection.getBlock().getEntries()))
+						collection.getBlock().getEntries().add(aggregateEntry);
+				}
+
+			}
+//			collection.getBlock().getEntries().stream().distinct().collect(Collectors.toList());
+		}
+
+		return collections;
+	}
+
+
+
+	/**
+	 * @param aggregateEntry
+	 * @param entries
+	 * @return true if aggregate has been already inserted in the entry list of the block
+	 */
+	private boolean aggregateHasBeenAlreadyAdded(Entry aggregateEntry, List<Entry> entries) {
+
+		Boolean found = false;
+
+		for (Entry entry : entries) {
+			if (entry.getId().equals(aggregateEntry.getId()))
+				found = true;
+		}
+		return found;
+
 	}
 }

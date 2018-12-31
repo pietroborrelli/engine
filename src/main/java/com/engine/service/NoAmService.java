@@ -13,4 +13,5 @@ public interface NoAmService {
 	Block createBlock(Path path, List<Entry> entries);
 	List<Entry> createEntries (Path path);
 	Collection createCollection(Path path, Block block, List<Entry> entries);
+	List<Collection> optimizeReadingAccessPaths(List<Collection> collections);
 }

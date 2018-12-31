@@ -1,6 +1,5 @@
 package com.engine.util;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.engine.domain.abstractmodel.Collection;
 import com.engine.domain.abstractmodel.Entry;
+import com.engine.domain.interactionflowelement.InteractionFlowElement;
 
 
 @Component
@@ -20,7 +20,13 @@ public class Output {
 	@Value("${output.path.physicalmodel}")
 	private String outputPathPhysicalModel;
 	
-	public void print(Collection collection, String area ) {
+	/**
+	 * @param collection
+	 * @param path
+	 * @param area
+	 * @return void. Print in console NoSQL Abstract Model and the access path
+	 */
+	public void printAbstractModel(Collection collection, String area ) {
 		
 		System.out.println("Output on: " + outputPathAbstractModel + area + "/" + collection.getId() +"-"+ collection.getName()+".txt");
 		
@@ -42,11 +48,24 @@ public class Output {
 	    	printWriter.println("\t\t\t" + entry.toString()); 
 	    }
 
+	    printWriter.println("\nPath:\n");
+	    	
+	    Integer count = 0;
+	    for (InteractionFlowElement ife : collection.getPath().getInteractionFlowElements()) {
+	    	count++;
+	    	printWriter.println(count + "." + ife.getClass() + "  ->  " + ife.getId() );
+	    }
 	    
 	    printWriter.close();
 	}
 	
-public void printScript(Collection collection,String area, String script) {
+/**
+ * @param collection
+ * @param area
+ * @param script
+ * @return void. Print in consolle Physical Model -> script
+ */
+public void printPhysicalModel(Collection collection,String area, String script) {
 		
 		System.out.println("Output on: " + outputPathPhysicalModel + area + "/" + collection.getId() +"-"+ collection.getName()+".txt");
 		

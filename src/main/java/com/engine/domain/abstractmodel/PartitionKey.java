@@ -31,7 +31,7 @@ public class PartitionKey {
 
 	@Override
 	public String toString() {
-		return "PartitionKey [name=" + name + "]";
+		return "PartitionKey [name=" +  entity.toLowerCase() + "." +name + "]";
 	}
 
 	public String getType() {

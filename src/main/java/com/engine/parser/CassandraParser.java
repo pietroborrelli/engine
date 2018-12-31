@@ -47,7 +47,7 @@ public class CassandraParser implements Parser {
 	public String getSortKeys(Block block) {
 		String sortKeys = "";
 		if (!block.getKey().getSortKeys().isEmpty())
-			sortKeys = block.getKey().getSortKeys().stream().map(sk -> sk.getName() + " " + sk.getOrdering().toString())
+			sortKeys = block.getKey().getSortKeys().stream().map(sk -> sk.getEntity().toLowerCase() + "." +sk.getName() + " " + sk.getOrdering().toString())
 					.collect(Collectors.joining(","));
 		return sortKeys;
 	}
@@ -58,18 +58,18 @@ public class CassandraParser implements Parser {
 		String sortKeys = "";
 
 		if (!block.getKey().getPartitionKeys().isEmpty())
-			partitionKeys = block.getKey().getPartitionKeys().stream().map(pk -> pk.getName())
+			partitionKeys = block.getKey().getPartitionKeys().stream().map(pk -> pk.getEntity().toLowerCase() + "." +pk.getName())
 					.collect(Collectors.joining(","));
 
 		if (!block.getKey().getSortKeys().isEmpty())
-			sortKeys = block.getKey().getSortKeys().stream().map(sk -> sk.getName()).collect(Collectors.joining(","));
+			sortKeys = block.getKey().getSortKeys().stream().map(sk -> sk.getEntity().toLowerCase() + "." + sk.getName()).collect(Collectors.joining(","));
 
 		return "(" + partitionKeys + "),(" + sortKeys + ")";
 	}
 
 	@Override
 	public String getColumns(List<Entry> entries) {
-		return entries.stream().map(e -> "	" + e.getName() + " " + e.getType()).collect(Collectors.joining(",\n"));
+		return entries.stream().map(e -> "	" + e.getEntityName().toLowerCase() + "." + e.getName() + " " + e.getType()).collect(Collectors.joining(",\n"));
 	}
 
 	/*
@@ -92,7 +92,7 @@ public class CassandraParser implements Parser {
 		String partitionKeysTemp = "";
 		if (!partitionKeys.isEmpty())
 			partitionKeysTemp = partitionKeys.stream()
-					.map(pk -> "	" + pk.getName() + " " + (pk.getType() == null ? "string" : pk.getType()))
+					.map(pk -> "	" + pk.getEntity().toLowerCase() + "." + pk.getName() + " " + (pk.getType() == null ? "string" : pk.getType()))
 					.collect(Collectors.joining(",\n"));
 		return partitionKeysTemp;
 	}
@@ -101,7 +101,7 @@ public class CassandraParser implements Parser {
 	public String getSortKeys(List<SortKey> sortKeys) {
 		String sortKeysTemp = "";
 		if (!sortKeys.isEmpty())
-			sortKeysTemp = sortKeys.stream().map(sk -> "	" + sk.getName() + " " + sk.getType())
+			sortKeysTemp = sortKeys.stream().map(sk -> "	" + sk.getEntity().toLowerCase() + "." + sk.getName() + " " + sk.getType())
 					.collect(Collectors.joining(",\n"));
 		return sortKeysTemp;
 	}

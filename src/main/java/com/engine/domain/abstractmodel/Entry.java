@@ -1,12 +1,15 @@
 package com.engine.domain.abstractmodel;
 
+import java.util.List;
+
 public class Entry {
 
 	private String id;
 	private String name;
 	private String type;
 	private String entityName;
-	
+	private String interactionFlowElementName;
+
 	public Entry() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -14,19 +17,38 @@ public class Entry {
 
 	public Entry(String id) {
 		super();
-		this.id=id;
+		this.id = id;
 	}
-	
+
 	public Entry(String id, String name) {
 		super();
-		this.id=id;
-		this.name=name;
+		this.id = id;
+		this.name = name;
 	}
-	
+
 	public Entry(String id, String name, String type) {
-		this.id=id;
-		this.name=name;
-		this.type=type;	
+		this.id = id;
+		this.name = name;
+		this.type = type;
+	}
+
+	// special constructor for aggregate entries for reading access path
+	public Entry(List<Entry> aggregateEntries) {
+
+		StringBuffer ids = new StringBuffer();
+		StringBuffer names = new StringBuffer();
+		StringBuffer interactionFlowElementNames = new StringBuffer();
+
+		for (Entry entry : aggregateEntries) {
+			ids.append(entry.getId() + " ");
+			names.append(entry.getName() + "&");
+			this.type = entry.getType();
+			this.entityName = entry.getEntityName();
+			interactionFlowElementNames.append(entry.getInteractionFlowElementName() + " ");
+		}
+		
+		this.id = ids.toString();
+		this.name = names.deleteCharAt(names.length() - 1).toString();
 	}
 
 	public String getName() {
@@ -40,11 +62,11 @@ public class Entry {
 	public void concatenateId(String id) {
 		this.id += id + " - ";
 	}
-	
+
 	public void concatenateName(String name) {
 		this.name += name + " - ";
 	}
-	
+
 	public String getType() {
 		return type;
 	}
@@ -63,8 +85,8 @@ public class Entry {
 
 	@Override
 	public String toString() {
-		if (entityName!=null)
-			return 	"Entry [name=" + entityName+"."+name + ", type=" + type + "]";
+		if (entityName != null)
+			return "Entry [name=" + entityName.toLowerCase() + "." + name + ", type=" + type + "]";
 		else
 			return "Entry [name=" + name + ", type=" + type + "]";
 	}
@@ -104,10 +126,17 @@ public class Entry {
 		return entityName;
 	}
 
-
 	public void setEntityName(String name2) {
 		this.entityName = name2;
-		
+
 	}
-	
+
+	public String getInteractionFlowElementName() {
+		return interactionFlowElementName;
+	}
+
+	public void setInteractionFlowElementName(String interactionFlowElementName) {
+		this.interactionFlowElementName = interactionFlowElementName;
+	}
+
 }

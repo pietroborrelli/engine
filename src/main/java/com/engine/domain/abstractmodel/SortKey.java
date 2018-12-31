@@ -75,7 +75,7 @@ public class SortKey {
 	}
 	@Override
 	public String toString() {
-		return "{Optional} SortKey [name=" + name + ", ordering=" + ordering + "]";
+		return "{Optional} SortKey [name=" + entity.toLowerCase() + "." + name + ", ordering=" + ordering + "]";
 	}
 	public String getType() {
 		return type;
