@@ -1,7 +1,9 @@
 package com.engine.domain.abstractmodel;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class Block {
@@ -45,17 +47,11 @@ public class Block {
 	 */
 	public void removeDuplicatesEntries() {
 
-		List<Entry> tempEntries = new ArrayList<Entry>(entries);
 
-		for (int i = 0; i < tempEntries.size() - 1; i++) {
-
-			if (tempEntries.get(i).getId().equals(tempEntries.get(i + 1).getId())) {
-				
-				getEntries().remove(tempEntries.get(i + 1));
-			}
-
-		}
-
+		Set<Entry> set = new HashSet<>(entries);
+		entries.clear();
+		entries.addAll(set);
+		Collections.sort(entries, (e1, e2) -> (e1.getEntityName()+"."+e1.getName()).compareTo(e2.getEntityName()+"."+e2.getName()));
 		
 	}
 

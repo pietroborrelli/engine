@@ -133,6 +133,11 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 		//array of sort attributes
 		ArrayList<Attribute> sortAttributes = new ArrayList<Attribute>();
 		
+		//check if list has at leas a child
+		Node firstChild = node.getFirstChild();
+		if (firstChild == null)
+			return sortAttributes;
+		
 		// get child of the node and iterate over its siblings
 		Node sibling = node.getFirstChild().getNextSibling();
 		

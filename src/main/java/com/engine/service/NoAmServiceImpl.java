@@ -29,6 +29,8 @@ import com.engine.domain.interactionflowelement.viewelement.viewcomponent.Select
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.Field;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.FieldImpl;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.MultipleSelectionFieldImpl;
+import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.SelectionFieldImpl;
 import com.engine.domain.wrapper.Path;
 
 @Service
@@ -67,9 +69,11 @@ public class NoAmServiceImpl implements NoAmService {
 					|| interactionFlowElement.getOutInteractionFlows().isEmpty())
 				collection.setName(interactionFlowElement.getName());
 		}
-		//means there is a leaf pointing to an action
-		if (collection.getName()==null)
-			collection.setName(path.getInteractionFlowElements().get(path.getInteractionFlowElements().size()-1).getName());;
+		// means there is a leaf pointing to an action
+		if (collection.getName() == null)
+			collection.setName(
+					path.getInteractionFlowElements().get(path.getInteractionFlowElements().size() - 1).getName());
+		;
 		collection.setBlock(block);
 
 		return collection;
@@ -123,9 +127,6 @@ public class NoAmServiceImpl implements NoAmService {
 		return block;
 	}
 
-	
-	
-	
 	/**
 	 * @param sortKeys
 	 * @return new sort keys without duplicate sort keys that differ only for
@@ -190,11 +191,11 @@ public class NoAmServiceImpl implements NoAmService {
 				for (Attribute sortAttribute : ((ListImpl) interactionFlowElement).getSortAttributes()) {
 					// if has been specified an ordering over the partition keys or attributes
 					// conditions
-					
-					//if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
-						SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
-						sortKeys.add(sortKey);
-					//}
+
+					// if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
+					SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
+					sortKeys.add(sortKey);
+					// }
 				}
 			}
 			// get attributes of attributes conditions if already in the group of the
@@ -208,12 +209,11 @@ public class NoAmServiceImpl implements NoAmService {
 						if (attributesCondition.getAttributes() != null) {
 							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
-								//if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
-								//		attributesCondition)) {
-									SortKey sortKey = extractSortKeyFromDataModel(attributesCondition,
-											wrapperAttribute);
-									sortKeys.add(sortKey);
-									//}
+								// if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+								// attributesCondition)) {
+								SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
+								sortKeys.add(sortKey);
+								// }
 							}
 						}
 					}
@@ -229,11 +229,11 @@ public class NoAmServiceImpl implements NoAmService {
 				for (Attribute sortAttribute : ((SelectorImpl) interactionFlowElement).getSortAttributes()) {
 					// if has been specified an ordering over the partition keys or attributes
 					// conditions
-					
-					//if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
-						SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
-						sortKeys.add(sortKey);
-					//}
+
+					// if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
+					SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
+					sortKeys.add(sortKey);
+					// }
 				}
 			}
 			// get attributes of attributes conditions if already in the group of the
@@ -247,12 +247,11 @@ public class NoAmServiceImpl implements NoAmService {
 						if (attributesCondition.getAttributes() != null) {
 							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
-								//	if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
-								//			attributesCondition)) {
-									SortKey sortKey = extractSortKeyFromDataModel(attributesCondition,
-											wrapperAttribute);
-									sortKeys.add(sortKey);
-									//	}
+								// if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+								// attributesCondition)) {
+								SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
+								sortKeys.add(sortKey);
+								// }
 							}
 						}
 					}
@@ -273,11 +272,11 @@ public class NoAmServiceImpl implements NoAmService {
 						AttributesCondition attributesCondition = (AttributesCondition) condition;
 						for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
-							//		if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
-							//			attributesCondition)) {
-								SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
-								sortKeys.add(sortKey);
-								//	}
+							// if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+							// attributesCondition)) {
+							SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
+							sortKeys.add(sortKey);
+							// }
 						}
 					}
 				}
@@ -548,11 +547,13 @@ public class NoAmServiceImpl implements NoAmService {
 		return entries;
 	}
 
-	/* 
+	/*
 	 * @param collections to evaluate
-	 * @return new collection with field aggregated.
-	 * For each collection are grouped all the fields by interaction flow element id. Then they are compared one by one and aggregated all the fields
-	 * that brings more than one field related to the same entity
+	 * 
+	 * @return new collection with field aggregated. For each collection are grouped
+	 * all the fields by interaction flow element id. Then they are compared one by
+	 * one and aggregated all the fields that brings more than one field related to
+	 * the same entity
 	 */
 	@Override
 	public List<Collection> optimizeReadingAccessPaths(List<Collection> collections) {
@@ -566,28 +567,35 @@ public class NoAmServiceImpl implements NoAmService {
 
 			for (Map.Entry<String, List<Entry>> e : entriesGrouped.entrySet()) {
 
-				List<Entry> aggregateEntries = new ArrayList<Entry>();
+				List<Entry> candidateAggregateEntries = new ArrayList<Entry>();
+
 				for (Map.Entry<String, List<Entry>> e2 : entriesGroupedTemp.entrySet()) {
 
 					if (!e.getKey().equals(e2.getKey())) {
 
 						for (Entry entry : e.getValue()) {
 							for (Entry entry2 : e2.getValue()) {
-								if (entry.getId().equals(entry2.getId()) && !aggregateHasBeenAlreadyAdded(entry,aggregateEntries) && !entry.isAKey(collection.getBlock().getKey()))
-									aggregateEntries.add(entry);
+								if (entry.getId().equals(entry2.getId())
+										&& !aggregateHasBeenAlreadyAdded(entry, candidateAggregateEntries)
+										&& !entry.isAKey(collection.getBlock().getKey()))
+
+									candidateAggregateEntries.add(entry);
 							}
 						}
 
 					}
 				}
-				
-				// must be found at least 2 aggregated elements between interaction flow elements
-				if (aggregateEntries.size() > 1) {
-					Entry aggregateEntry = new Entry(aggregateEntries);
+
+				// must be found at least 2 aggregated elements between interaction flow
+				// elements and aggregate entries must be present in all view components having
+				// same entity
+				if (candidateAggregateEntries.size() > 1
+						&& checkPresence(candidateAggregateEntries, collection.getPath())) {
+					Entry aggregateEntry = new Entry(candidateAggregateEntries);
 					List<Entry> entryTemp = new ArrayList<Entry>(collection.getBlock().getEntries());
 
 					for (Entry entry : entryTemp) {
-						for (Entry entry2 : aggregateEntries) {
+						for (Entry entry2 : candidateAggregateEntries) {
 							if (entry.getId().equals(entry2.getId())) {
 								collection.getBlock().getEntries().remove(entry);
 							}
@@ -604,12 +612,114 @@ public class NoAmServiceImpl implements NoAmService {
 		return collections;
 	}
 
+	/**
+	 * @param candidateAggregateEntries
+	 * @param path
+	 * @return true if the aggregate entries are present in all view components entity based
+	 */
+	private boolean checkPresence(List<Entry> candidateAggregateEntries, Path path) {
+		boolean aggregable = true;
 
+		for (Entry candidateEntry : candidateAggregateEntries) {
+			String entityName = candidateEntry.getEntityName();
+			if (entityName == null)
+				continue;
+
+			for (InteractionFlowElement ife : path.getInteractionFlowElements()) {
+				boolean found = false;
+
+				if (ife instanceof ListImpl && ((ListImpl) ife).getEntity() != null) {
+					ListImpl listImpl = (ListImpl) ife;
+					
+					if (!listImpl.getEntity().getName().equals(entityName))
+						continue;
+					
+					for (Attribute attribute : listImpl.getDisplayAttributes()) {
+						if (attribute.getId().equals(candidateEntry.getId()))
+							found = true;
+					}
+
+				}
+
+				if (ife instanceof DetailImpl && ((DetailImpl) ife).getEntity() != null) {
+					DetailImpl detailImpl = (DetailImpl) ife;
+					
+					if (!detailImpl.getEntity().getName().equals(entityName))
+						continue;
+					
+					for (Attribute attribute : detailImpl.getDisplayAttributes()) {
+						if (attribute.getId().equals(candidateEntry.getId()))
+							found = true;
+					}
+				}
+
+				if (ife instanceof SelectorImpl && ((SelectorImpl) ife).getEntity() != null) {
+					SelectorImpl selectorImpl = (SelectorImpl) ife;
+					
+					if (!selectorImpl.getEntity().getName().equals(entityName))
+						continue;
+					
+					for (String attributeId : selectorImpl.getAttributes().keySet()) {
+						if (attributeId.equals(candidateEntry.getId()))
+							found = true;
+					}
+				}
+
+				if (ife instanceof FormImpl && ((FormImpl) ife).getEntity() != null) {
+					FormImpl formImpl = (FormImpl) ife;
+					
+					if (!formImpl.getEntity().getName().equals(entityName))
+						continue;
+					
+					for (Field field : formImpl.getFields()) {
+
+						if (field instanceof FieldImpl && ((FieldImpl) field).getAttribute() != null) {
+							FieldImpl fieldImpl = (FieldImpl) field;
+							if (fieldImpl.getAttribute().getId().equals(candidateEntry.getId()))
+								found = true;
+						}
+
+						if (field instanceof SelectionFieldImpl
+								&& ((SelectionFieldImpl) field).getAttribute() != null) {
+							SelectionFieldImpl selectionFieldImpl = (SelectionFieldImpl) field;
+							if (selectionFieldImpl.getAttribute().getId().equals(candidateEntry.getId()))
+								found = true;
+						}
+
+						if (field instanceof MultipleSelectionFieldImpl
+								&& ((MultipleSelectionFieldImpl) field).getRelationshipRoleCondition() != null) {
+							MultipleSelectionFieldImpl multipleSelectionFieldImpl = (MultipleSelectionFieldImpl) field;
+							if (multipleSelectionFieldImpl.getRelationshipRoleCondition().getRelationshipRole1() != null
+									&& multipleSelectionFieldImpl.getRelationshipRoleCondition().getRelationshipRole1()
+											.getJoinColumn() != null
+									&& multipleSelectionFieldImpl.getRelationshipRoleCondition().getRelationshipRole1()
+											.getJoinColumn().getAttribute().equals(candidateEntry.getId()))
+								found = true;
+							else if (multipleSelectionFieldImpl.getRelationshipRoleCondition()
+									.getRelationshipRole2() != null
+									&& multipleSelectionFieldImpl.getRelationshipRoleCondition().getRelationshipRole2()
+											.getJoinColumn() != null
+									&& multipleSelectionFieldImpl.getRelationshipRoleCondition().getRelationshipRole2()
+											.getJoinColumn().getAttribute().equals(candidateEntry.getId()))
+								found = true;
+						}
+					}
+				}
+				
+				if (!found)
+					return false;
+
+			}
+
+		}
+		return aggregable;
+	}
 
 	/**
 	 * @param aggregateEntry
 	 * @param entries
-	 * @return true if aggregate has been already inserted in the entry list of the block
+	 * @return true if aggregate has been already inserted in the entry list of the
+	 *         block, even if single attributes are in grouped in different order
 	 */
 	private boolean aggregateHasBeenAlreadyAdded(Entry aggregateEntry, List<Entry> entries) {
 
@@ -618,12 +728,30 @@ public class NoAmServiceImpl implements NoAmService {
 		for (Entry entry : entries) {
 			if (entry.getId().equals(aggregateEntry.getId()))
 				found = true;
+			
+			//may already exist an aggregated entry with name of the single entry in a different order
+			if (!entry.equals(aggregateEntry) && entry.getId().length() == aggregateEntry.getId().length() && entry.getId().contains(" ")) {
+
+				int count=0;
+				String[] idsAggregatedAttributes = aggregateEntry.getId().split(" ") ;
+				String[] idsEntry = entry.getId().split(" ");
+				
+				if (idsEntry!=null && idsAggregatedAttributes != null && idsAggregatedAttributes.length == idsEntry.length) {
+				
+					for (String idAggregatedAttribute : idsAggregatedAttributes ) {
+						for (String idEntry : idsEntry) {
+							if (idAggregatedAttribute.equals(idEntry))
+								count++;
+								
+						}
+					}
+				if (count==idsEntry.length)
+					found = true;
+				}
+			}
 		}
 		return found;
 
 	}
-	
-	
-	
-	
+
 }

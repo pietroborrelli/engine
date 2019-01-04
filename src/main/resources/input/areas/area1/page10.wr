@@ -8,7 +8,7 @@
         <LinkParameter id="sv1#area1#page10#pwu10#ln30#par55" name="oid_Key Condition [oid]" source="data[].ent4#att3" target="sv1#area1#page10#enu6.ent4#att3"/>
       </Link>
     </PowerIndexUnit>
-    <EntryUnit id="sv1#area1#page10#enu6" name="Form" linkOrder="sv1#area1#page10#enu6#ln36 sv1#area1#page10#enu6#ln37" gr:x="15" gr:y="205" entity="ent4">
+    <EntryUnit id="sv1#area1#page10#enu6" name="Gearea" linkOrder="sv1#area1#page10#enu6#ln36 sv1#area1#page10#enu6#ln37" gr:x="15" gr:y="205" entity="ent4">
       <Comment xml:space="preserve">INPUT:
 -values of the selected smartmeter object.
 -list of the building that populate the select list. The preselected building is dinamically retrieved from the previous view component (see its data binding preselection)</Comment>

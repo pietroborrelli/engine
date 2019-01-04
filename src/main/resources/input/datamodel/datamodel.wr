@@ -64,11 +64,10 @@
     <Attribute id="ent3#att9" name="value" type="decimal" db:column="value" key="false"/>
     <Attribute id="ent3#att10" name="date" type="timestamp" db:column="date" key="false"/>
     <Attribute id="ent3#att23" name="error_explanation" type="string" db:column="error_explanation"/>
-    <Attribute id="ent3#att17" name="error_code" type="integer" db:column="error_code"/>
+    <Attribute id="ent3#att17" name="error_code" type="string" db:column="error_code"/>
     <Attribute id="ent3#att6" name="validity" type="boolean" db:column="validity"/>
   </Entity>
-  <db:Database id="db1" name="encompass_webratio" type="MySQL" url="jdbc:mysql://127.0.0.1:3306/encompass_webratio" cryptedPassword="true" password="cm9vdA==" username="root">
-  </db:Database>
+  <db:Database id="db1" name="encompass_webratio" type="MySQL" url="jdbc:mysql://127.0.0.1:3306/encompass_webratio" cryptedPassword="true" password="cm9vdA==" username="root"/>
   <Entity gr:x="310" gr:y="435" id="ent4" name="GeoArea" duration="persistent" attributeOrder="ent4#att3 ent4#att12 ent4#att13 ent4#att14 ent4#att15 ent4#att16" db:database="db1" db:table="geoarea">
     <Attribute id="ent4#att3" key="true" name="oid" type="integer" db:column="oid"/>
     <Attribute id="ent4#att12" name="country" type="string" db:column="country"/>
