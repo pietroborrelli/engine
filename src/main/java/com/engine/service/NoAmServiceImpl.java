@@ -67,6 +67,9 @@ public class NoAmServiceImpl implements NoAmService {
 					|| interactionFlowElement.getOutInteractionFlows().isEmpty())
 				collection.setName(interactionFlowElement.getName());
 		}
+		//means there is a leaf pointing to an action
+		if (collection.getName()==null)
+			collection.setName(path.getInteractionFlowElements().get(path.getInteractionFlowElements().size()-1).getName());;
 		collection.setBlock(block);
 
 		return collection;
