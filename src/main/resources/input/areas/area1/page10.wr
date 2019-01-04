@@ -1,0 +1,265 @@
+<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv1#area1#page10" name="GeoArea" landmark="true" gr:x="1095" gr:y="780">
+  <ContentUnits>
+    <MultiMessageUnit id="sv1#area1#page10#mssu8" name="GeoArea Page" gr:x="0" gr:y="0">
+      <Message xml:space="preserve">CRUD operations on Geographical Area</Message>
+    </MultiMessageUnit>
+    <PowerIndexUnit id="sv1#area1#page10#pwu10" name="List" linkOrder="sv1#area1#page10#pwu10#ln30" gr:x="25" gr:y="75" entity="ent4" sortable="true" checkable="false" useCountQuery="false" displayAttributes="ent4#att3 ent4#att12 ent4#att13 ent4#att14 ent4#att15 ent4#att16">
+      <Link id="sv1#area1#page10#pwu10#ln30" name="Edit" to="sv1#area1#page10#enu6" type="normal" validate="true">
+        <LinkParameter id="sv1#area1#page10#pwu10#ln30#par55" name="oid_Key Condition [oid]" source="data[].ent4#att3" target="sv1#area1#page10#enu6.ent4#att3"/>
+      </Link>
+    </PowerIndexUnit>
+    <EntryUnit id="sv1#area1#page10#enu6" name="Form" linkOrder="sv1#area1#page10#enu6#ln36 sv1#area1#page10#enu6#ln37" gr:x="15" gr:y="205" entity="ent4">
+      <Comment xml:space="preserve">INPUT:
+-values of the selected smartmeter object.
+-list of the building that populate the select list. The preselected building is dinamically retrieved from the previous view component (see its data binding preselection)</Comment>
+      <Field id="sv1#area1#page10#enu6#fld18" name="oid" type="integer" modifiable="false" attribute="ent4#att3"/>
+      <Field id="sv1#area1#page10#enu6#fld19" name="country" type="string" modifiable="true" attribute="ent4#att12"/>
+      <Field id="sv1#area1#page10#enu6#fld20" name="district" type="string" modifiable="true" attribute="ent4#att13"/>
+      <Field id="sv1#area1#page10#enu6#fld21" name="name" type="string" modifiable="true" attribute="ent4#att14"/>
+      <Field id="sv1#area1#page10#enu6#fld22" name="longitude" type="float" modifiable="true" attribute="ent4#att15"/>
+      <Field id="sv1#area1#page10#enu6#fld23" name="latitude" type="string" modifiable="true" attribute="ent4#att16"/>
+      <Link id="sv1#area1#page10#enu6#ln36" name="Save" to="sv1#area1#miu9" type="normal" validate="true">
+        <LinkParameter id="sv1#area1#page10#enu6#ln36#par63" name="Key [oid]_GeoArea Key" source="key.ent4#att3" target="sv1#area1#miu9.mov1#opm7#icu9#icp10"/>
+        <LinkParameter id="sv1#area1#page10#enu6#ln36#par64" name="GeoArea Object_GeoArea Object" source="entityBean" target="sv1#area1#miu9.mov1#opm7#icu9#icp11"/>
+      </Link>
+      <Link id="sv1#area1#page10#enu6#ln37" name="Delete" to="sv1#area1#miu10" type="normal" validate="true">
+        <LinkParameter id="sv1#area1#page10#enu6#ln37#par65" name="Key [oid]_GeoArea Key" source="key.ent4#att3" target="sv1#area1#miu10.mov1#opm8#icu10#icp12"/>
+      </Link>
+    </EntryUnit>
+  </ContentUnits>
+  <layout:Grid containerType="grid">
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv1#area1#page10#mssu8"/>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv1#area1#page10#pwu10">
+          <layout:Link link="sv1#area1#page10#pwu10#ln30"/>
+          <layout:Attribute attribute="ent4#att3"/>
+          <layout:Attribute attribute="ent4#att12"/>
+          <layout:Attribute attribute="ent4#att13"/>
+          <layout:Attribute attribute="ent4#att14"/>
+          <layout:Attribute attribute="ent4#att15"/>
+          <layout:Attribute attribute="ent4#att16"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv1#area1#page10#enu6">
+          <layout:Field field="sv1#area1#page10#enu6#fld18"/>
+          <layout:Field field="sv1#area1#page10#enu6#fld19"/>
+          <layout:Field field="sv1#area1#page10#enu6#fld20"/>
+          <layout:Field field="sv1#area1#page10#enu6#fld21"/>
+          <layout:Field field="sv1#area1#page10#enu6#fld22"/>
+          <layout:Field field="sv1#area1#page10#enu6#fld23"/>
+          <layout:Link link="sv1#area1#page10#enu6#ln36"/>
+          <layout:Link link="sv1#area1#page10#enu6#ln37"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+  </layout:Grid>
+</Page>
