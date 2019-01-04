@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -121,6 +120,9 @@ public class NoAmServiceImpl implements NoAmService {
 		return block;
 	}
 
+	
+	
+	
 	/**
 	 * @param sortKeys
 	 * @return new sort keys without duplicate sort keys that differ only for
@@ -185,10 +187,11 @@ public class NoAmServiceImpl implements NoAmService {
 				for (Attribute sortAttribute : ((ListImpl) interactionFlowElement).getSortAttributes()) {
 					// if has been specified an ordering over the partition keys or attributes
 					// conditions
-					if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
+					
+					//if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
 						SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
 						sortKeys.add(sortKey);
-					}
+					//}
 				}
 			}
 			// get attributes of attributes conditions if already in the group of the
@@ -202,12 +205,12 @@ public class NoAmServiceImpl implements NoAmService {
 						if (attributesCondition.getAttributes() != null) {
 							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
-								if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
-										attributesCondition)) {
+								//if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+								//		attributesCondition)) {
 									SortKey sortKey = extractSortKeyFromDataModel(attributesCondition,
 											wrapperAttribute);
 									sortKeys.add(sortKey);
-								}
+									//}
 							}
 						}
 					}
@@ -223,10 +226,11 @@ public class NoAmServiceImpl implements NoAmService {
 				for (Attribute sortAttribute : ((SelectorImpl) interactionFlowElement).getSortAttributes()) {
 					// if has been specified an ordering over the partition keys or attributes
 					// conditions
-					if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
+					
+					//if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
 						SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
 						sortKeys.add(sortKey);
-					}
+					//}
 				}
 			}
 			// get attributes of attributes conditions if already in the group of the
@@ -240,12 +244,12 @@ public class NoAmServiceImpl implements NoAmService {
 						if (attributesCondition.getAttributes() != null) {
 							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
-								if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
-										attributesCondition)) {
+								//	if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+								//			attributesCondition)) {
 									SortKey sortKey = extractSortKeyFromDataModel(attributesCondition,
 											wrapperAttribute);
 									sortKeys.add(sortKey);
-								}
+									//	}
 							}
 						}
 					}
@@ -266,11 +270,11 @@ public class NoAmServiceImpl implements NoAmService {
 						AttributesCondition attributesCondition = (AttributesCondition) condition;
 						for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
 
-							if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
-									attributesCondition)) {
+							//		if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
+							//			attributesCondition)) {
 								SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
 								sortKeys.add(sortKey);
-							}
+								//	}
 						}
 					}
 				}
@@ -566,7 +570,7 @@ public class NoAmServiceImpl implements NoAmService {
 
 						for (Entry entry : e.getValue()) {
 							for (Entry entry2 : e2.getValue()) {
-								if (entry.getId().equals(entry2.getId()) && !aggregateHasBeenAlreadyAdded(entry,aggregateEntries))
+								if (entry.getId().equals(entry2.getId()) && !aggregateHasBeenAlreadyAdded(entry,aggregateEntries) && !entry.isAKey(collection.getBlock().getKey()))
 									aggregateEntries.add(entry);
 							}
 						}
@@ -591,7 +595,7 @@ public class NoAmServiceImpl implements NoAmService {
 				}
 
 			}
-//			collection.getBlock().getEntries().stream().distinct().collect(Collectors.toList());
+			collection.getBlock().removeDuplicatesEntries();
 		}
 
 		return collections;
@@ -615,4 +619,8 @@ public class NoAmServiceImpl implements NoAmService {
 		return found;
 
 	}
+	
+	
+	
+	
 }

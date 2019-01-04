@@ -98,7 +98,7 @@ public class EngineApplication implements CommandLineRunner {
 		for (Area area : areas) {
 			ArrayList<Document> documents = (ArrayList<Document>) pageService.loadPages(inputPathAreas, area.getName());
 			if (documents == null)
-				break;
+				continue;
 
 			pages.clear();
 			for (Document document : documents) {
@@ -106,8 +106,6 @@ public class EngineApplication implements CommandLineRunner {
 				frontEndInspector.setDocument(document);
 				Page page = frontEndInspector.elaborateDocument();
 
-				// List<ViewComponent> leavesViewComponents =
-				// frontEndInspector.findLeavesViewComponents();
 				List<InteractionFlowElement> viewComponents = frontEndInspector.findViewComponents();
 				List<Path> paths = frontEndInspector.extractPaths(viewComponents);
 				List<Collection> collections = noAmService.computeAbstractModelsByPaths(paths);

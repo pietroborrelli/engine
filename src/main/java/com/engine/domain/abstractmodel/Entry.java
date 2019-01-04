@@ -139,4 +139,24 @@ public class Entry {
 		this.interactionFlowElementName = interactionFlowElementName;
 	}
 
+	/**
+	 * @param primary key
+	 * @return true if entry that should be aggregated is part of the partitionKey or sort key, otherwise false
+	 * 		   an entry that is a partition/sort key cannot be aggregated.
+	 */
+	public Boolean isAKey(PrimaryKey primaryKey) {
+		Boolean found = false;
+		for (PartitionKey partitionKey : primaryKey.getPartitionKeys()) {
+			if (partitionKey.getId().equals(this.getId()))
+				found = true;
+		}
+		
+		for (SortKey sortKey : primaryKey.getSortKeys()) {
+			if (sortKey.getId().equals(this.getId()))
+				found = true;
+		}
+		
+		return found;
+	}
+	
 }

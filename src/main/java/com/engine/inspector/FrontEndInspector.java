@@ -97,7 +97,7 @@ public class FrontEndInspector {
 		System.out.println("----------- CALCOLO PERCORSI -------------");
 
 		for (InteractionFlowElement nodeViewComponent : nodeViewComponents) {
-			countPath=1;
+			
 			getStack().push(nodeViewComponent);
 			traverse(nodeViewComponent);
 			getStack().pop();

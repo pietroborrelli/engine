@@ -1,5 +1,6 @@
 package com.engine.domain.abstractmodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,6 +39,25 @@ public class Block {
 		return "Block [key=" + key + ", entries=" + entries + "]";
 	}
 	
+	/**
+	 * @param entries
+	 * @return set a new list of entries without duplicates(from the optimization reading access path process)
+	 */
+	public void removeDuplicatesEntries() {
+
+		List<Entry> tempEntries = new ArrayList<Entry>(entries);
+
+		for (int i = 0; i < tempEntries.size() - 1; i++) {
+
+			if (tempEntries.get(i).getId().equals(tempEntries.get(i + 1).getId())) {
+				
+				getEntries().remove(tempEntries.get(i + 1));
+			}
+
+		}
+
+		
+	}
 
 	
 }
