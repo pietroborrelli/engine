@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.engine.domain.abstractmodel.Entry;
 import com.engine.domain.enumeration.Ordering;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
@@ -44,7 +45,7 @@ public class FrontEndInspector {
 	private Context context;
 	private Document document;
 	private Stack<InteractionFlowElement> stack;
-	
+
 	/*
 	 * support lists for traversing
 	 */
@@ -82,7 +83,7 @@ public class FrontEndInspector {
 
 		this.setViewComponents(viewComponents);
 		this.setPaths(new ArrayList<Path>());
-		
+
 		List<InteractionFlowElement> nodeViewComponents = new ArrayList<InteractionFlowElement>();
 		viewComponents.stream().forEach(vc -> {
 			if (vc.getIsRoot())
@@ -93,35 +94,32 @@ public class FrontEndInspector {
 			System.err.println("Non ho trovato view component ROOT!");
 			// return null;
 		}
-		
+
 		System.out.println("----------- CALCOLO PERCORSI -------------");
 
 		for (InteractionFlowElement nodeViewComponent : nodeViewComponents) {
-			
+
 			getStack().push(nodeViewComponent);
 			traverse(nodeViewComponent);
 			getStack().pop();
 		}
-		
+
 		return removeDuplicates(getPaths());
-		
-		
+
 	}
 
 	private List<Path> removeDuplicates(List<Path> paths2) {
-		
-		Boolean equals = true;
-		
-		for (Path x : getPaths()) {
-			
-			for (Path x2 : paths2) {
-			
-				if (!x.equals(x2))
-					equals=false;
-			
+
+		for (int i = 0; i < paths2.size() - 1; i++) {
+
+			if (paths2.get(i).equals(paths2.get(i + 1))) {
+
+				getPaths().remove(paths2.get(i + 1));
 			}
+
 		}
-		return paths2;
+
+		return getPaths();
 	}
 
 	/**
@@ -132,7 +130,7 @@ public class FrontEndInspector {
 	 */
 	private void traverse(InteractionFlowElement interactionFlowElement) {
 		System.out.println(interactionFlowElement.getId());
-		if (interactionFlowElement.getOutInteractionFlows().isEmpty() ) { // sono arrivato al nodo foglia
+		if (interactionFlowElement.getOutInteractionFlows().isEmpty()) { // sono arrivato al nodo foglia
 			printPath(getStack());
 			savePath(getStack());
 			return;
@@ -142,7 +140,8 @@ public class FrontEndInspector {
 		// in application domain
 		for (InteractionFlow outInteractionFlow : interactionFlowElement.getOutInteractionFlows()) {
 
-			// condition added for actions which are temporary null.. to be removed when actions are implemented
+			// condition added for actions which are temporary null.. to be removed when
+			// actions are implemented
 			if (outInteractionFlow.getTargetInteractionFlowElement() != null) {
 
 				getStack().push(getViewComponents().stream()
@@ -152,13 +151,14 @@ public class FrontEndInspector {
 				traverse(getViewComponents().stream()
 						.filter(vc -> vc.getId().equals(outInteractionFlow.getTargetInteractionFlowElement().getId()))
 						.collect(Collectors.toList()).get(0));
-				
-				// condition added for actions which are temporary null.. to be removed when actions are implemented
-				if (outInteractionFlow.getTargetInteractionFlowElement() != null) 
+
+				// condition added for actions which are temporary null.. to be removed when
+				// actions are implemented
+				if (outInteractionFlow.getTargetInteractionFlowElement() != null)
 					getStack().pop();
 
-			}else { //handled elements != view components
-				//may produce duplicate paths according with the outgoing arcs
+			} else { // handled elements != view components
+				// may produce duplicate paths according with the outgoing arcs
 				printPath(getStack());
 				savePath(getStack());
 			}
@@ -167,15 +167,15 @@ public class FrontEndInspector {
 	}
 
 	private void savePath(Stack<InteractionFlowElement> stackTemp) {
-		
-		List <InteractionFlowElement> interactionFlowElements = new ArrayList<InteractionFlowElement>();
-		
+
+		List<InteractionFlowElement> interactionFlowElements = new ArrayList<InteractionFlowElement>();
+
 		stackTemp.forEach(k -> {
 			interactionFlowElements.add(k);
 		});
-		
-		getPaths().add(new Path(countPath,interactionFlowElements));
-		
+
+		getPaths().add(new Path(countPath, interactionFlowElements));
+
 	}
 
 	private void printPath(Stack<InteractionFlowElement> stackTemp) {
@@ -277,10 +277,13 @@ public class FrontEndInspector {
 
 				Attribute attributeApplication = new Attribute();
 
-				attributeApplication.setEntity(dataModelUtil.findEntity(wrapperAttribute.getId().substring(0, wrapperAttribute.getId().lastIndexOf("#"))));
+				attributeApplication.setEntity(dataModelUtil
+						.findEntity(wrapperAttribute.getId().substring(0, wrapperAttribute.getId().lastIndexOf("#"))));
 				attributeApplication.setId(wrapperAttribute.getId());
-				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), wrapperAttribute.getId()));
-				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), wrapperAttribute.getId()));
+				attributeApplication.setName(
+						dataModelUtil.findAttributeName(attributeApplication.getEntity(), wrapperAttribute.getId()));
+				attributeApplication.setType(
+						dataModelUtil.findAttributeType(attributeApplication.getEntity(), wrapperAttribute.getId()));
 				attributeApplication.setKey(true);
 				// candidate to be sort key of NOAM
 				if (attributesCondition.getPredicate().equals("lteq")
@@ -416,10 +419,13 @@ public class FrontEndInspector {
 
 				Attribute attributeApplication = new Attribute();
 
-				attributeApplication.setEntity(dataModelUtil.findEntity(wrapperAttribute.getId().substring(0, wrapperAttribute.getId().lastIndexOf("#"))));
+				attributeApplication.setEntity(dataModelUtil
+						.findEntity(wrapperAttribute.getId().substring(0, wrapperAttribute.getId().lastIndexOf("#"))));
 				attributeApplication.setId(wrapperAttribute.getId());
-				attributeApplication.setName(dataModelUtil.findAttributeName(attributeApplication.getEntity(), wrapperAttribute.getId()));
-				attributeApplication.setType(dataModelUtil.findAttributeType(attributeApplication.getEntity(), wrapperAttribute.getId()));
+				attributeApplication.setName(
+						dataModelUtil.findAttributeName(attributeApplication.getEntity(), wrapperAttribute.getId()));
+				attributeApplication.setType(
+						dataModelUtil.findAttributeType(attributeApplication.getEntity(), wrapperAttribute.getId()));
 				attributeApplication.setKey(true);
 				// candidate to be sort key of NOAM
 				if (attributesCondition.getPredicate().equals("lteq")

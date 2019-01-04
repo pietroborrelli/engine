@@ -30,6 +30,31 @@ public class Path {
 		this.interactionFlowElements = interactionFlowElements;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((interactionFlowElements == null) ? 0 : interactionFlowElements.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Path other = (Path) obj;
+		if (interactionFlowElements == null) {
+			if (other.interactionFlowElements != null)
+				return false;
+		} else if (!interactionFlowElements.equals(other.interactionFlowElements))
+			return false;
+		return true;
+	}
+
 
 
 	
