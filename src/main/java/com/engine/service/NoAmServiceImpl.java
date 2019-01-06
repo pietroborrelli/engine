@@ -32,9 +32,13 @@ import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewco
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.MultipleSelectionFieldImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.SelectionFieldImpl;
 import com.engine.domain.wrapper.Path;
+import com.engine.inspector.DataModelUtil;
+import com.engine.mapper.datamodel.DataModel.Relationship;
 
 @Service
 public class NoAmServiceImpl implements NoAmService {
+
+	public DataModelUtil dataModelUtil;
 
 	@Override
 	public List<Collection> computeAbstractModelsByPaths(List<Path> paths) {
@@ -115,6 +119,10 @@ public class NoAmServiceImpl implements NoAmService {
 		// update partition key list by removing duplicates from sort keys
 		partitionKeys = removeDuplicatesFromPartitionKeys(partitionKeys, sortKeys);
 
+		// update partition key list by removing partition keys related to "weak"
+		// entities (handled 1:N case)
+		partitionKeys = removeWeakPartitionKeys(partitionKeys);
+
 		// update sort keys by removing duplicates keys with different ordering
 		sortKeys = removeDuplicatesFromSortKeys(sortKeys);
 
@@ -125,6 +133,56 @@ public class NoAmServiceImpl implements NoAmService {
 		block.setEntries(entries);
 
 		return block;
+	}
+
+	/**
+	 * @param partitionKeys
+	 * @return new partition keys list without 'weak' keys. In 1:N relationships,
+	 *         the entity with cardinality 1 is the owner/parent of the
+	 *         relationship. It's discarded the one with N cardinality (note that in
+	 *         web ratio data model document, logic is inverted). In 1:1 not relevant:
+	 *         partition keys are not discarded and the entries are flat. In N:M
+	 *         cannot be understood which is the owner of the relationship
+	 */
+	private List<PartitionKey> removeWeakPartitionKeys(List<PartitionKey> partitionKeys) {
+
+		// not enough keys to compare, returns
+		if (partitionKeys.size() < 2)
+			return partitionKeys;
+
+		List<PartitionKey> tempPartitionKeys = new ArrayList<PartitionKey>(partitionKeys);
+		List<PartitionKey> updatedPartitionKeys = new ArrayList<PartitionKey>(partitionKeys);
+
+		for (PartitionKey partitionKey : partitionKeys) {
+			for (PartitionKey tempPartitionKey : tempPartitionKeys) {
+
+				// not comparing same attribute, retrieved entity source and target != null ,
+				// retrieved relationship != null
+				if (!partitionKey.getId().equals(tempPartitionKey.getId())
+						&& dataModelUtil.findEntityByName(partitionKey.getEntity()) != null
+						&& dataModelUtil.findEntityByName(tempPartitionKey.getEntity()) != null
+						&& dataModelUtil.findRelationshipBySourceAndTarget(
+								dataModelUtil.findEntityByName(partitionKey.getEntity()).getId(),
+								dataModelUtil.findEntityByName(tempPartitionKey.getEntity()).getId()) != null) {
+
+					Relationship relationship = dataModelUtil.findRelationshipBySourceAndTarget(
+							dataModelUtil.findEntityByName(partitionKey.getEntity()).getId(),
+							dataModelUtil.findEntityByName(tempPartitionKey.getEntity()).getId());
+
+					if ((relationship.getRelationshipRole1().getMaxCard().equals("N") && relationship
+							.getRelationshipRole1().getJoinColumn().getAttribute().equals(partitionKey.getId()))
+							|| (relationship.getRelationshipRole2().getMaxCard().equals("N")
+									&& relationship.getRelationshipRole2().getJoinColumn().getAttribute()
+											.equals(partitionKey.getId())))
+						// if found , removed the partition key which participates to the relationship
+						updatedPartitionKeys.remove(tempPartitionKey);
+
+				}
+
+			}
+		}
+
+		return updatedPartitionKeys;
 	}
 
 	/**
@@ -615,7 +673,8 @@ public class NoAmServiceImpl implements NoAmService {
 	/**
 	 * @param candidateAggregateEntries
 	 * @param path
-	 * @return true if the aggregate entries are present in all view components entity based
+	 * @return true if the aggregate entries are present in all view components
+	 *         entity based
 	 */
 	private boolean checkPresence(List<Entry> candidateAggregateEntries, Path path) {
 		boolean aggregable = true;
@@ -630,10 +689,10 @@ public class NoAmServiceImpl implements NoAmService {
 
 				if (ife instanceof ListImpl && ((ListImpl) ife).getEntity() != null) {
 					ListImpl listImpl = (ListImpl) ife;
-					
+
 					if (!listImpl.getEntity().getName().equals(entityName))
 						continue;
-					
+
 					for (Attribute attribute : listImpl.getDisplayAttributes()) {
 						if (attribute.getId().equals(candidateEntry.getId()))
 							found = true;
@@ -643,10 +702,10 @@ public class NoAmServiceImpl implements NoAmService {
 
 				if (ife instanceof DetailImpl && ((DetailImpl) ife).getEntity() != null) {
 					DetailImpl detailImpl = (DetailImpl) ife;
-					
+
 					if (!detailImpl.getEntity().getName().equals(entityName))
 						continue;
-					
+
 					for (Attribute attribute : detailImpl.getDisplayAttributes()) {
 						if (attribute.getId().equals(candidateEntry.getId()))
 							found = true;
@@ -655,10 +714,10 @@ public class NoAmServiceImpl implements NoAmService {
 
 				if (ife instanceof SelectorImpl && ((SelectorImpl) ife).getEntity() != null) {
 					SelectorImpl selectorImpl = (SelectorImpl) ife;
-					
+
 					if (!selectorImpl.getEntity().getName().equals(entityName))
 						continue;
-					
+
 					for (String attributeId : selectorImpl.getAttributes().keySet()) {
 						if (attributeId.equals(candidateEntry.getId()))
 							found = true;
@@ -667,10 +726,10 @@ public class NoAmServiceImpl implements NoAmService {
 
 				if (ife instanceof FormImpl && ((FormImpl) ife).getEntity() != null) {
 					FormImpl formImpl = (FormImpl) ife;
-					
+
 					if (!formImpl.getEntity().getName().equals(entityName))
 						continue;
-					
+
 					for (Field field : formImpl.getFields()) {
 
 						if (field instanceof FieldImpl && ((FieldImpl) field).getAttribute() != null) {
@@ -705,7 +764,7 @@ public class NoAmServiceImpl implements NoAmService {
 						}
 					}
 				}
-				
+
 				if (!found)
 					return false;
 
@@ -728,30 +787,41 @@ public class NoAmServiceImpl implements NoAmService {
 		for (Entry entry : entries) {
 			if (entry.getId().equals(aggregateEntry.getId()))
 				found = true;
-			
-			//may already exist an aggregated entry with name of the single entry in a different order
-			if (!entry.equals(aggregateEntry) && entry.getId().length() == aggregateEntry.getId().length() && entry.getId().contains(" ")) {
 
-				int count=0;
-				String[] idsAggregatedAttributes = aggregateEntry.getId().split(" ") ;
+			// may already exist an aggregated entry with name of the single entry in a
+			// different order
+			if (!entry.equals(aggregateEntry) && entry.getId().length() == aggregateEntry.getId().length()
+					&& entry.getId().contains(" ")) {
+
+				int count = 0;
+				String[] idsAggregatedAttributes = aggregateEntry.getId().split(" ");
 				String[] idsEntry = entry.getId().split(" ");
-				
-				if (idsEntry!=null && idsAggregatedAttributes != null && idsAggregatedAttributes.length == idsEntry.length) {
-				
-					for (String idAggregatedAttribute : idsAggregatedAttributes ) {
+
+				if (idsEntry != null && idsAggregatedAttributes != null
+						&& idsAggregatedAttributes.length == idsEntry.length) {
+
+					for (String idAggregatedAttribute : idsAggregatedAttributes) {
 						for (String idEntry : idsEntry) {
 							if (idAggregatedAttribute.equals(idEntry))
 								count++;
-								
+
 						}
 					}
-				if (count==idsEntry.length)
-					found = true;
+					if (count == idsEntry.length)
+						found = true;
 				}
 			}
 		}
 		return found;
 
+	}
+
+	public DataModelUtil getDataModelUtil() {
+		return dataModelUtil;
+	}
+
+	public void setDataModelUtil(DataModelUtil dataModelUtil) {
+		this.dataModelUtil = dataModelUtil;
 	}
 
 }

@@ -6,6 +6,7 @@ import com.engine.domain.abstractmodel.Block;
 import com.engine.domain.abstractmodel.Collection;
 import com.engine.domain.abstractmodel.Entry;
 import com.engine.domain.wrapper.Path;
+import com.engine.inspector.DataModelUtil;
 
 public interface NoAmService {
 
@@ -14,4 +15,5 @@ public interface NoAmService {
 	List<Entry> createEntries (Path path);
 	Collection createCollection(Path path, Block block, List<Entry> entries);
 	List<Collection> optimizeReadingAccessPaths(List<Collection> collections);
+	void setDataModelUtil(DataModelUtil dataModelUtil);
 }

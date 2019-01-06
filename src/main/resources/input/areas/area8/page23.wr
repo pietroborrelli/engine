@@ -1,36 +1,40 @@
-<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv1#area1#page10" name="GeoArea" landmark="true" gr:x="1095" gr:y="780">
+<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv2#area8#page23" name="Building" landmark="true" gr:x="0" gr:y="225">
   <ContentUnits>
-    <MultiMessageUnit id="sv1#area1#page10#mssu8" name="GeoArea Page" gr:x="0" gr:y="0">
-      <Message xml:space="preserve">CRUD operations on Geographical Area</Message>
+    <MultiMessageUnit id="sv2#area8#page23#mssu11" name="Building Page" gr:x="70" gr:y="0">
+      <Message xml:space="preserve">CRUD operations on Building</Message>
     </MultiMessageUnit>
-    <PowerIndexUnit id="sv1#area1#page10#pwu10" name="List" linkOrder="sv1#area1#page10#pwu10#ln30" gr:x="25" gr:y="75" entity="ent4" sortable="true" checkable="false" useCountQuery="false" displayAttributes="ent4#att3 ent4#att12 ent4#att13 ent4#att14 ent4#att15 ent4#att16">
-      <Link id="sv1#area1#page10#pwu10#ln30" name="Edit" to="sv1#area1#page10#enu6" type="normal" validate="true">
-        <LinkParameter id="sv1#area1#page10#pwu10#ln30#par55" name="oid_Key Condition [oid]" source="data[].ent4#att3" target="sv1#area1#page10#enu6.ent4#att3"/>
+    <SelectorUnit id="sv2#area8#page23#seu32" name="SelectorGeoArea" gr:x="0" gr:y="75" entity="ent4">
+      <Link id="sv2#area8#page23#seu32#ln120" name="Flow8" to="sv2#area8#page23#enu21" type="transport" validate="true">
+        <LinkParameter id="sv2#area8#page23#seu32#ln120#par196" name="district|name_BuildingToGeoArea [label]" source="ent4#att13Array" target="sv2#area8#page23#enu21#sfld28_label"/>
+        <LinkParameter id="sv2#area8#page23#seu32#ln120#par197" name="oid_BuildingToGeoArea [output]" source="ent4#att3Array" target="sv2#area8#page23#enu21#sfld28_output"/>
+      </Link>
+    </SelectorUnit>
+    <PowerIndexUnit id="sv2#area8#page23#pwu37" name="List" linkOrder="sv2#area8#page23#pwu37#ln121" gr:x="175" gr:y="75" entity="ent2" sortable="true" checkable="false" useCountQuery="false" displayAttributes="ent2#att4 ent2#att5 ent2#att11">
+      <Link id="sv2#area8#page23#pwu37#ln121" name="Edit" to="sv2#area8#page23#enu21" type="normal" validate="true">
+        <LinkParameter id="sv2#area8#page23#pwu37#ln121#par199" name="oid_Key Condition [oid]" source="data[].ent2#att4" target="sv2#area8#page23#enu21.ent2#att4"/>
       </Link>
     </PowerIndexUnit>
-    <EntryUnit id="sv1#area1#page10#enu6" name="Gearea" linkOrder="sv1#area1#page10#enu6#ln36 sv1#area1#page10#enu6#ln37" gr:x="15" gr:y="205" entity="ent4">
+    <EntryUnit id="sv2#area8#page23#enu21" name="Buildings" linkOrder="sv2#area8#page23#enu21#ln122 sv2#area8#page23#enu21#ln123" gr:x="85" gr:y="205" entity="ent2" fieldOrder="sv2#area8#page23#enu21#fld87 sv2#area8#page23#enu21#fld88 sv2#area8#page23#enu21#fld89 sv2#area8#page23#enu21#sfld28">
       <Comment xml:space="preserve">INPUT:
 -values of the selected smartmeter object.
 -list of the building that populate the select list. The preselected building is dinamically retrieved from the previous view component (see its data binding preselection)</Comment>
-      <Field id="sv1#area1#page10#enu6#fld18" name="oid" type="integer" modifiable="false" attribute="ent4#att3"/>
-      <Field id="sv1#area1#page10#enu6#fld19" name="country" type="string" modifiable="true" attribute="ent4#att12"/>
-      <Field id="sv1#area1#page10#enu6#fld20" name="district" type="string" modifiable="true" attribute="ent4#att13"/>
-      <Field id="sv1#area1#page10#enu6#fld21" name="name" type="string" modifiable="true" attribute="ent4#att14"/>
-      <Field id="sv1#area1#page10#enu6#fld22" name="longitude" type="float" modifiable="true" attribute="ent4#att15"/>
-      <Field id="sv1#area1#page10#enu6#fld23" name="latitude" type="string" modifiable="true" attribute="ent4#att16"/>
-      <Link id="sv1#area1#page10#enu6#ln36" name="Save" to="sv1#area1#miu9" type="normal" validate="true">
-        <LinkParameter id="sv1#area1#page10#enu6#ln36#par63" name="Key [oid]_GeoArea Key" source="key.ent4#att3" target="sv1#area1#miu9.mov1#opm7#icu9#icp10"/>
-        <LinkParameter id="sv1#area1#page10#enu6#ln36#par64" name="GeoArea Object_GeoArea Object" source="entityBean" target="sv1#area1#miu9.mov1#opm7#icu9#icp11"/>
+      <Field id="sv2#area8#page23#enu21#fld87" name="oid" type="integer" modifiable="false" attribute="ent2#att4"/>
+      <Field id="sv2#area8#page23#enu21#fld88" name="Address" type="string" modifiable="true" attribute="ent2#att5"/>
+      <Field id="sv2#area8#page23#enu21#fld89" name="Construction year" type="integer" modifiable="true" attribute="ent2#att11"/>
+      <SelectionField id="sv2#area8#page23#enu21#sfld28" name="District" type="string" role="rel3#role6"/>
+      <Link id="sv2#area8#page23#enu21#ln122" name="Save" to="sv2#area8#miu15" type="normal" validate="true">
+        <LinkParameter id="sv2#area8#page23#enu21#ln122#par200" name="Key [oid]_Building Key" source="key.ent2#att4" target="sv2#area8#miu15.mov1#opm5#icu7#icp7"/>
+        <LinkParameter id="sv2#area8#page23#enu21#ln122#par201" name="Building Object_Building Object" source="entityBean" target="sv2#area8#miu15.mov1#opm5#icu7#icp8"/>
       </Link>
-      <Link id="sv1#area1#page10#enu6#ln37" name="Delete" to="sv1#area1#miu10" type="normal" validate="true">
-        <LinkParameter id="sv1#area1#page10#enu6#ln37#par65" name="Key [oid]_GeoArea Key" source="key.ent4#att3" target="sv1#area1#miu10.mov1#opm8#icu10#icp12"/>
+      <Link id="sv2#area8#page23#enu21#ln123" name="Delete" to="sv2#area8#miu16" type="normal" validate="true" gr:bendpoints="-55,90,-65,-90">
+        <LinkParameter id="sv2#area8#page23#enu21#ln123#par202" name="Key [oid]_Building Key" source="key.ent2#att4" target="sv2#area8#miu16.mov1#opm6#icu8#icp9"/>
       </Link>
     </EntryUnit>
   </ContentUnits>
   <layout:Grid containerType="grid">
     <layout:Row>
       <layout:Cell colspan="12">
-        <layout:Unit unitId="sv1#area1#page10#mssu8"/>
+        <layout:Unit unitId="sv2#area8#page23#mssu11"/>
       </layout:Cell>
       <layout:Cell/>
       <layout:Cell/>
@@ -214,14 +218,11 @@
     </layout:Row>
     <layout:Row>
       <layout:Cell colspan="12">
-        <layout:Unit unitId="sv1#area1#page10#pwu10">
-          <layout:Link link="sv1#area1#page10#pwu10#ln30"/>
-          <layout:Attribute attribute="ent4#att3"/>
-          <layout:Attribute attribute="ent4#att12"/>
-          <layout:Attribute attribute="ent4#att13"/>
-          <layout:Attribute attribute="ent4#att14"/>
-          <layout:Attribute attribute="ent4#att15"/>
-          <layout:Attribute attribute="ent4#att16"/>
+        <layout:Unit unitId="sv2#area8#page23#pwu37">
+          <layout:Link link="sv2#area8#page23#pwu37#ln121"/>
+          <layout:Attribute attribute="ent2#att4"/>
+          <layout:Attribute attribute="ent2#att5"/>
+          <layout:Attribute attribute="ent2#att11"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>
@@ -238,15 +239,13 @@
     </layout:Row>
     <layout:Row>
       <layout:Cell colspan="12">
-        <layout:Unit unitId="sv1#area1#page10#enu6">
-          <layout:Field field="sv1#area1#page10#enu6#fld18"/>
-          <layout:Field field="sv1#area1#page10#enu6#fld19"/>
-          <layout:Field field="sv1#area1#page10#enu6#fld20"/>
-          <layout:Field field="sv1#area1#page10#enu6#fld21"/>
-          <layout:Field field="sv1#area1#page10#enu6#fld22"/>
-          <layout:Field field="sv1#area1#page10#enu6#fld23"/>
-          <layout:Link link="sv1#area1#page10#enu6#ln36"/>
-          <layout:Link link="sv1#area1#page10#enu6#ln37"/>
+        <layout:Unit unitId="sv2#area8#page23#enu21">
+          <layout:Field field="sv2#area8#page23#enu21#fld87"/>
+          <layout:Field field="sv2#area8#page23#enu21#fld88"/>
+          <layout:Field field="sv2#area8#page23#enu21#fld89"/>
+          <layout:Field field="sv2#area8#page23#enu21#sfld28"/>
+          <layout:Link link="sv2#area8#page23#enu21#ln122"/>
+          <layout:Link link="sv2#area8#page23#enu21#ln123"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>

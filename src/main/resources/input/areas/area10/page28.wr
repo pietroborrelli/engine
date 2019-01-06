@@ -1,0 +1,184 @@
+<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv2#area10#page28" name="Geographic Area" landmark="true" gr:x="0" gr:y="620">
+  <ContentUnits>
+    <PowerIndexUnit id="sv2#area10#page28#pwu43" name="GeoAreas List" linkOrder="sv2#area10#page28#pwu43#ln137 sv2#area10#page28#pwu43#ln138" gr:x="0" gr:y="0" sortable="true" checkable="false" useCountQuery="false" entity="ent4" displayAttributes="ent4#att12 ent4#att13 ent4#att14 ent4#att15 ent4#att16">
+      <Link id="sv2#area10#page28#pwu43#ln137" name="Coordinates" to="sv2#area10#page28#enu25" type="normal" validate="true">
+        <LinkParameter id="sv2#area10#page28#pwu43#ln137#par229" name="oid_Key Condition [oid]" source="data[].ent4#att3" target="sv2#area10#page28#enu25.ent4#att3"/>
+      </Link>
+      <Link id="sv2#area10#page28#pwu43#ln138" name="All Readings" to="sv2#area10#page28#pwu44" type="normal" validate="true">
+        <LinkParameter id="sv2#area10#page28#pwu43#ln138#par230" name="oid_ReadingsOfGeoArea [oid]" source="data[].ent4#att3" target="sv2#area10#page28#pwu44#su63#rcond36.ent4#att3"/>
+      </Link>
+    </PowerIndexUnit>
+    <EntryUnit id="sv2#area10#page28#enu25" name="GeoArea Coordinates" gr:x="10" gr:y="155" entity="ent4">
+      <Field id="sv2#area10#page28#enu25#fld92" name="longitude" type="float" modifiable="true" attribute="ent4#att15"/>
+      <Field id="sv2#area10#page28#enu25#fld93" name="latitude" type="float" modifiable="true" attribute="ent4#att16"/>
+    </EntryUnit>
+    <PowerIndexUnit id="sv2#area10#page28#pwu44" name="Readings by geoarea" gr:x="180" gr:y="150" entity="ent3" displayAttributes="ent3#att10 ent3#att9 ent3#att8 ent3#att6" sortable="true" checkable="false" useCountQuery="false">
+      <Selector id="sv2#area10#page28#pwu44#su63" defaultPolicy="fill" booleanOperator="and">
+        <RelationshipRoleCondition id="sv2#area10#page28#pwu44#su63#rcond36" name="ReadingsOfGeoArea" role="rel3#role5.rel4#role7.rel8#role15" predicate="in" implied="false"/>
+      </Selector>
+    </PowerIndexUnit>
+    <SelectorUnit id="sv2#area10#page28#seu38" name="All GeoAreas" gr:x="455" gr:y="0" entity="ent4">
+      <Link id="sv2#area10#page28#seu38#ln139" name="Flow80" to="sv2#area10#page28#enu26" type="transport" validate="true">
+        <LinkParameter id="sv2#area10#page28#seu38#ln139#par231" name="name_Name [label]" source="ent4#att14Array" target="sv2#area10#page28#enu26#sfld36_label"/>
+        <LinkParameter id="sv2#area10#page28#seu38#ln139#par232" name="oid_Name [output]" source="ent4#att3Array" target="sv2#area10#page28#enu26#sfld36_output"/>
+      </Link>
+    </SelectorUnit>
+    <EntryUnit id="sv2#area10#page28#enu26" name="Geoarea Form" linkOrder="sv2#area10#page28#enu26#ln140 sv2#area10#page28#enu26#ln141" gr:x="445" gr:y="150" entity="ent4" fieldOrder="sv2#area10#page28#enu26#sfld36 sv2#area10#page28#enu26#fld94 sv2#area10#page28#enu26#fld95">
+      <SelectionField id="sv2#area10#page28#enu26#sfld36" name="Name" attribute="ent4#att14" type="string"/>
+      <Link id="sv2#area10#page28#enu26#ln140" name="Search Readings" to="sv2#area10#page28#pwu45" type="normal" validate="true">
+        <LinkParameter id="sv2#area10#page28#enu26#ln140#par233" name="End date_end date" source="sv2#area10#page28#enu26#fld95" target="sv2#area10#page28#pwu45#su64#acond26"/>
+        <LinkParameter id="sv2#area10#page28#enu26#ln140#par234" name="Start date_start date" source="sv2#area10#page28#enu26#fld94" target="sv2#area10#page28#pwu45#su64#acond25"/>
+        <LinkParameter id="sv2#area10#page28#enu26#ln140#par235" name="Key [oid]_ReadingsOfGeoArea [oid]" source="sv2#area10#page28#enu26#sfld36" target="sv2#area10#page28#pwu45#su64#rcond37.ent4#att3"/>
+      </Link>
+      <Field id="sv2#area10#page28#enu26#fld94" name="Start date" type="timestamp" modifiable="true"/>
+      <Field id="sv2#area10#page28#enu26#fld95" name="End date" type="timestamp" modifiable="true"/>
+      <Link id="sv2#area10#page28#enu26#ln141" name="Search Consumers" to="sv2#area10#page28#pwu46" type="normal" validate="true">
+        <LinkParameter id="sv2#area10#page28#enu26#ln141#par236" name="Name_ConsumersOfGeaorea [oid]" source="sv2#area10#page28#enu26#sfld36" target="sv2#area10#page28#pwu46#su65#rcond38.ent4#att3"/>
+      </Link>
+    </EntryUnit>
+    <PowerIndexUnit id="sv2#area10#page28#pwu45" name="Readings by geoarea_dates" gr:x="310" gr:y="320" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att7 ent3#att10 ent3#att9 ent3#att8 ent3#att6 ent3#att17 ent3#att23">
+      <Selector id="sv2#area10#page28#pwu45#su64" defaultPolicy="fill" booleanOperator="and">
+        <AttributesCondition id="sv2#area10#page28#pwu45#su64#acond25" name="start date" predicate="gteq" booleanOperator="or" implied="false" attributes="ent3#att10"/>
+        <AttributesCondition id="sv2#area10#page28#pwu45#su64#acond26" name="end date" predicate="lteq" booleanOperator="or" implied="false" attributes="ent3#att10"/>
+        <RelationshipRoleCondition id="sv2#area10#page28#pwu45#su64#rcond37" name="ReadingsOfGeoArea" role="rel3#role5.rel4#role7.rel8#role15" predicate="in" implied="false"/>
+      </Selector>
+    </PowerIndexUnit>
+    <PowerIndexUnit id="sv2#area10#page28#pwu46" name="Consumer by geoarea" gr:x="535" gr:y="325" sortable="true" checkable="false" useCountQuery="false" entity="ent5" displayAttributes="ent5#att19 ent5#att20 ent5#att22">
+      <Selector id="sv2#area10#page28#pwu46#su65" defaultPolicy="fill" booleanOperator="and">
+        <RelationshipRoleCondition id="sv2#area10#page28#pwu46#su65#rcond38" name="ConsumersOfGeaorea" role="rel3#role5.rel6#role12" predicate="in" implied="false"/>
+      </Selector>
+    </PowerIndexUnit>
+  </ContentUnits>
+  <layout:Grid containerType="grid">
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page28#pwu43">
+          <layout:Attribute attribute="ent4#att12"/>
+          <layout:Attribute attribute="ent4#att13"/>
+          <layout:Attribute attribute="ent4#att14"/>
+          <layout:Attribute attribute="ent4#att15"/>
+          <layout:Attribute attribute="ent4#att16"/>
+          <layout:Link link="sv2#area10#page28#pwu43#ln137"/>
+          <layout:Link link="sv2#area10#page28#pwu43#ln138"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page28#enu25">
+          <layout:Field field="sv2#area10#page28#enu25#fld92"/>
+          <layout:Field field="sv2#area10#page28#enu25#fld93"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page28#pwu44">
+          <layout:Attribute attribute="ent3#att10"/>
+          <layout:Attribute attribute="ent3#att9"/>
+          <layout:Attribute attribute="ent3#att8"/>
+          <layout:Attribute attribute="ent3#att6"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page28#enu26">
+          <layout:Field field="sv2#area10#page28#enu26#sfld36"/>
+          <layout:Field field="sv2#area10#page28#enu26#fld94"/>
+          <layout:Field field="sv2#area10#page28#enu26#fld95"/>
+          <layout:Link link="sv2#area10#page28#enu26#ln140"/>
+          <layout:Link link="sv2#area10#page28#enu26#ln141"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page28#pwu45">
+          <layout:Attribute attribute="ent3#att7"/>
+          <layout:Attribute attribute="ent3#att10"/>
+          <layout:Attribute attribute="ent3#att9"/>
+          <layout:Attribute attribute="ent3#att8"/>
+          <layout:Attribute attribute="ent3#att6"/>
+          <layout:Attribute attribute="ent3#att17"/>
+          <layout:Attribute attribute="ent3#att23"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page28#pwu46">
+          <layout:Attribute attribute="ent5#att19"/>
+          <layout:Attribute attribute="ent5#att20"/>
+          <layout:Attribute attribute="ent5#att22"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+  </layout:Grid>
+</Page>

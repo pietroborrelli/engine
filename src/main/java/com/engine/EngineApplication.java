@@ -77,6 +77,8 @@ public class EngineApplication implements CommandLineRunner {
 
 		FrontEndInspector frontEndInspector = initializeFrontEndInspector();
 
+		noAmService.setDataModelUtil(frontEndInspector.getDataModelUtil());
+		
 		navigateFrontEnd(frontEndInspector);
 
 	}

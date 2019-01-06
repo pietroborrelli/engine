@@ -33,6 +33,21 @@ public class DataModelUtil {
 	}
 
 	/**
+	 * @param entity
+	 * @return entity of the data model
+	 */
+	public Entity findEntityByName(String nameEntity) {
+
+		for (Object e : dataModel.getEntityOrRelationshipOrDatabase()) {
+			if (isEntity(e) && ((Entity) e).getName().equals(nameEntity)) {
+				return (Entity) e;
+			}
+		}
+		return null;
+
+	}
+	
+	/**
 	 * @param relationship
 	 * @return relationship of the data model
 	 */
@@ -99,7 +114,23 @@ public class DataModelUtil {
 		return null;
 
 	}
+	
+	/**
+	 * @param source entity
+	 * @param target entity
+	 * @return relationship of the data model by source and target entity
+	 */
+	public Relationship findRelationshipBySourceAndTarget(String sourceEntity, String targetEntity) {
 
+		for (Object r : dataModel.getEntityOrRelationshipOrDatabase()) {
+			if (isRelationship(r) && ((Relationship) r).getSourceEntity().equals(sourceEntity) && ((Relationship) r).getTargetEntity().equals(targetEntity) ) {
+				return (Relationship) r;
+			}
+		}
+		return null;
+
+	}
+	
 	/**
 	 * @param entity:
 	 *            used to access directly entity
