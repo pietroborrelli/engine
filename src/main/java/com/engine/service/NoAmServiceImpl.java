@@ -130,9 +130,49 @@ public class NoAmServiceImpl implements NoAmService {
 		primaryKey.setSortKeys(sortKeys);
 
 		block.setKey(primaryKey);
+		
+		//add partition keys in entries if does not exist
+		entries = addEntriesFromKeys(partitionKeys,sortKeys,entries);
+		
 		block.setEntries(entries);
 
 		return block;
+	}
+
+	/**
+	 * @param partitionKeys
+	 * @param entries
+	 * @return entries enriched with partition keys and sort keys, needed for the script of the physical model
+	 */
+	private List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys,List<SortKey> sortKeys, List<Entry> entries) {
+		
+		List<Entry> entriesTemp = new ArrayList<Entry>(entries);
+		
+		//check on partition keys
+		for (PartitionKey partitionKey : partitionKeys) {
+			boolean found = false;
+			for (Entry entry : entriesTemp) {
+				
+				if (partitionKey.getId().equals(entry.getId())) 
+					found = true;
+			}
+			if (!found)
+				entries.add(new Entry(partitionKey.getId(), partitionKey.getName(), partitionKey.getType(), partitionKey.getEntity(), "from_partition_key"));
+		}
+		
+		//check on sort keys
+		for (SortKey sortKey : sortKeys) {
+			boolean found = false;
+			for (Entry entry : entriesTemp) {
+				
+				if (sortKey.getId().equals(entry.getId())) 
+					found = true;
+			}
+			if (!found)
+				entries.add(new Entry(sortKey.getId(), sortKey.getName(), sortKey.getType(), sortKey.getEntity(), "from_sort_key"));
+		}
+		
+		return entries;
 	}
 
 	/**

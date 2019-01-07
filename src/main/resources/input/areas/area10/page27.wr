@@ -17,12 +17,12 @@
       </Selector>
       <SortAttribute attribute="ent3#att9" order="ascending"/>
     </PowerIndexUnit>
-    <DataUnit id="sv2#area10#page27#dau12" name="Reading Detail" gr:x="380" gr:y="430" entity="ent3" displayAttributes="ent3#att6 ent3#att17 ent3#att23 ent3#att10">
+    <DataUnit id="sv2#area10#page27#dau12" name="Reading Status Detail" gr:x="360" gr:y="435" entity="ent3" displayAttributes="ent3#att6 ent3#att17 ent3#att23 ent3#att10 ent3#att7">
       <Selector id="sv2#area10#page27#dau12#su59" defaultPolicy="fill" booleanOperator="and">
         <KeyCondition id="sv2#area10#page27#dau12#su59#kcond30" name="KeyCondition11" predicate="in" implied="false"/>
       </Selector>
     </DataUnit>
-    <PowerIndexUnit id="sv2#area10#page27#pwu41" name="Readings errors" linkOrder="sv2#area10#page27#pwu41#ln134" gr:x="370" gr:y="240" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att23 ent3#att17">
+    <PowerIndexUnit id="sv2#area10#page27#pwu41" name="Readings status" linkOrder="sv2#area10#page27#pwu41#ln134" gr:x="370" gr:y="240" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att23 ent3#att17">
       <Selector id="sv2#area10#page27#pwu41#su60" defaultPolicy="fill" booleanOperator="and">
         <RelationshipRoleCondition id="sv2#area10#page27#pwu41#su60#rcond34" name="ReadingsOfTheSmartMeter" role="rel8#role15" predicate="in" implied="false"/>
       </Selector>
@@ -33,7 +33,7 @@
     <EntryUnit id="sv2#area10#page27#enu24" name="Search Readings" linkOrder="sv2#area10#page27#enu24#ln135" gr:x="535" gr:y="245" entity="ent1" fieldOrder="sv2#area10#page27#enu24#fld90 sv2#area10#page27#enu24#fld91 sv2#area10#page27#enu24#sfld35">
       <Field id="sv2#area10#page27#enu24#fld90" name="Start date" type="timestamp" modifiable="true"/>
       <Field id="sv2#area10#page27#enu24#fld91" name="End date" type="timestamp" modifiable="true"/>
-      <SelectionField id="sv2#area10#page27#enu24#sfld35" name="name" attribute="ent1#att2" type="string"/>
+      <SelectionField id="sv2#area10#page27#enu24#sfld35" name="Smartmeter name" attribute="ent1#att2" type="string"/>
       <Link id="sv2#area10#page27#enu24#ln135" name="search by dates" to="sv2#area10#page27#pwu42" type="normal" validate="true">
         <LinkParameter id="sv2#area10#page27#enu24#ln135#par224" name="Key [oid]_ReadingsOfTheSmartMeter [oid]" source="sv2#area10#page27#enu24#sfld35" target="sv2#area10#page27#pwu42#su61#rcond35.ent1#att1"/>
         <LinkParameter id="sv2#area10#page27#enu24#ln135#par225" name="End date_end date" source="sv2#area10#page27#enu24#fld91" target="sv2#area10#page27#pwu42#su61#acond24"/>
@@ -112,6 +112,7 @@
           <layout:Attribute attribute="ent3#att17"/>
           <layout:Attribute attribute="ent3#att23"/>
           <layout:Attribute attribute="ent3#att10"/>
+          <layout:Attribute attribute="ent3#att7"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>

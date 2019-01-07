@@ -32,6 +32,15 @@ public class Entry {
 		this.type = type;
 	}
 
+	public Entry(String id, String name, String type, String entityName, String interactionFlowElementName) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.type = type;
+		this.entityName = entityName;
+		this.interactionFlowElementName = interactionFlowElementName;
+	}
+
 	// special constructor for aggregate entries for reading access path
 	public Entry(List<Entry> aggregateEntries) {
 

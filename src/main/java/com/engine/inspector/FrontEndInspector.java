@@ -203,6 +203,7 @@ public class FrontEndInspector {
 				interactionFlows.add(interactionFlow);
 				found = true;
 			}
+			// TODO binding parameter to do also for OK 
 			if (node.getNodeName().equals(NAVIGATIONFLOW_OKLINK)) {
 				this.context = new Context(new OKLink(dataModel));
 				interactionFlows.add(this.context.mapInteractionFlow(node));
