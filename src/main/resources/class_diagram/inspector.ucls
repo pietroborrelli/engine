@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.2.2" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
+  <class id="1" language="java" name="com.engine.inspector.DataUnit" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/DataUnit.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1331" y="770"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" name="com.engine.inspector.XPathUtil" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/XPathUtil.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="689" y="60"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="com.engine.inspector.Context" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/Context.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="858" y="190"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="com.engine.inspector.DataModelUtil" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/DataModelUtil.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1398" y="1093"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="com.engine.inspector.AttributesConditionE" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/AttributesConditionE.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1755" y="995"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="6" language="java" name="com.engine.inspector.PageExtractor" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/PageExtractor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1077" y="409"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="7" language="java" name="com.engine.inspector.LinkExtractor" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/LinkExtractor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1075" y="187"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="8" language="java" name="com.engine.inspector.KOLink" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/KOLink.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1598" y="186"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="com.engine.inspector.Link" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/Link.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1379" y="104"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="com.engine.inspector.PageExtractorImpl" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/PageExtractorImpl.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1379" y="409"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="com.engine.inspector.EntryUnit" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/EntryUnit.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1182" y="904"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="com.engine.inspector.KeyConditionE" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/KeyConditionE.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1944" y="1001"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="com.engine.inspector.PowerIndexUnit" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/PowerIndexUnit.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1421" y="655"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="14" language="java" name="com.engine.inspector.ConditionalExpressionExtractor" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/ConditionalExpressionExtractor.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1955" y="671"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="com.engine.inspector.SelectorUnit" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/SelectorUnit.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1416" y="549"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="com.engine.inspector.FrontEndInspector" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/FrontEndInspector.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="294" width="283" x="251" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="17" language="java" name="com.engine.inspector.RelationshipRoleConditionE" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/RelationshipRoleConditionE.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2165" y="999"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="18" language="java" name="com.engine.inspector.ViewComponentExtractor" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/ViewComponentExtractor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1057" y="627"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="19" language="java" name="com.engine.inspector.OKLink" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/OKLink.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1379" y="258"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="20" language="java" name="com.engine.inspector.ConditionExtractor" project="engine" 
+    file="/engine/src/main/java/com/engine/inspector/ConditionExtractor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="83" width="191" x="1852" y="825"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <realization id="21">    
+    <bendpoint x="1217" y="187"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="7"/>  
+  </realization>  
+  <association id="22">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="23" name="pageExtractor">        
+        <position height="19" width="83" x="990" y="344"/>      
+      </attribute>      
+      <multiplicity id="24" minimum="0" maximum="1">        
+        <position height="17" width="26" x="1049" y="359"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="25">    
+    <bendpoint x="1381" y="-13"/>    
+    <bendpoint x="690" y="-13"/>    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="26" name="xPathUtil"/>      
+      <multiplicity id="27" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="28">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="29" name="conditionalExpressionExtractor">        
+        <position height="19" width="173" x="1622" y="698"/>      
+      </attribute>      
+      <multiplicity id="30" minimum="0" maximum="1">        
+        <position height="17" width="26" x="1801" y="698"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="31">    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="32" name="conditionalExpressionExtractor">        
+        <position height="19" width="173" x="1624" y="606"/>      
+      </attribute>      
+      <multiplicity id="33" minimum="0" maximum="1">        
+        <position height="17" width="26" x="1790" y="626"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="34">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="35" name="dataModelUtil">        
+        <position height="19" width="82" x="1467" y="1012"/>      
+      </attribute>      
+      <multiplicity id="36" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="37">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="38" name="conditionalExpressionExtractor">        
+        <position height="19" width="173" x="1628" y="645"/>      
+      </attribute>      
+      <multiplicity id="39" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="40">    
+    <bendpoint x="1945" y="942"/>    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="20"/>  
+  </realization>  
+  <realization id="41">    
+    <bendpoint x="1182" y="637"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="18"/>  
+  </realization>  
+  <realization id="42">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="6"/>  
+  </realization>  
+  <realization id="43">    
+    <bendpoint x="1180" y="637"/>    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="18"/>  
+  </realization>  
+  <association id="44">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="45" name="dataModelUtil">        
+        <position height="19" width="82" x="1250" y="1029"/>      
+      </attribute>      
+      <multiplicity id="46" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="47">    
+    <bendpoint x="399" y="1094"/>    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="48" name="dataModelUtil"/>      
+      <multiplicity id="49" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="50">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="51" name="viewComponentExtractor"/>      
+      <multiplicity id="52" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="18" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="53">    
+    <bendpoint x="2388" y="102"/>    
+    <bendpoint x="2386" y="1090"/>    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="54" name="dataModelUtil"/>      
+      <multiplicity id="55" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="56">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="57" name="context"/>      
+      <multiplicity id="58" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="59">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="60" name="dataModelUtil">        
+        <position height="19" width="82" x="1390" y="989"/>      
+      </attribute>      
+      <multiplicity id="61" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="62">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="18"/>  
+  </realization>  
+  <association id="63">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="64" name="conditionExtractor"/>      
+      <multiplicity id="65" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="66">    
+    <bendpoint x="1226" y="186"/>    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="7"/>  
+  </realization>  
+  <realization id="67">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="20"/>  
+  </realization>  
+  <association id="68">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="69" name="dataModelUtil">        
+        <position height="19" width="82" x="1319" y="1006"/>      
+      </attribute>      
+      <multiplicity id="70" minimum="0" maximum="1">        
+        <position height="17" width="26" x="1370" y="1033"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="71">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="72" name="linkExtractor">        
+        <position height="19" width="75" x="940" y="168"/>      
+      </attribute>      
+      <multiplicity id="73" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="74">    
+    <bendpoint x="1944" y="942"/>    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="20"/>  
+  </realization>  
+  <association id="75">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="76" name="xPathUtil"/>      
+      <multiplicity id="77" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="78">    
+    <bendpoint x="2386" y="554"/>    
+    <bendpoint x="2386" y="1090"/>    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="79" name="dataModelUtil"/>      
+      <multiplicity id="80" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="81">    
+    <bendpoint x="2386" y="185"/>    
+    <bendpoint x="2386" y="1091"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="82" name="dataModelUtil"/>      
+      <multiplicity id="83" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="84">    
+    <bendpoint x="1185" y="637"/>    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="18"/>  
+  </realization>  
+  <realization id="85">    
+    <bendpoint x="1225" y="187"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="7"/>  
+  </realization>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
