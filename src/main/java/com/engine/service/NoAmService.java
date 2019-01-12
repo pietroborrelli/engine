@@ -5,15 +5,19 @@ import java.util.List;
 import com.engine.domain.abstractmodel.Block;
 import com.engine.domain.abstractmodel.Collection;
 import com.engine.domain.abstractmodel.Entry;
+import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.wrapper.Path;
 import com.engine.inspector.DataModelUtil;
 
 public interface NoAmService {
 
-	List<Collection> computeAbstractModelsByPaths(List<Path> paths);
-	Block createBlock(Path path, List<Entry> entries);
-	List<Entry> createEntries (Path path);
-	Collection createCollection(Path path, Block block, List<Entry> entries);
+	List<Collection> computeAbstractModels(Path path);
+	Block createBlock(List<InteractionFlowElement> interactionFlowElements, List<Entry> entries);
 	List<Collection> optimizeReadingAccessPaths(List<Collection> collections);
 	void setDataModelUtil(DataModelUtil dataModelUtil);
+	List<Entry> createEntries(List<InteractionFlowElement> interactionFlowElements);
+	Collection createCollection(List<InteractionFlowElement> interactionFlowElements, Path path, Block block,
+			List<Entry> entries);
+	List<Collection> localOptimization(List<Collection> collections);
+	List<Collection> optimizeCollections(List<Collection> collections);
 }

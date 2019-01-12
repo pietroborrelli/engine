@@ -2,8 +2,11 @@ package com.engine.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -41,34 +44,38 @@ public class NoAmServiceImpl implements NoAmService {
 	public DataModelUtil dataModelUtil;
 
 	@Override
-	public List<Collection> computeAbstractModelsByPaths(List<Path> paths) {
+	public List<Collection> computeAbstractModels(Path path) {
 
 		List<Collection> collections = new ArrayList<Collection>();
 		System.out.println("--------- CREAZIONE DEL NO AM ---------");
 
-		for (Path path : paths) {
+			List<Entry> entries = new ArrayList<Entry>();
+			List<InteractionFlowElement> interactionFlowElements = new ArrayList<InteractionFlowElement>();
 
-			List<Entry> entries = createEntries(path);
-			System.out.println(entries.size() + " entries");
+			// create a collection for each VC of the path
+			for (InteractionFlowElement interactionFlowElement : path.getInteractionFlowElements()) {
+				interactionFlowElements.add(interactionFlowElement);
 
-			Block block = createBlock(path, entries);
-			System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
-			System.out.println(block.getKey().getSortKeys().size() + " sort keys");
+				entries = createEntries(interactionFlowElements);
+				System.out.println(entries.size() + " entries");
+				Block block = createBlock(interactionFlowElements, entries);
+				System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
+				System.out.println(block.getKey().getSortKeys().size() + " sort keys");
 
-			Collection collection = createCollection(path, block, entries);
+				Collection collection = createCollection(interactionFlowElements,path, block, entries);
 
-			collections.add(collection);
-		}
+				collections.add(collection);
+			}
 
 		return collections;
 	}
 
 	@Override
-	public Collection createCollection(Path path, Block block, List<Entry> entries) {
-		Collection collection = new Collection(path.getIdPath());
+	public Collection createCollection(List<InteractionFlowElement> interactionFlowElements, Path path, Block block, List<Entry> entries) {
+		Collection collection = new Collection(path.getIdPath()+"."+interactionFlowElements.size());
 		collection.setPath(path);
 		// get leaf node as name of the collection
-		for (InteractionFlowElement interactionFlowElement : path.getInteractionFlowElements()) {
+		for (InteractionFlowElement interactionFlowElement : interactionFlowElements) {
 			if (interactionFlowElement.getOutInteractionFlows() == null
 					|| interactionFlowElement.getOutInteractionFlows().isEmpty())
 				collection.setName(interactionFlowElement.getName());
@@ -76,7 +83,7 @@ public class NoAmServiceImpl implements NoAmService {
 		// means there is a leaf pointing to an action
 		if (collection.getName() == null)
 			collection.setName(
-					path.getInteractionFlowElements().get(path.getInteractionFlowElements().size() - 1).getName());
+					interactionFlowElements.get(interactionFlowElements.size() - 1).getName());
 		;
 		collection.setBlock(block);
 
@@ -84,22 +91,20 @@ public class NoAmServiceImpl implements NoAmService {
 	}
 
 	@Override
-	public Block createBlock(Path path, List<Entry> entries) {
+	public Block createBlock(List<InteractionFlowElement> interactionFlowElements, List<Entry> entries) {
 
 		Block block = new Block();
 		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
 		List<SortKey> sortKeys = new ArrayList<SortKey>();
 		PrimaryKey primaryKey = new PrimaryKey(partitionKeys, sortKeys);
 
-		System.out.println("Estrazione delle chiavi su percorso n." + path.getIdPath());
-
 		// get all partition keys
-		for (int i = 0; i < path.getInteractionFlowElements().size(); i++) {
-			InteractionFlowElement current = path.getInteractionFlowElements().get(i);
+		for (int i = 0; i < interactionFlowElements.size(); i++) {
+			InteractionFlowElement current = interactionFlowElements.get(i);
 			InteractionFlowElement next = null;
 
-			if ((i + 1) < path.getInteractionFlowElements().size())
-				next = path.getInteractionFlowElements().get(i + 1);
+			if ((i + 1) < interactionFlowElements.size())
+				next = interactionFlowElements.get(i + 1);
 
 			if (retrievePartitionKey(current, next) != null)
 				partitionKeys.addAll(retrievePartitionKey(current, next));
@@ -110,68 +115,96 @@ public class NoAmServiceImpl implements NoAmService {
 		partitionKeys = partitionKeys.stream().distinct().collect(Collectors.toList());
 
 		// get all sort keys
-		for (int s = 0; s < path.getInteractionFlowElements().size(); s++)
-			sortKeys.addAll(retrieveSortKey(path.getInteractionFlowElements().get(s), partitionKeys));
+		for (int s = 0; s < interactionFlowElements.size(); s++)
+			sortKeys.addAll(retrieveSortKey(interactionFlowElements.get(s), partitionKeys));
 
 		// removed duplicates on sort list
 		sortKeys = sortKeys.stream().distinct().collect(Collectors.toList());
+		// update sort keys: removed keys with ordering = null
+		sortKeys = removeSortKeysWithOrderIsNull(sortKeys);
+
+		// update sort keys: removed same keys with different order
+		sortKeys = removeSortKeysWithDifferentOrder(sortKeys);
 
 		// update partition key list by removing duplicates from sort keys
 		partitionKeys = removeDuplicatesFromPartitionKeys(partitionKeys, sortKeys);
 
 		// update partition key list by removing partition keys related to "weak"
 		// entities (handled 1:N case)
-		partitionKeys = removeWeakPartitionKeys(partitionKeys);
-
-		// update sort keys by removing duplicates keys with different ordering
-		sortKeys = removeDuplicatesFromSortKeys(sortKeys);
+		// partitionKeys = removeWeakPartitionKeys(partitionKeys);
 
 		primaryKey.setPartitionKeys(partitionKeys);
 		primaryKey.setSortKeys(sortKeys);
 
 		block.setKey(primaryKey);
-		
-		//add partition keys in entries if does not exist
-		entries = addEntriesFromKeys(partitionKeys,sortKeys,entries);
-		
+
+		// add partition keys in entries if does not exist
+		entries = addEntriesFromKeys(partitionKeys, sortKeys, entries);
+
 		block.setEntries(entries);
 
 		return block;
 	}
 
 	/**
+	 * Sort keys with order = null comes from attributes conditions with "equal"
+	 * predicate
+	 * 
+	 * @param sortKeys
+	 * @return keys without null ordering
+	 */
+	private List<SortKey> removeSortKeysWithOrderIsNull(List<SortKey> sortKeys) {
+		List<SortKey> tempSortKeys = new ArrayList<SortKey>(sortKeys);
+
+		for (SortKey sortKey : tempSortKeys) {
+
+			if (sortKey.getOrdering() == null) {
+
+				sortKeys.remove(sortKey);
+
+			}
+		}
+
+		return sortKeys;
+	}
+
+	/**
 	 * @param partitionKeys
 	 * @param entries
-	 * @return entries enriched with partition keys and sort keys, needed for the script of the physical model
+	 * @return entries enriched with partition keys and sort keys, needed for the
+	 *         script of the physical model
 	 */
-	private List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys,List<SortKey> sortKeys, List<Entry> entries) {
-		
+	private List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys, List<SortKey> sortKeys,
+			List<Entry> entries) {
+
 		List<Entry> entriesTemp = new ArrayList<Entry>(entries);
-		
-		//check on partition keys
+
+		// check on partition keys
 		for (PartitionKey partitionKey : partitionKeys) {
 			boolean found = false;
 			for (Entry entry : entriesTemp) {
-				
-				if (partitionKey.getId().equals(entry.getId())) 
+
+				if (partitionKey.getId().equals(entry.getId()))
 					found = true;
 			}
 			if (!found)
-				entries.add(new Entry(partitionKey.getId(), partitionKey.getName(), partitionKey.getType(), partitionKey.getEntity(), "from_partition_key"));
+				entries.add(new Entry(partitionKey.getId(), partitionKey.getName(), partitionKey.getType(),
+						partitionKey.getEntity(), "from_partition_key"));
 		}
-		
-		//check on sort keys
+
+		// check on sort keys
 		for (SortKey sortKey : sortKeys) {
 			boolean found = false;
 			for (Entry entry : entriesTemp) {
-				
-				if (sortKey.getId().equals(entry.getId())) 
+
+				if (sortKey.getId().equals(entry.getId()))
 					found = true;
 			}
 			if (!found)
-				entries.add(new Entry(sortKey.getId(), sortKey.getName(), sortKey.getType(), sortKey.getEntity(), "from_sort_key"));
+				entries.add(new Entry(sortKey.getId(), sortKey.getName(), sortKey.getType(), sortKey.getEntity(),
+						"from_sort_key"));
 		}
-		
+
 		return entries;
 	}
 
@@ -180,9 +213,9 @@ public class NoAmServiceImpl implements NoAmService {
 	 * @return new partition keys list without 'weak' keys. In 1:N relationships,
 	 *         the entity with cardinality 1 is the owner/parent of the
 	 *         relationship. It's discarded the one with N cardinality (note that in
-	 *         web ratio data model document, logic is inverted). In 1:1 not relevant:
-	 *         partition keys are not discarded and the entries are flat. In N:M
-	 *         cannot be understood which is the owner of the relationship
+	 *         web ratio data model document, logic is inverted). In 1:1 not
+	 *         relevant: partition keys are not discarded and the entries are flat.
+	 *         In N:M cannot be understood which is the owner of the relationship
 	 */
 	private List<PartitionKey> removeWeakPartitionKeys(List<PartitionKey> partitionKeys) {
 
@@ -230,18 +263,23 @@ public class NoAmServiceImpl implements NoAmService {
 	 * @return new sort keys without duplicate sort keys that differ only for
 	 *         ordering. given priority to DESC order
 	 */
-	private List<SortKey> removeDuplicatesFromSortKeys(List<SortKey> sortKeys) {
+	private List<SortKey> removeSortKeysWithDifferentOrder(List<SortKey> sortKeys) {
 
 		List<SortKey> tempSortKeys = new ArrayList<SortKey>(sortKeys);
+		List<SortKey> tempSortKeys2 = new ArrayList<SortKey>(sortKeys);
 
-		for (int i = 0; i < tempSortKeys.size() - 1; i++) {
+		for (SortKey sortKey : tempSortKeys) {
 
-			if (tempSortKeys.get(i).getId().equals(tempSortKeys.get(i + 1).getId())) {
+			for (SortKey sortKey2 : tempSortKeys2) {
 
-				if (tempSortKeys.get(i).getOrdering().equals(Ordering.ASCENDING))
-					sortKeys.remove(tempSortKeys.get(i));
-				else
-					sortKeys.remove(tempSortKeys.get(i + 1));
+				if (sortKey.getId().equals(sortKey2.getId()) && !sortKey.getOrdering().equals(sortKey2.getOrdering())) {
+
+					if (sortKey.getOrdering().equals(Ordering.ASCENDING))
+						sortKeys.remove(sortKey);
+					else
+						sortKeys.remove(sortKey2);
+
+				}
 			}
 
 		}
@@ -448,11 +486,8 @@ public class NoAmServiceImpl implements NoAmService {
 	/**
 	 * @param ife:
 	 *            interaction flow element from which extract attribute(s)
-	 * @return partition key computed from the source of the binding parameter; if
-	 *         the source is null means that is a field of a form which has not an
-	 *         attribute set. Retrieved firstly all the sources of the binding
-	 *         parameter and then all the targets. Are generated duplicates Return
-	 *         null if there is no binding parameter
+	 * @return partition key computed from targets which express a condition. Are
+	 *         generated duplicates Return null if there is no binding parameter
 	 */
 	private List<PartitionKey> retrievePartitionKey(InteractionFlowElement ife, InteractionFlowElement nextIfe) {
 
@@ -471,22 +506,22 @@ public class NoAmServiceImpl implements NoAmService {
 						return null;
 
 					// get all sources of binding parameters
-					for (int x = 0; x < bindingParameter.getSources().size(); x++) {
-
-						if (bindingParameter.getSources().get(x) instanceof Attribute) {
-							Attribute sourceAttribute = (Attribute) bindingParameter.getSources().get(x);
-
-							if (sourceAttribute.getId() != null) {
-								PartitionKey partitionKey = new PartitionKey(sourceAttribute.getId());
-								partitionKey.setName(sourceAttribute.getName());
-								partitionKey.setType(sourceAttribute.getType());
-								partitionKey.setEntity(sourceAttribute.getEntity().getName());
-
-								partitionKeys.add(partitionKey);
-
-							}
-						}
-					}
+					// for (int x = 0; x < bindingParameter.getSources().size(); x++) {
+					//
+					// if (bindingParameter.getSources().get(x) instanceof Attribute) {
+					// Attribute sourceAttribute = (Attribute) bindingParameter.getSources().get(x);
+					//
+					// if (sourceAttribute.getId() != null) {
+					// PartitionKey partitionKey = new PartitionKey(sourceAttribute.getId());
+					// partitionKey.setName(sourceAttribute.getName());
+					// partitionKey.setType(sourceAttribute.getType());
+					// partitionKey.setEntity(sourceAttribute.getEntity().getName());
+					//
+					// partitionKeys.add(partitionKey);
+					//
+					// }
+					// }
+					// }
 
 					// get all targets of binding parameters
 					for (int y = 0; y < bindingParameter.getTargets().size(); y++) {
@@ -518,11 +553,11 @@ public class NoAmServiceImpl implements NoAmService {
 	}
 
 	@Override
-	public List<Entry> createEntries(Path path) {
+	public List<Entry> createEntries(List<InteractionFlowElement> interactionFlowElements) {
 
 		List<Entry> entries = new ArrayList<Entry>();
 
-		for (InteractionFlowElement interactionFlowElement : path.getInteractionFlowElements()) {
+		for (InteractionFlowElement interactionFlowElement : interactionFlowElements) {
 
 			if (interactionFlowElement instanceof ListImpl)
 				entries.addAll(retrieveListDisplayAttributes((ListImpl) interactionFlowElement));
@@ -643,6 +678,29 @@ public class NoAmServiceImpl implements NoAmService {
 
 		}
 		return entries;
+	}
+
+	/* 
+	 * Optimization on path scope
+	 */
+	@Override
+	public List<Collection> localOptimization(List<Collection> collections) {
+
+		//field aggregation
+		List<Collection> optimizedCollections = optimizeReadingAccessPaths(collections);
+
+		//collection aggregation
+		optimizedCollections = optimizeCollections(collections);
+		
+		
+		return optimizedCollections;
+	}
+
+
+	@Override
+	public List<Collection> optimizeCollections(List<Collection> collections) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*

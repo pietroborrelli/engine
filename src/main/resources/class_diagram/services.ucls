@@ -12,7 +12,7 @@
   </class>  
   <class id="2" language="java" name="com.engine.repository.PageRepositoryXML" project="engine" 
     file="/engine/src/main/java/com/engine/repository/PageRepositoryXML.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="334" y="647"/>    
+    <position height="-1" width="-1" x="324" y="647"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -21,7 +21,7 @@
   </class>  
   <class id="3" language="java" name="com.engine.repository.DataModelRepositoryXML" project="engine" 
     file="/engine/src/main/java/com/engine/repository/DataModelRepositoryXML.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="897" y="649"/>    
+    <position height="-1" width="-1" x="891" y="649"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -39,7 +39,7 @@
   </interface>  
   <interface id="5" language="java" name="com.engine.service.AreaService" project="engine" 
     file="/engine/src/main/java/com/engine/service/AreaService.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="68" y="283"/>    
+    <position height="-1" width="-1" x="72" y="284"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -75,7 +75,7 @@
   </class>  
   <class id="9" language="java" name="com.engine.service.AreaServiceImpl" project="engine" 
     file="/engine/src/main/java/com/engine/service/AreaServiceImpl.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="66" y="440"/>    
+    <position height="-1" width="-1" x="72" y="440"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      

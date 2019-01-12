@@ -109,11 +109,18 @@ public class EngineApplication implements CommandLineRunner {
 				Page page = frontEndInspector.elaborateDocument();
 
 				List<InteractionFlowElement> viewComponents = frontEndInspector.findViewComponents();
+				
+				
 				List<Path> paths = frontEndInspector.extractPaths(viewComponents);
-				List<Collection> collections = noAmService.computeAbstractModelsByPaths(paths);
-				collections = noAmService.optimizeReadingAccessPaths(collections);
+				
+				
+				paths.stream().forEach(p->p.setCollections(noAmService.computeAbstractModels(p)));
+				
+				
+				paths.stream().forEach(p->p.setCollections(noAmService.optimize(p.getCollections())));
 
-				generateModels(collections,area.getName());
+				
+				paths.stream().forEach(p->generateModels(p,p.getCollections(),area.getName()));
 
 				pages.add(page);
 
@@ -145,11 +152,11 @@ public class EngineApplication implements CommandLineRunner {
 		}
 	}
 
-	public void generateModels(List<Collection> collections, String area) {
+	public void generateModels(Path path, List<Collection> collections, String area) {
 
 		//create output folder according with the area
-		new File(outputPathPhysicalModel+area+"/").mkdirs();
-		new File(outputPathAbstractModel+area+"/").mkdirs();
+		new File(outputPathPhysicalModel+area+"/"+path.getIdPath()+"/").mkdirs();
+		new File(outputPathAbstractModel+area+"/"+path.getIdPath()+"/").mkdirs();
 		
 		for (Collection collection : collections) {
 

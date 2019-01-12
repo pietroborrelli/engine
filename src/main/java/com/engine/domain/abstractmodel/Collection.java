@@ -5,12 +5,12 @@ import com.engine.domain.wrapper.Path;
 public class Collection {
 
 	
-	private Integer id;
+	private String id;
 	private String name;
 	private Block block;
 	private Path path;
 	
-	public Collection(Integer id) {
+	public Collection(String id) {
 		this.id = id;
 		this.block = new Block();
 	}
@@ -31,11 +31,11 @@ public class Collection {
 		this.block = block;
 	}
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

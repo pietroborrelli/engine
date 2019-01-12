@@ -7,7 +7,7 @@
       <Link id="sv2#area10#page27#pwu39#ln132" name="Detail" to="sv2#area10#page27#dau13" type="normal" validate="true">
         <LinkParameter id="sv2#area10#page27#pwu39#ln132#par221" name="oid_KeyCondition14 [oid]" source="data[].ent1#att1" target="sv2#area10#page27#dau13#su62#kcond31.ent1#att1"/>
       </Link>
-      <Link id="sv2#area10#page27#pwu39#ln133" name="Error checks" to="sv2#area10#page27#pwu41" type="normal" validate="true">
+      <Link id="sv2#area10#page27#pwu39#ln133" name="Check Readings" to="sv2#area10#page27#pwu41" type="normal" validate="true">
         <LinkParameter id="sv2#area10#page27#pwu39#ln133#par222" name="oid_ReadingsOfTheSmartMeter [oid]" source="data[].ent1#att1" target="sv2#area10#page27#pwu41#su60#rcond34.ent1#att1"/>
       </Link>
     </PowerIndexUnit>
@@ -17,7 +17,7 @@
       </Selector>
       <SortAttribute attribute="ent3#att9" order="ascending"/>
     </PowerIndexUnit>
-    <DataUnit id="sv2#area10#page27#dau12" name="Reading Status Detail" gr:x="360" gr:y="435" entity="ent3" displayAttributes="ent3#att6 ent3#att17 ent3#att23 ent3#att10 ent3#att7">
+    <DataUnit id="sv2#area10#page27#dau12" name="Reading Status Detail" gr:x="350" gr:y="435" entity="ent3" displayAttributes="ent3#att6 ent3#att17 ent3#att23 ent3#att10 ent3#att7">
       <Selector id="sv2#area10#page27#dau12#su59" defaultPolicy="fill" booleanOperator="and">
         <KeyCondition id="sv2#area10#page27#dau12#su59#kcond30" name="KeyCondition11" predicate="in" implied="false"/>
       </Selector>
@@ -30,7 +30,7 @@
         <LinkParameter id="sv2#area10#page27#pwu41#ln134#par223" name="oid_KeyCondition11 [oid]" source="data[].ent3#att7" target="sv2#area10#page27#dau12#su59#kcond30.ent3#att7"/>
       </Link>
     </PowerIndexUnit>
-    <EntryUnit id="sv2#area10#page27#enu24" name="Search Readings" linkOrder="sv2#area10#page27#enu24#ln135" gr:x="535" gr:y="245" entity="ent1" fieldOrder="sv2#area10#page27#enu24#fld90 sv2#area10#page27#enu24#fld91 sv2#area10#page27#enu24#sfld35">
+    <EntryUnit id="sv2#area10#page27#enu24" name="Search Readings" linkOrder="sv2#area10#page27#enu24#ln135" gr:x="565" gr:y="245" entity="ent1" fieldOrder="sv2#area10#page27#enu24#fld90 sv2#area10#page27#enu24#fld91 sv2#area10#page27#enu24#sfld35">
       <Field id="sv2#area10#page27#enu24#fld90" name="Start date" type="timestamp" modifiable="true"/>
       <Field id="sv2#area10#page27#enu24#fld91" name="End date" type="timestamp" modifiable="true"/>
       <SelectionField id="sv2#area10#page27#enu24#sfld35" name="Smartmeter name" attribute="ent1#att2" type="string"/>
@@ -40,13 +40,13 @@
         <LinkParameter id="sv2#area10#page27#enu24#ln135#par226" name="Start date_start date" source="sv2#area10#page27#enu24#fld90" target="sv2#area10#page27#pwu42#su61#acond23"/>
       </Link>
     </EntryUnit>
-    <SelectorUnit id="sv2#area10#page27#seu37" name="Selector SmartMeters" gr:x="515" gr:y="0" entity="ent1" distinctAttributes="ent1#att2">
+    <SelectorUnit id="sv2#area10#page27#seu37" name="Selector SmartMeters" gr:x="530" gr:y="0" entity="ent1" distinctAttributes="ent1#att2">
       <Link id="sv2#area10#page27#seu37#ln136" name="Flow58" to="sv2#area10#page27#enu24" type="transport" validate="true">
         <LinkParameter id="sv2#area10#page27#seu37#ln136#par227" name="name_name [label]" source="ent1#att2Array" target="sv2#area10#page27#enu24#sfld35_label"/>
         <LinkParameter id="sv2#area10#page27#seu37#ln136#par228" name="oid_name [output]" source="ent1#att1Array" target="sv2#area10#page27#enu24#sfld35_output"/>
       </Link>
     </SelectorUnit>
-    <PowerIndexUnit id="sv2#area10#page27#pwu42" name="Readings by smartmeter_dates" gr:x="535" gr:y="425" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att10 ent3#att9 ent3#att8 ent3#att6">
+    <PowerIndexUnit id="sv2#area10#page27#pwu42" name="Readings by smartmeter_dates" gr:x="530" gr:y="425" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att10 ent3#att9 ent3#att8 ent3#att6">
       <Selector id="sv2#area10#page27#pwu42#su61" defaultPolicy="fill" booleanOperator="and">
         <RelationshipRoleCondition id="sv2#area10#page27#pwu42#su61#rcond35" name="ReadingsOfTheSmartMeter" role="rel8#role15" predicate="in" implied="false"/>
         <AttributesCondition id="sv2#area10#page27#pwu42#su61#acond23" name="start date" predicate="gteq" booleanOperator="or" implied="false" attributes="ent3#att10"/>
@@ -59,6 +59,24 @@
         <KeyCondition id="sv2#area10#page27#dau13#su62#kcond31" name="KeyCondition14" predicate="in" implied="false"/>
       </Selector>
     </DataUnit>
+    <PowerIndexUnit gr:x="5" gr:y="320" id="sv2#area10#page27#pwu47" name="Inverse" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att7" linkOrder="sv2#area10#page27#pwu47#ln142">
+      <Link id="sv2#area10#page27#pwu47#ln142" name="Flow142" to="sv2#area10#page27#dau14" type="normal" validate="true">
+        <LinkParameter id="sv2#area10#page27#pwu47#ln142#par242" name="oid_RoleCondition40 [oid]" source="data[].ent3#att7" target="sv2#area10#page27#dau14#su66#rcond40.ent3#att7"/>
+      </Link>
+    </PowerIndexUnit>
+    <DataUnit gr:x="150" gr:y="360" id="sv2#area10#page27#dau14" name="smss" entity="ent1" displayAttributes="ent1#att25 ent1#att24 ent1#att26">
+      <Selector id="sv2#area10#page27#dau14#su66" defaultPolicy="fill" booleanOperator="and">
+        <RelationshipRoleCondition id="sv2#area10#page27#dau14#su66#rcond40" name="RoleCondition40" predicate="in" implied="false" role="rel8#role16"/>
+      </Selector>
+      <Link id="sv2#area10#page27#dau14#ln144" name="Flow144" to="sv2#area10#page27#pwu48" type="transport" validate="true">
+        <LinkParameter id="sv2#area10#page27#dau14#ln144#par244" name="oid_RoleCondition41 [oid]" source="data.ent1#att1" target="sv2#area10#page27#pwu48#su68#rcond42.ent1#att1"/>
+      </Link>
+    </DataUnit>
+    <PowerIndexUnit id="sv2#area10#page27#pwu48" entity="ent2" sortable="true" checkable="false" useCountQuery="false" gr:x="155" gr:y="490" name="building">
+      <Selector id="sv2#area10#page27#pwu48#su68" defaultPolicy="fill" booleanOperator="and">
+        <RelationshipRoleCondition id="sv2#area10#page27#pwu48#su68#rcond42" role="rel4#role8" predicate="in" implied="false" name="RoleCondition41"/>
+      </Selector>
+    </PowerIndexUnit>
   </ContentUnits>
   <layout:Grid containerType="grid">
     <layout:Row>
@@ -227,7 +245,48 @@
       <layout:Cell/>
     </layout:Row>
     <layout:Row>
-      <layout:Cell colspan="12"/>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page27#pwu47">
+          <layout:Attribute attribute="ent3#att7"/>
+          <layout:Link link="sv2#area10#page27#pwu47#ln142"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page27#dau14">
+          <layout:Attribute attribute="ent1#att25"/>
+          <layout:Attribute attribute="ent1#att24"/>
+          <layout:Attribute attribute="ent1#att26"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area10#page27#pwu48"/>
+      </layout:Cell>
       <layout:Cell/>
       <layout:Cell/>
       <layout:Cell/>

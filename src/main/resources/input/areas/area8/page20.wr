@@ -1,0 +1,270 @@
+<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv2#area8#page20" name="Consumer" landmark="true" gr:x="45" gr:y="775">
+  <ContentUnits>
+    <MultiMessageUnit id="sv2#area8#page20#mssu2" name="User Page" gr:x="70" gr:y="0">
+      <Message xml:space="preserve">CRUD operations on User</Message>
+    </MultiMessageUnit>
+    <SelectorUnit id="sv2#area8#page20#seu29" name="SelectorBuilding" gr:x="0" gr:y="75" entity="ent2">
+      <Link id="sv2#area8#page20#seu29#ln106" name="Flow8" to="sv2#area8#page20#enu18" type="transport" validate="true">
+        <LinkParameter id="sv2#area8#page20#seu29#ln106#par176" name="address_UserToBuilding [label]" source="ent2#att5Array" target="sv2#area8#page20#enu18#msfld4_label"/>
+        <LinkParameter id="sv2#area8#page20#seu29#ln106#par177" name="oid_UserToBuilding [output]" source="ent2#att4Array" target="sv2#area8#page20#enu18#msfld4_output"/>
+      </Link>
+    </SelectorUnit>
+    <PowerIndexUnit id="sv2#area8#page20#pwu34" name="List" linkOrder="sv2#area8#page20#pwu34#ln107" gr:x="175" gr:y="75" entity="ent5" sortable="true" checkable="false" useCountQuery="false" displayAttributes="ent5#att18 ent5#att19 ent5#att20 ent5#att22 ent5#att21">
+      <Link id="sv2#area8#page20#pwu34#ln107" name="Edit" to="sv2#area8#page20#enu18" type="normal" validate="true">
+        <LinkParameter id="sv2#area8#page20#pwu34#ln107#par178" name="oid_Key Condition [oid]" source="data[].ent5#att18" target="sv2#area8#page20#enu18.ent5#att18"/>
+      </Link>
+    </PowerIndexUnit>
+    <EntryUnit id="sv2#area8#page20#enu18" name="User" linkOrder="sv2#area8#page20#enu18#ln108 sv2#area8#page20#enu18#ln109" gr:x="85" gr:y="205" entity="ent5" fieldOrder="sv2#area8#page20#enu18#fld74 sv2#area8#page20#enu18#fld70 sv2#area8#page20#enu18#fld71 sv2#area8#page20#enu18#fld72 sv2#area8#page20#enu18#fld73 sv2#area8#page20#enu18#msfld4">
+      <Comment xml:space="preserve">INPUT:
+-values of the selected smartmeter object.
+-list of the building that populate the select list. The preselected building is dinamically retrieved from the previous view component (see its data binding preselection)</Comment>
+      <Field id="sv2#area8#page20#enu18#fld70" name="name" type="string" modifiable="true" attribute="ent5#att19"/>
+      <Field id="sv2#area8#page20#enu18#fld71" name="surname" type="string" modifiable="true" attribute="ent5#att20"/>
+      <Field id="sv2#area8#page20#enu18#fld72" name="email" type="string" modifiable="true" attribute="ent5#att22"/>
+      <Field id="sv2#area8#page20#enu18#fld73" name="password" type="string" modifiable="true" attribute="ent5#att21"/>
+      <MultiSelectionField id="sv2#area8#page20#enu18#msfld4" name="Living Buildings" type="string" role="rel6#role11"/>
+      <Field id="sv2#area8#page20#enu18#fld74" name="oid" type="integer" modifiable="false" attribute="ent5#att18"/>
+      <Link id="sv2#area8#page20#enu18#ln108" name="Save" to="sv2#area8#miu19" type="normal" validate="true">
+        <LinkParameter id="sv2#area8#page20#enu18#ln108#par179" name="Key [oid]_User Key" source="key.ent5#att18" target="sv2#area8#miu19.mov1#opm10#icu12#icp14"/>
+        <LinkParameter id="sv2#area8#page20#enu18#ln108#par180" name="User2 Object_User Object" source="entityBean" target="sv2#area8#miu19.mov1#opm10#icu12#icp15"/>
+      </Link>
+      <Link id="sv2#area8#page20#enu18#ln109" name="Delete" to="sv2#area8#miu20" type="normal" validate="true">
+        <LinkParameter id="sv2#area8#page20#enu18#ln109#par181" name="Key [oid]_Delete Key" source="key.ent5#att18" target="sv2#area8#miu20.mov1#opm9#icu11#icp13"/>
+      </Link>
+    </EntryUnit>
+  </ContentUnits>
+  <layout:Grid containerType="grid">
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area8#page20#mssu2"/>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12"/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area8#page20#pwu34">
+          <layout:Link link="sv2#area8#page20#pwu34#ln107"/>
+          <layout:Attribute attribute="ent5#att18"/>
+          <layout:Attribute attribute="ent5#att19"/>
+          <layout:Attribute attribute="ent5#att20"/>
+          <layout:Attribute attribute="ent5#att22"/>
+          <layout:Attribute attribute="ent5#att21"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+    <layout:Row>
+      <layout:Cell colspan="12">
+        <layout:Unit unitId="sv2#area8#page20#enu18">
+          <layout:Field field="sv2#area8#page20#enu18#fld74"/>
+          <layout:Field field="sv2#area8#page20#enu18#fld70"/>
+          <layout:Field field="sv2#area8#page20#enu18#fld71"/>
+          <layout:Field field="sv2#area8#page20#enu18#fld72"/>
+          <layout:Field field="sv2#area8#page20#enu18#fld73"/>
+          <layout:Field field="sv2#area8#page20#enu18#msfld4"/>
+          <layout:Link link="sv2#area8#page20#enu18#ln108"/>
+          <layout:Link link="sv2#area8#page20#enu18#ln109"/>
+        </layout:Unit>
+      </layout:Cell>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+      <layout:Cell/>
+    </layout:Row>
+  </layout:Grid>
+</Page>

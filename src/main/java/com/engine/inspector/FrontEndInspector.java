@@ -265,7 +265,7 @@ public class FrontEndInspector {
 
 		}
 
-		// acond case, looks for attribute
+		// acond case, looks for attributes
 		if (bindingParameter.getTargetId().contains("acond")) {
 
 			AttributesConditionE attributesConditionExtractor = new AttributesConditionE();
@@ -312,8 +312,9 @@ public class FrontEndInspector {
 				viewComponentParts.add(((FieldImpl) field).getAttribute());
 
 			if (field instanceof SelectionFieldImpl) {
-				Attribute selectionFieldAttribute;
+				Attribute selectionFieldAttribute = null;
 
+				if (((SelectionFieldImpl) field).getRelationshipRoleCondition() != null) {
 				// search on relationshiprole1
 				if (dataModelUtil.findRelationshipRole1(
 						((SelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
@@ -332,7 +333,9 @@ public class FrontEndInspector {
 				selectionFieldAttribute.setType(dataModelUtil.findAttributeType(selectionFieldAttribute.getEntity(),
 						selectionFieldAttribute.getId()));
 				selectionFieldAttribute.setKey(true);
-
+				}else if (((SelectionFieldImpl) field).getAttribute()!=null)
+					selectionFieldAttribute = ((SelectionFieldImpl) field).getAttribute();
+				
 				viewComponentParts.add(selectionFieldAttribute);
 			}
 
@@ -454,8 +457,9 @@ public class FrontEndInspector {
 				viewComponentParts.add(((FieldImpl) field).getAttribute());
 
 			if (field instanceof SelectionFieldImpl) {
-				Attribute selectionFieldAttribute;
-
+				Attribute selectionFieldAttribute = null;
+				
+				if (((SelectionFieldImpl) field).getRelationshipRoleCondition() != null) {
 				// search on relationshiprole1
 				if (dataModelUtil.findRelationshipRole1(
 						((SelectionFieldImpl) field).getRelationshipRoleCondition().getId()) != null)
@@ -466,7 +470,8 @@ public class FrontEndInspector {
 					selectionFieldAttribute = new Attribute(dataModelUtil
 							.findRelationshipRole2(((SelectionFieldImpl) field).getRelationshipRoleCondition().getId())
 							.getJoinColumn().getAttribute());
-
+				
+				
 				selectionFieldAttribute.setEntity(dataModelUtil.findEntity(selectionFieldAttribute.getId().substring(0,
 						selectionFieldAttribute.getId().lastIndexOf("#"))));
 				selectionFieldAttribute.setName(dataModelUtil.findAttributeName(selectionFieldAttribute.getEntity(),
@@ -474,7 +479,9 @@ public class FrontEndInspector {
 				selectionFieldAttribute.setType(dataModelUtil.findAttributeType(selectionFieldAttribute.getEntity(),
 						selectionFieldAttribute.getId()));
 				selectionFieldAttribute.setKey(true);
-
+				}else if (((SelectionFieldImpl) field).getAttribute()!=null)
+					selectionFieldAttribute = ((SelectionFieldImpl) field).getAttribute();
+				
 				viewComponentParts.add(selectionFieldAttribute);
 			}
 
@@ -686,14 +693,4 @@ public class FrontEndInspector {
 		this.paths = paths;
 	}
 
-	// public Stack<InteractionFlowElement> getStack() {
-	// return stack;
-	// }
-	//
-	//
-	// public void setStack(Stack<InteractionFlowElement> stack) {
-	// this.stack = stack;
-	// }
-	//
-	//
 }

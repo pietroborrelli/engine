@@ -65,8 +65,12 @@ public class SortKey {
 				return false;
 		} else if (!entity.equals(other.entity))
 			return false;
+		else if (entity.equals(other.entity) && !name.equals(other.name))
+			return false;
 		return true;
 	}
+	
+	
 	public String getId() {
 		return id;
 	}

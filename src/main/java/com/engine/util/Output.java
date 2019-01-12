@@ -28,11 +28,11 @@ public class Output {
 	 */
 	public void printAbstractModel(Collection collection, String area ) {
 		
-		System.out.println("Output on: " + outputPathAbstractModel + area + "/" + collection.getId() +"-"+ collection.getName()+".txt");
+		System.out.println("Output on: " + outputPathAbstractModel + area + "/" +collection.getPath().getIdPath() + "/" + collection.getId() +"-"+ collection.getName()+".txt");
 		
 	    FileWriter fileWriter = null;
 		try {
-			fileWriter = new FileWriter(outputPathAbstractModel + area + "/" + collection.getId() + "-"+ collection.getName()+".txt");
+			fileWriter = new FileWriter(outputPathAbstractModel + area + "/"  + collection.getPath().getIdPath() + "/" + collection.getId() + "-"+ collection.getName()+".txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -67,11 +67,11 @@ public class Output {
  */
 public void printPhysicalModel(Collection collection,String area, String script) {
 		
-		System.out.println("Output on: " + outputPathPhysicalModel + area + "/" + collection.getId() +"-"+ collection.getName()+".txt");
+		System.out.println("Output on: " + outputPathPhysicalModel + area + "/" + collection.getPath().getIdPath() +"/"+ collection.getId() +"-"+ collection.getName()+".txt");
 		
 	    FileWriter fileWriter=null;
 		try {
-			fileWriter = new FileWriter(outputPathPhysicalModel + area + "/" + collection.getId() + "-"+ collection.getName()+".txt");
+			fileWriter = new FileWriter(outputPathPhysicalModel + area + "/" + collection.getPath().getIdPath() +"/"+  collection.getId() + "-"+ collection.getName()+".txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

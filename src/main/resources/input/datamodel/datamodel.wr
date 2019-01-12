@@ -52,6 +52,8 @@
     <Attribute id="ent1#att25" name="production_year" type="string" db:column="production_year"/>
     <Attribute id="ent1#att24" name="make" type="string" db:column="make"/>
     <Attribute id="ent1#att26" name="model" type="string" db:column="model"/>
+    <Comment xml:space="preserve">rispetto a Reading, Smart meter ha molecplicit&#224; 1
+Schema padre dell'associazione</Comment>
   </Entity>
   <Entity id="ent2" name="Building" duration="persistent" attributeOrder="ent2#att4 ent2#att5 ent2#att11" gr:x="35" gr:y="605" db:database="db1" db:table="building">
     <Attribute id="ent2#att4" name="oid" key="true" type="integer" db:column="oid"/>
@@ -66,6 +68,8 @@
     <Attribute id="ent3#att23" name="status_explanation" type="string" db:column="status_explanation"/>
     <Attribute id="ent3#att17" name="status_code" type="string" db:column="status_code"/>
     <Attribute id="ent3#att6" name="validity" type="boolean" db:column="validity"/>
+    <Comment xml:space="preserve">Reading ha moleplicit&#224; N, sulla relazione con SmartMeter
+Schema figlio dell'associazione</Comment>
   </Entity>
   <db:Database id="db1" name="encompass_webratio" type="MySQL" url="jdbc:mysql://127.0.0.1:3306/encompass_webratio" cryptedPassword="true" password="cm9vdA==" username="root">
   </db:Database>
@@ -77,7 +81,7 @@
     <Attribute id="ent4#att15" name="longitude" type="float" db:column="longitude"/>
     <Attribute id="ent4#att16" name="latitude" type="float" db:column="latitude"/>
   </Entity>
-  <Relationship id="rel3" name="GeoArea_Building" sourceEntity="ent4" targetEntity="ent2" db:database="db1" db:table="building" gr:bendpoints="-87,49,158,-81">
+  <Relationship id="rel3" name="GeoArea_Building" sourceEntity="ent4" targetEntity="ent2" db:database="db1" db:table="building">
     <RelationshipRole1 id="rel3#role5" name="GeoAreaToBuilding" maxCard="N">
       <db:JoinColumn attribute="ent4#att3" name="geoarea_oid"/>
     </RelationshipRole1>

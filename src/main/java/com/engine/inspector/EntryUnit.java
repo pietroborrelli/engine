@@ -337,10 +337,29 @@ public final class EntryUnit implements ViewComponentExtractor {
 
 				selectionField.setRelationshipRoleCondition(relationshipRoleCondition);
 
-				return selectionField;
+				
 
 			}
+			if (!attributeId.isEmpty()) {
+				Attribute entityAttribute = new Attribute();
+				entityAttribute.setId(attributeId);
+				// set name of attribute from entity
+				entityAttribute.setName(dataModelUtil.findAttributeName(
+						dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))),
+						entityAttribute.getId()));
 
+				// set type of attribute from entity
+				entityAttribute.setType(dataModelUtil.findAttributeType(
+						dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))),
+						entityAttribute.getId()));
+
+				// set entity on attribute
+				entityAttribute
+						.setEntity(dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#"))));
+				
+				selectionField.setAttribute(entityAttribute);
+			}
+			return selectionField;
 		}
 
 		if (node.getNodeName().equals(FORM_MULTI_SELECTION_FIELD)) {

@@ -2,6 +2,7 @@ package com.engine.domain.wrapper;
 
 import java.util.List;
 
+import com.engine.domain.abstractmodel.Collection;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 
 /*
@@ -11,6 +12,7 @@ public class Path {
 
 	private Integer idPath;
 	private List<InteractionFlowElement> interactionFlowElements;
+	private List<Collection> collections;
 	
 	public Path(Integer idPath,List<InteractionFlowElement> interactionFlowElements) {
 		this.idPath = idPath;
@@ -53,6 +55,14 @@ public class Path {
 		} else if (!interactionFlowElements.equals(other.interactionFlowElements))
 			return false;
 		return true;
+	}
+
+	public List<Collection> getCollections() {
+		return collections;
+	}
+
+	public void setCollections(List<Collection> collections) {
+		this.collections = collections;
 	}
 
 
