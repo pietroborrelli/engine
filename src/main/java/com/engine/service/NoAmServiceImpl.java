@@ -49,30 +49,31 @@ public class NoAmServiceImpl implements NoAmService {
 		List<Collection> collections = new ArrayList<Collection>();
 		System.out.println("--------- CREAZIONE DEL NO AM ---------");
 
-			List<Entry> entries = new ArrayList<Entry>();
-			List<InteractionFlowElement> interactionFlowElements = new ArrayList<InteractionFlowElement>();
+		List<Entry> entries = new ArrayList<Entry>();
+		List<InteractionFlowElement> interactionFlowElements = new ArrayList<InteractionFlowElement>();
 
-			// create a collection for each VC of the path
-			for (InteractionFlowElement interactionFlowElement : path.getInteractionFlowElements()) {
-				interactionFlowElements.add(interactionFlowElement);
+		// create a collection for each VC of the path
+		for (InteractionFlowElement interactionFlowElement : path.getInteractionFlowElements()) {
+			interactionFlowElements.add(interactionFlowElement);
 
-				entries = createEntries(interactionFlowElements);
-				System.out.println(entries.size() + " entries");
-				Block block = createBlock(interactionFlowElements, entries);
-				System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
-				System.out.println(block.getKey().getSortKeys().size() + " sort keys");
+			entries = createEntries(interactionFlowElements);
+			System.out.println(entries.size() + " entries");
+			Block block = createBlock(interactionFlowElements, entries);
+			System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
+			System.out.println(block.getKey().getSortKeys().size() + " sort keys");
 
-				Collection collection = createCollection(interactionFlowElements,path, block, entries);
+			Collection collection = createCollection(interactionFlowElements, path, block, entries);
 
-				collections.add(collection);
-			}
+			collections.add(collection);
+		}
 
 		return collections;
 	}
 
 	@Override
-	public Collection createCollection(List<InteractionFlowElement> interactionFlowElements, Path path, Block block, List<Entry> entries) {
-		Collection collection = new Collection(path.getIdPath()+"."+interactionFlowElements.size());
+	public Collection createCollection(List<InteractionFlowElement> interactionFlowElements, Path path, Block block,
+			List<Entry> entries) {
+		Collection collection = new Collection(path.getIdPath() + "." + interactionFlowElements.size());
 		collection.setPath(path);
 		// get leaf node as name of the collection
 		for (InteractionFlowElement interactionFlowElement : interactionFlowElements) {
@@ -82,8 +83,7 @@ public class NoAmServiceImpl implements NoAmService {
 		}
 		// means there is a leaf pointing to an action
 		if (collection.getName() == null)
-			collection.setName(
-					interactionFlowElements.get(interactionFlowElements.size() - 1).getName());
+			collection.setName(interactionFlowElements.get(interactionFlowElements.size() - 1).getName());
 		;
 		collection.setBlock(block);
 
@@ -680,27 +680,229 @@ public class NoAmServiceImpl implements NoAmService {
 		return entries;
 	}
 
-	/* 
+	/*
 	 * Optimization on path scope
 	 */
 	@Override
 	public List<Collection> localOptimization(List<Collection> collections) {
 
-		//field aggregation
+		// field aggregation
 		List<Collection> optimizedCollections = optimizeReadingAccessPaths(collections);
 
-		//collection aggregation
+		// collection aggregation
 		optimizedCollections = optimizeCollections(collections);
-		
-		
+
 		return optimizedCollections;
 	}
 
-
 	@Override
+	// TODO da finire ottimizzazione sul percorso
 	public List<Collection> optimizeCollections(List<Collection> collections) {
-		// TODO Auto-generated method stub
-		return null;
+
+		ArrayList<Collection> collectionsTemp = new ArrayList<Collection>(collections);
+		ArrayList<Collection> collectionsTemp2 = new ArrayList<Collection>(collections);
+		ArrayList<Collection> optimizedCollections = new ArrayList<Collection>();
+
+		for (Collection collectionTemp : collectionsTemp) {
+
+			String name = collectionTemp.getName();
+			ArrayList<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
+			ArrayList<SortKey> sortKeys = new ArrayList<SortKey>();
+			ArrayList<Entry> entries = new ArrayList<Entry>();
+
+			for (Collection collectionTemp2 : collectionsTemp2) {
+
+				// comparing different collections
+				if (!collectionTemp.getName().equals(collectionTemp2.getName())) {
+
+					if (haveSamePartitionKeys(collectionTemp.getBlock().getKey().getPartitionKeys(),
+							collectionTemp2.getBlock().getKey().getPartitionKeys())) {
+
+						partitionKeys.addAll(collectionTemp2.getBlock().getKey().getPartitionKeys());
+
+						sortKeys.addAll(collectionTemp2.getBlock().getKey().getSortKeys());
+						sortKeys.addAll(collectionTemp.getBlock().getKey().getSortKeys());
+
+						entries.addAll(collectionTemp2.getBlock().getEntries());
+						entries.addAll(collectionTemp.getBlock().getEntries());
+
+						name = name + "-" + collectionTemp2.getName();
+					}
+				}
+			}
+
+			if (!partitionKeys.isEmpty()) {
+
+				Collection collection = new Collection(collectionTemp.getId());
+				collection.setName(name);
+				collection.setPath(collectionTemp.getPath());
+
+				PrimaryKey primaryKey = new PrimaryKey(collectionTemp.getBlock().getKey().getPartitionKeys(),
+						collectionTemp.getBlock().getKey().getSortKeys());
+				primaryKey.getPartitionKeys().addAll(partitionKeys);
+				primaryKey.getSortKeys().addAll(sortKeys);
+				primaryKey.setPartitionKeys(
+						primaryKey.getPartitionKeys().stream().distinct().collect(Collectors.toList()));
+				primaryKey.setSortKeys(primaryKey.getSortKeys().stream().distinct().collect(Collectors.toList()));
+				primaryKey.setSortKeys(removeSortKeysWithDifferentOrder(primaryKey.getSortKeys()));
+
+				collection.getBlock().setKey(primaryKey);
+
+				collection.getBlock().setEntries(collectionTemp.getBlock().getEntries());
+				collection.getBlock().getEntries().addAll(entries);
+
+				collection.getBlock().setEntries(removeDuplicatesEntries(collection.getBlock().getEntries()));
+
+				optimizedCollections.add(collection);
+
+			}
+
+		}
+
+		return removeDuplicatesCollections(optimizedCollections);
+	}
+
+	private List<Entry> removeDuplicatesEntries(List<Entry> entries) {
+
+		entries = entries.stream().distinct().collect(Collectors.toList());
+
+		ArrayList<Entry> entriesTemp = new ArrayList<Entry>(entries);
+		ArrayList<Entry> entriesTemp2 = new ArrayList<Entry>(entries);
+
+		for (Entry entryTemp : entriesTemp) {
+
+			for (Entry entryTemp2 : entriesTemp2) {
+
+				// > 4, because for example ent1#att26 contains ent1#att2 !!
+				if (entryTemp.getId().length() > entryTemp2.getId().length()
+						&& entryTemp.getId().contains(entryTemp2.getId())
+						&& (entryTemp.getId().length() - entryTemp2.getId().length() > 4))
+
+					entries.remove(entryTemp2);
+				else if (entryTemp2.getId().length() > entryTemp.getId().length()
+						&& entryTemp2.getId().contains(entryTemp.getId())
+						&& (entryTemp2.getId().length() - entryTemp.getId().length() > 4))
+					entries.remove(entryTemp);
+
+			}
+		}
+		return entries;
+	}
+
+	/**
+	 * @param collections
+	 * @return list of collection without duplicates (comparison based on the keys
+	 *         and entries)
+	 */
+	private List<Collection> removeDuplicatesCollections(List<Collection> collections) {
+
+		ArrayList<Collection> collectionsTemp = new ArrayList<Collection>(collections);
+		ArrayList<Collection> collectionsTemp2 = new ArrayList<Collection>(collections);
+		ArrayList<Collection> newCollection = new ArrayList<Collection>();
+
+		for (Collection collectionTemp : collectionsTemp) {
+
+			for (Collection collectionTemp2 : collectionsTemp2) {
+
+				if (!collectionTemp.getName().equals(collectionTemp2.getName())
+						&& haveSamePartitionKeys(collectionTemp.getBlock().getKey().getPartitionKeys(),
+								collectionTemp2.getBlock().getKey().getPartitionKeys())
+						&& haveSameSortKeys(collectionTemp.getBlock().getKey().getSortKeys(),
+								collectionTemp2.getBlock().getKey().getSortKeys())
+						&& haveSameEntries(collectionTemp.getBlock().getEntries(),
+								collectionTemp2.getBlock().getEntries())
+						&& !collectionHasAlreadyBeenAdded(collectionTemp2, newCollection)) {
+
+					collections.remove(collectionTemp2);
+
+				}
+
+			}
+		}
+		return collections;
+	}
+
+	/**
+	 * @param aggregateEntry
+	 * @param entries
+	 * @return true if collection has been already inserted in the new collection
+	 *         list,
+	 */
+	private boolean collectionHasAlreadyBeenAdded(Collection collection, List<Collection> alreadyAddedCollections) {
+
+		Boolean found = false;
+
+		for (Collection alreadyAddedCollection : alreadyAddedCollections) {
+
+			if (haveSamePartitionKeys(collection.getBlock().getKey().getPartitionKeys(),
+					alreadyAddedCollection.getBlock().getKey().getPartitionKeys())
+					&& haveSameSortKeys(collection.getBlock().getKey().getSortKeys(),
+							alreadyAddedCollection.getBlock().getKey().getSortKeys())
+					&& haveSameEntries(collection.getBlock().getEntries(),
+							alreadyAddedCollection.getBlock().getEntries()))
+				found = true;
+		}
+
+		return found;
+
+	}
+
+	private boolean haveSameEntries(List<Entry> entries, List<Entry> entries2) {
+		boolean same = false;
+		for (Entry entry : entries) {
+			same = false;
+
+			for (Entry entry2 : entries2) {
+
+				if (entry.equals(entry2))
+					same = true;
+			}
+
+			if (!same)
+				return same;
+		}
+
+		return same;
+	}
+
+	private boolean haveSameSortKeys(List<SortKey> sortKeys, List<SortKey> sortKeys2) {
+		boolean same = false;
+		for (SortKey sortKey : sortKeys) {
+			same = false;
+
+			for (SortKey sortKey2 : sortKeys2) {
+
+				if (sortKey.equals(sortKey2))
+					same = true;
+			}
+
+			if (!same)
+				return same;
+		}
+
+		return same;
+	}
+
+	private boolean haveSamePartitionKeys(List<PartitionKey> partitionKeys, List<PartitionKey> partitionKeys2) {
+		boolean same = false;
+		
+		if (partitionKeys.size() != partitionKeys2.size())
+			return same;
+		
+		for (PartitionKey partitionKey : partitionKeys) {
+			same = false;
+
+			for (PartitionKey partitionKey2 : partitionKeys2) {
+
+				if (partitionKey.equals(partitionKey2))
+					same = true;
+			}
+
+			if (!same)
+				return same;
+		}
+
+		return same;
 	}
 
 	/*
