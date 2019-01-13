@@ -59,24 +59,7 @@
         <KeyCondition id="sv2#area10#page27#dau13#su62#kcond31" name="KeyCondition14" predicate="in" implied="false"/>
       </Selector>
     </DataUnit>
-    <PowerIndexUnit gr:x="5" gr:y="320" id="sv2#area10#page27#pwu47" name="Inverse" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att7" linkOrder="sv2#area10#page27#pwu47#ln142">
-      <Link id="sv2#area10#page27#pwu47#ln142" name="Flow142" to="sv2#area10#page27#dau14" type="normal" validate="true">
-        <LinkParameter id="sv2#area10#page27#pwu47#ln142#par242" name="oid_RoleCondition40 [oid]" source="data[].ent3#att7" target="sv2#area10#page27#dau14#su66#rcond40.ent3#att7"/>
-      </Link>
-    </PowerIndexUnit>
-    <DataUnit gr:x="150" gr:y="360" id="sv2#area10#page27#dau14" name="smss" entity="ent1" displayAttributes="ent1#att25 ent1#att24 ent1#att26">
-      <Selector id="sv2#area10#page27#dau14#su66" defaultPolicy="fill" booleanOperator="and">
-        <RelationshipRoleCondition id="sv2#area10#page27#dau14#su66#rcond40" name="RoleCondition40" predicate="in" implied="false" role="rel8#role16"/>
-      </Selector>
-      <Link id="sv2#area10#page27#dau14#ln144" name="Flow144" to="sv2#area10#page27#pwu48" type="transport" validate="true">
-        <LinkParameter id="sv2#area10#page27#dau14#ln144#par244" name="oid_RoleCondition41 [oid]" source="data.ent1#att1" target="sv2#area10#page27#pwu48#su68#rcond42.ent1#att1"/>
-      </Link>
-    </DataUnit>
-    <PowerIndexUnit id="sv2#area10#page27#pwu48" entity="ent2" sortable="true" checkable="false" useCountQuery="false" gr:x="155" gr:y="490" name="building">
-      <Selector id="sv2#area10#page27#pwu48#su68" defaultPolicy="fill" booleanOperator="and">
-        <RelationshipRoleCondition id="sv2#area10#page27#pwu48#su68#rcond42" role="rel4#role8" predicate="in" implied="false" name="RoleCondition41"/>
-      </Selector>
-    </PowerIndexUnit>
+    <PowerIndexUnit gr:x="45" gr:y="360" id="sv2#area10#page27#pwu47" name="Inverse" sortable="true" checkable="false" useCountQuery="false" entity="ent3" displayAttributes="ent3#att7"/>
   </ContentUnits>
   <layout:Grid containerType="grid">
     <layout:Row>
@@ -248,7 +231,6 @@
       <layout:Cell colspan="12">
         <layout:Unit unitId="sv2#area10#page27#pwu47">
           <layout:Attribute attribute="ent3#att7"/>
-          <layout:Link link="sv2#area10#page27#pwu47#ln142"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>
@@ -264,13 +246,7 @@
       <layout:Cell/>
     </layout:Row>
     <layout:Row>
-      <layout:Cell colspan="12">
-        <layout:Unit unitId="sv2#area10#page27#dau14">
-          <layout:Attribute attribute="ent1#att25"/>
-          <layout:Attribute attribute="ent1#att24"/>
-          <layout:Attribute attribute="ent1#att26"/>
-        </layout:Unit>
-      </layout:Cell>
+      <layout:Cell colspan="12"/>
       <layout:Cell/>
       <layout:Cell/>
       <layout:Cell/>
@@ -284,9 +260,7 @@
       <layout:Cell/>
     </layout:Row>
     <layout:Row>
-      <layout:Cell colspan="12">
-        <layout:Unit unitId="sv2#area10#page27#pwu48"/>
-      </layout:Cell>
+      <layout:Cell colspan="12"/>
       <layout:Cell/>
       <layout:Cell/>
       <layout:Cell/>

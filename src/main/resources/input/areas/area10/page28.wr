@@ -1,6 +1,6 @@
-<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv2#area10#page28" name="Geographic Area" landmark="true" gr:x="0" gr:y="620">
+<Page xmlns:gr="http://www.webratio.com/2006/WebML/Graph" xmlns:layout="http://www.webratio.com/2006/WebML/Layout" id="sv2#area10#page28" name="Geographic Area" landmark="true" gr:x="5" gr:y="650">
   <ContentUnits>
-    <PowerIndexUnit id="sv2#area10#page28#pwu43" name="GeoAreas List" linkOrder="sv2#area10#page28#pwu43#ln137 sv2#area10#page28#pwu43#ln138" gr:x="0" gr:y="0" sortable="true" checkable="false" useCountQuery="false" entity="ent4" displayAttributes="ent4#att12 ent4#att13 ent4#att14 ent4#att15 ent4#att16">
+    <PowerIndexUnit id="sv2#area10#page28#pwu43" name="GeoAreas List" linkOrder="sv2#area10#page28#pwu43#ln137 sv2#area10#page28#pwu43#ln138" gr:x="0" gr:y="0" sortable="true" checkable="false" useCountQuery="false" entity="ent4" displayAttributes="ent4#att12 ent4#att13 ent4#att14">
       <Link id="sv2#area10#page28#pwu43#ln137" name="Coordinates" to="sv2#area10#page28#enu25" type="normal" validate="true">
         <LinkParameter id="sv2#area10#page28#pwu43#ln137#par229" name="oid_Key Condition [oid]" source="data[].ent4#att3" target="sv2#area10#page28#enu25.ent4#att3"/>
       </Link>
@@ -9,8 +9,10 @@
       </Link>
     </PowerIndexUnit>
     <EntryUnit id="sv2#area10#page28#enu25" name="GeoArea Coordinates" gr:x="10" gr:y="155" entity="ent4">
-      <Field id="sv2#area10#page28#enu25#fld92" name="longitude" type="float" modifiable="true" attribute="ent4#att15"/>
-      <Field id="sv2#area10#page28#enu25#fld93" name="latitude" type="float" modifiable="true" attribute="ent4#att16"/>
+      <Field id="sv2#area10#page28#enu25#fld92" name="x2" type="float" modifiable="true" attribute="ent4#att30"/>
+      <Field id="sv2#area10#page28#enu25#fld93" name="x1" type="float" modifiable="true" attribute="ent4#att29"/>
+      <Field id="sv2#area10#page28#enu25#fld97" name="y1" type="float" modifiable="true" attribute="ent4#att27"/>
+      <Field id="sv2#area10#page28#enu25#fld98" name="y2" type="float" modifiable="true" attribute="ent4#att28"/>
     </EntryUnit>
     <PowerIndexUnit id="sv2#area10#page28#pwu44" name="Readings by geoarea" gr:x="180" gr:y="150" entity="ent3" displayAttributes="ent3#att10 ent3#att9 ent3#att8 ent3#att6" sortable="true" checkable="false" useCountQuery="false">
       <Selector id="sv2#area10#page28#pwu44#su63" defaultPolicy="fill" booleanOperator="and">
@@ -53,13 +55,11 @@
     <layout:Row>
       <layout:Cell colspan="12">
         <layout:Unit unitId="sv2#area10#page28#pwu43">
+          <layout:Link link="sv2#area10#page28#pwu43#ln137"/>
+          <layout:Link link="sv2#area10#page28#pwu43#ln138"/>
           <layout:Attribute attribute="ent4#att12"/>
           <layout:Attribute attribute="ent4#att13"/>
           <layout:Attribute attribute="ent4#att14"/>
-          <layout:Attribute attribute="ent4#att15"/>
-          <layout:Attribute attribute="ent4#att16"/>
-          <layout:Link link="sv2#area10#page28#pwu43#ln137"/>
-          <layout:Link link="sv2#area10#page28#pwu43#ln138"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>
@@ -79,6 +79,8 @@
         <layout:Unit unitId="sv2#area10#page28#enu25">
           <layout:Field field="sv2#area10#page28#enu25#fld92"/>
           <layout:Field field="sv2#area10#page28#enu25#fld93"/>
+          <layout:Field field="sv2#area10#page28#enu25#fld97"/>
+          <layout:Field field="sv2#area10#page28#enu25#fld98"/>
         </layout:Unit>
       </layout:Cell>
       <layout:Cell/>

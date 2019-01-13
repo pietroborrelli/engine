@@ -73,13 +73,15 @@ Schema figlio dell'associazione</Comment>
   </Entity>
   <db:Database id="db1" name="encompass_webratio" type="MySQL" url="jdbc:mysql://127.0.0.1:3306/encompass_webratio" cryptedPassword="true" password="cm9vdA==" username="root">
   </db:Database>
-  <Entity gr:x="310" gr:y="435" id="ent4" name="GeoArea" duration="persistent" attributeOrder="ent4#att3 ent4#att12 ent4#att13 ent4#att14 ent4#att15 ent4#att16" db:database="db1" db:table="geoarea">
+  <Entity gr:x="310" gr:y="405" id="ent4" name="GeoArea" duration="persistent" attributeOrder="ent4#att3 ent4#att12 ent4#att13 ent4#att14 ent4#att27 ent4#att28 ent4#att29 ent4#att30" db:database="db1" db:table="geoarea">
     <Attribute id="ent4#att3" key="true" name="oid" type="integer" db:column="oid"/>
     <Attribute id="ent4#att12" name="country" type="string" db:column="country"/>
     <Attribute id="ent4#att13" name="district" type="string" db:column="district"/>
     <Attribute id="ent4#att14" name="name" type="string" db:column="name"/>
-    <Attribute id="ent4#att15" name="longitude" type="float" db:column="longitude"/>
-    <Attribute id="ent4#att16" name="latitude" type="float" db:column="latitude"/>
+    <Attribute id="ent4#att27" name="y1" type="float" db:column="y1"/>
+    <Attribute id="ent4#att28" name="y2" type="float" db:column="y2"/>
+    <Attribute id="ent4#att29" name="x1" type="float" db:column="x1"/>
+    <Attribute id="ent4#att30" name="x2" type="float" db:column="x2"/>
   </Entity>
   <Relationship id="rel3" name="GeoArea_Building" sourceEntity="ent4" targetEntity="ent2" db:database="db1" db:table="building">
     <RelationshipRole1 id="rel3#role5" name="GeoAreaToBuilding" maxCard="N">
