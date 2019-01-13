@@ -45,16 +45,17 @@ public class EngineApplication implements CommandLineRunner {
 	private String inputPathDataModel;
 	@Value("${input.path.areas}")
 	private String inputPathAreas;
-	@Value("${input.path.abstractmodel}")
-	private String inputPathAbstractModel;
-	
+
 	// output path
-	@Value("${output.path.abstractmodel}")
-	private String outputPathAbstractModel;
-	@Value("${output.path.physicalmodel}")
-	private String outputPathPhysicalModel;
-	
-	
+	@Value("${output.path}")
+	private String outputPath;
+
+	static String OUTPUT_PM = "physical_model/";
+	static String OUTPUT_NOAM = "abstract_model/";
+
+	static String OUTPUT_PM_OPTIMIZATION = "physical_model/optimization/";
+	static String OUTPUT_NOAM_OPTIMIZATION = "abstract_model/optimization/";
+
 	@Autowired
 	public EngineApplication(DataModelService dataModelService, AreaService areaService, PageService pageService,
 			NoAmService noAmService, Parser parser, Output output) {
@@ -73,14 +74,17 @@ public class EngineApplication implements CommandLineRunner {
 
 	public void run(String... args) throws Exception {
 
+		System.out.println(" START ");
+		
 		initializeFileSystem();
 
 		FrontEndInspector frontEndInspector = initializeFrontEndInspector();
 
 		noAmService.setDataModelUtil(frontEndInspector.getDataModelUtil());
-		
+
 		navigateFrontEnd(frontEndInspector);
 
+		System.out.println(" END SUCCESS ");
 	}
 
 	private void navigateFrontEnd(FrontEndInspector frontEndInspector) throws Exception {
@@ -108,19 +112,19 @@ public class EngineApplication implements CommandLineRunner {
 				frontEndInspector.setDocument(document);
 				Page page = frontEndInspector.elaborateDocument();
 
-				List<InteractionFlowElement> viewComponents = frontEndInspector.findViewComponents();
-				
-				
-				List<Path> paths = frontEndInspector.extractPaths(viewComponents);
-				
-				
-				paths.stream().forEach(p->p.setCollections(noAmService.computeAbstractModels(p)));
-				
-				
-				paths.stream().forEach(p->p.setCollections(noAmService.optimize(p.getCollections())));
+				// found a page with no wr model
+				if (page.getId() == null && page.getName() == null)
+					continue;
 
-				
-				paths.stream().forEach(p->generateModels(p,p.getCollections(),area.getName()));
+				List<InteractionFlowElement> viewComponents = frontEndInspector.findViewComponents();
+
+				List<Path> paths = frontEndInspector.extractPaths(viewComponents);
+
+				paths.stream().forEach(p -> p.setCollections(noAmService.computeAbstractModels(p)));
+				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), false));
+
+				paths.stream().forEach(p -> p.setCollections(noAmService.localOptimization(p.getCollections())));
+				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), true));
 
 				pages.add(page);
 
@@ -144,26 +148,37 @@ public class EngineApplication implements CommandLineRunner {
 	private void initializeFileSystem() {
 		// prepare and clean directory
 		try {
-			FileUtils.cleanDirectory(new File(inputPathAbstractModel));
-			FileUtils.cleanDirectory(new File(outputPathAbstractModel));
-			FileUtils.cleanDirectory(new File(outputPathPhysicalModel));
+
+			if (new File(outputPath + OUTPUT_NOAM).exists())
+				FileUtils.cleanDirectory(new File(outputPath + OUTPUT_NOAM));
+
+			if (new File(outputPath + OUTPUT_PM).exists())
+				FileUtils.cleanDirectory(new File(outputPath + OUTPUT_PM));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void generateModels(Path path, List<Collection> collections, String area) {
+	public void generateModels(Path path, List<Collection> collections, Page page, String area, boolean optimization) {
 
-		//create output folder according with the area
-		new File(outputPathPhysicalModel+area+"/"+path.getIdPath()+"/").mkdirs();
-		new File(outputPathAbstractModel+area+"/"+path.getIdPath()+"/").mkdirs();
-		
+		String pageName = page.getName().substring(page.getName().lastIndexOf("#") + 1);
+
+		// create output folder according with the area
+		if (optimization) {
+			new File(outputPath + OUTPUT_PM_OPTIMIZATION + area + "/" + pageName + "/" + path.getIdPath()).mkdirs();
+			new File(outputPath + OUTPUT_NOAM_OPTIMIZATION + area + "/" + pageName + "/" + +path.getIdPath() + "/")
+					.mkdirs();
+		} else {
+			new File(outputPath + OUTPUT_NOAM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
+			new File(outputPath + OUTPUT_PM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
+		}
 		for (Collection collection : collections) {
 
 			// print noAM
-			output.printAbstractModel(collection,area);
+			output.printAbstractModel(collection, area,pageName, optimization);
 			// print Physical Implementation
-			output.printPhysicalModel(collection, area,  parser.buildPhysicalModel(collection));
+			output.printPhysicalModel(collection, area, parser.buildPhysicalModel(collection),pageName, optimization);
 
 		}
 	}

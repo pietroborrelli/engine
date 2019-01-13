@@ -14,14 +14,14 @@ import com.engine.domain.interactionflowelement.InteractionFlowElement;
 @Component
 public class Output {
 
-	@Value("${output.path.abstractmodel}")
-	private String outputPathAbstractModel;
-	@Value("${output.path.physicalmodel}")
-	private String outputPathPhysicalModel;
-	@Value("${output.path.abstractmodel.optimization}")
-	private String outputPathAbstractModelOptimization;
-	@Value("${output.path.physicalmodel.optimization}")
-	private String outputPathPhysicalModelOptimization;
+	@Value("${output.path}")
+	private String defaultOutputPath;
+
+	static String OUTPUT_PM = "physical_model/";
+	static String OUTPUT_NOAM = "abstract_model/";
+
+	static String OUTPUT_PM_OPTIMIZATION = "physical_model/optimization/";
+	static String OUTPUT_NOAM_OPTIMIZATION = "abstract_model/optimization/";
 
 	/**
 	 * @param collection
@@ -29,16 +29,15 @@ public class Output {
 	 * @param area
 	 * @return void. Print in console NoSQL Abstract Model and the access path
 	 */
-	public void printAbstractModel(Collection collection, String area, boolean optimization) {
-
-		String outputPath = "";
+	public void printAbstractModel(Collection collection, String area, String pageName, boolean optimization) {
+		String outputPath = defaultOutputPath;
 		if (optimization)
-			outputPath = outputPathAbstractModelOptimization + area + "/" + collection.getPath().getIdPath() + "/"
-			+ collection.getId() + "-" + collection.getName() + ".txt";
-		else
-			outputPath = outputPathAbstractModel + area + "/" + collection.getPath().getIdPath() + "/"
+			outputPath = outputPath + OUTPUT_NOAM_OPTIMIZATION + area +"/" + pageName + "/" + collection.getPath().getIdPath() + "/"
 					+ collection.getId() + "-" + collection.getName() + ".txt";
-			
+		else
+			outputPath = outputPath + OUTPUT_NOAM + area + "/" + pageName +"/" + collection.getPath().getIdPath() + "/"
+					+ collection.getId() + "-" + collection.getName() + ".txt";
+
 		System.out.println("Output on: " + outputPath);
 
 		FileWriter fileWriter = null;
@@ -74,15 +73,15 @@ public class Output {
 	 * @param collection
 	 * @param area
 	 * @param script
-	 * @return void. Print in consolle Physical Model -> script
+	 * @return void. Print in console Physical Model -> script
 	 */
-	public void printPhysicalModel(Collection collection, String area, String script, boolean optimization) {
-		String outputPath = "";
+	public void printPhysicalModel(Collection collection, String area,  String script, String pageName, boolean optimization) {
+		String outputPath = defaultOutputPath;
 		if (optimization)
-			outputPath = outputPathPhysicalModelOptimization + area + "/" + collection.getPath().getIdPath() + "/"
+			outputPath = outputPath + OUTPUT_PM_OPTIMIZATION + area + "/" + pageName +"/" + collection.getPath().getIdPath() + "/"
 					+ collection.getId() + "-" + collection.getName() + ".txt";
 		else
-			outputPath = outputPathPhysicalModel + area + "/" + collection.getPath().getIdPath() + "/"
+			outputPath = outputPath + OUTPUT_PM + area + "/" + pageName +"/" + collection.getPath().getIdPath() + "/"
 					+ collection.getId() + "-" + collection.getName() + ".txt";
 
 		System.out.println("Output on: " + outputPath);
