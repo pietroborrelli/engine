@@ -75,7 +75,7 @@ public class EngineApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		System.out.println(" START ");
-		
+
 		initializeFileSystem();
 
 		FrontEndInspector frontEndInspector = initializeFrontEndInspector();
@@ -173,13 +173,19 @@ public class EngineApplication implements CommandLineRunner {
 			new File(outputPath + OUTPUT_NOAM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
 			new File(outputPath + OUTPUT_PM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
 		}
-		for (Collection collection : collections) {
 
-			// print noAM
-			output.printAbstractModel(collection, area,pageName, optimization);
-			// print Physical Implementation
-			output.printPhysicalModel(collection, area, parser.buildPhysicalModel(collection),pageName, optimization);
+		if (!collections.isEmpty()) {
+			System.out.println("----------- OUTPUT -------------");
 
+			for (Collection collection : collections) {
+
+				// print noAM
+				output.printAbstractModel(collection, area, pageName, optimization);
+				// print Physical Implementation
+				output.printPhysicalModel(collection, area, parser.buildPhysicalModel(collection), pageName,
+						optimization);
+
+			}
 		}
 	}
 

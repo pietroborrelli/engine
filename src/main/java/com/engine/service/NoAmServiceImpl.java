@@ -97,7 +97,11 @@ public class NoAmServiceImpl implements NoAmService {
 		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
 		List<SortKey> sortKeys = new ArrayList<SortKey>();
 		PrimaryKey primaryKey = new PrimaryKey(partitionKeys, sortKeys);
-
+		
+		//collects all the entities that are navigated in the path
+		List<com.engine.mapper.datamodel.DataModel.Entity> entities = new ArrayList<com.engine.mapper.datamodel.DataModel.Entity>();
+		com.engine.mapper.datamodel.DataModel.Entity entity=null;
+		
 		// get all partition keys
 		for (int i = 0; i < interactionFlowElements.size(); i++) {
 			InteractionFlowElement current = interactionFlowElements.get(i);
@@ -106,11 +110,35 @@ public class NoAmServiceImpl implements NoAmService {
 			if ((i + 1) < interactionFlowElements.size())
 				next = interactionFlowElements.get(i + 1);
 
-			if (retrievePartitionKey(current, next) != null)
+			if (current instanceof ListImpl && ((ListImpl)current).getEntity()!=null) {
+				entity = ((ListImpl)current).getEntity();
+				entities.add(entity);
+			}
+			if (current instanceof DetailImpl && ((DetailImpl)current).getEntity()!=null) {
+				entity = ((DetailImpl)current).getEntity();
+				entities.add(entity);
+			}
+			if (current instanceof FormImpl && ((FormImpl)current).getEntity()!=null) {
+				entity = ((FormImpl)current).getEntity();
+				entities.add(entity);
+			}
+			if (current instanceof SelectorImpl && ((SelectorImpl)current).getEntity()!=null) {
+				entity = ((SelectorImpl)current).getEntity();
+				entities.add(entity);
+			}
+			
+			
+			if (retrievePartitionKey(current, next) != null) {
 				partitionKeys.addAll(retrievePartitionKey(current, next));
+			}
 
 		}
-
+		
+		//extracted attributes keys as sort key needed to guarantee uniqueness to the record
+		List<SortKey> extractedEntitiesKeys = new ArrayList<SortKey>();
+		entities.stream().forEach(e -> extractedEntitiesKeys.addAll(dataModelUtil.extractKeyAttributesIntoSortKeys(e)));
+		List<SortKey> distinctExtractedEntitiesKeys = extractedEntitiesKeys.stream().distinct().collect(Collectors.toList());
+		
 		// removed duplicates on partition list
 		partitionKeys = partitionKeys.stream().distinct().collect(Collectors.toList());
 
@@ -129,6 +157,9 @@ public class NoAmServiceImpl implements NoAmService {
 		// update partition key list by removing duplicates from sort keys
 		partitionKeys = removeDuplicatesFromPartitionKeys(partitionKeys, sortKeys);
 
+		// update sort list to guarantee uniqueness
+		sortKeys = guaranteeRecordUniqueness(sortKeys,partitionKeys,distinctExtractedEntitiesKeys);
+		
 		// update partition key list by removing partition keys related to "weak"
 		// entities (handled 1:N case)
 		// partitionKeys = removeWeakPartitionKeys(partitionKeys);
@@ -144,6 +175,42 @@ public class NoAmServiceImpl implements NoAmService {
 		block.setEntries(entries);
 
 		return block;
+	}
+
+	/**
+	 * @param sortKeys
+	 * @param partitionKeys
+	 * @param distinctExtractedEntitiesKeys
+	 * @return new sort key list comprising the attributes id of the entities, in order to guarantee uniqueness of the record.
+	 */
+	private List<SortKey> guaranteeRecordUniqueness(List<SortKey> sortKeys, List<PartitionKey> partitionKeys,
+			List<SortKey> distinctExtractedEntitiesKeys) {
+		
+		if (partitionKeys.isEmpty())
+			return sortKeys;
+		
+		List<SortKey> newSortKeys = new ArrayList<SortKey>(sortKeys);
+		
+		for (SortKey extractedSortKey : distinctExtractedEntitiesKeys) {
+			boolean foundInSortKeys = false;
+			boolean foundInPartitionKeys = false;
+			
+			for (SortKey sortKey : sortKeys) {
+				if (extractedSortKey.getId().equals(sortKey.getId()))
+					foundInSortKeys=true;
+			}
+			
+			for (PartitionKey partitionKey : partitionKeys) {
+				if (extractedSortKey.getId().equals(partitionKey.getId()))
+					foundInPartitionKeys=true;
+			}
+			
+			if (!foundInSortKeys && !foundInPartitionKeys)
+				newSortKeys.add(extractedSortKey);
+			
+		}
+
+		return newSortKeys.stream().distinct().collect(Collectors.toList());
 	}
 
 	/**
@@ -309,6 +376,27 @@ public class NoAmServiceImpl implements NoAmService {
 		return partitionKeys;
 	}
 
+	/**
+	 * @param partitionKeys
+	 * @param sortKeys
+	 * @return new sort keys list without keys that are already partition keys
+	 */
+	private List<SortKey> removeDuplicatesFromSortKeys(List<PartitionKey> partitionKeys,
+			List<SortKey> sortKeys) {
+
+		List<SortKey> tempSortKeys = new ArrayList<SortKey>(sortKeys);
+
+		for (SortKey sortKey : tempSortKeys) {
+			for (PartitionKey partitionKey : partitionKeys) {
+
+				if (sortKey.getId().equals(partitionKey.getId()))
+					sortKeys.remove(sortKey);
+			}
+		}
+
+		return sortKeys;
+	}
+	
 	/**
 	 * @param interactionFlowElement
 	 * @param partitionKeys
@@ -493,13 +581,13 @@ public class NoAmServiceImpl implements NoAmService {
 
 		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
 
-		for (InteractionFlow outInteractionFlow : ife.getOutInteractionFlows()) {
+		for (InteractionFlow inInteractionFlow : ife.getInInteractionFlows()) {
 
 			// looks for the right pointing link to the next interaction flow element; if
 			// nextIfe is null, a leaf is reached
-			if (nextIfe == null || outInteractionFlow.getTo().equals(nextIfe.getId())) {
+			if (nextIfe == null || inInteractionFlow.getTo().equals(ife.getId() )) {
 
-				for (BindingParameter bindingParameter : outInteractionFlow.getBindingParameter()) {
+				for (BindingParameter bindingParameter : inInteractionFlow.getBindingParameter()) {
 
 					// TODO remove this condition when handle actions
 					if (bindingParameter.getSources() == null || bindingParameter.getTargets() == null)
@@ -686,7 +774,7 @@ public class NoAmServiceImpl implements NoAmService {
 	@Override
 	public List<Collection> localOptimization(List<Collection> collections) {
 
-		// field aggregation
+		// entries aggregation
 		List<Collection> optimizedCollections = optimizeReadingAccessPaths(collections);
 
 		// collection aggregation
@@ -744,7 +832,11 @@ public class NoAmServiceImpl implements NoAmService {
 				primaryKey.setPartitionKeys(
 						primaryKey.getPartitionKeys().stream().distinct().collect(Collectors.toList()));
 				primaryKey.setSortKeys(primaryKey.getSortKeys().stream().distinct().collect(Collectors.toList()));
-				primaryKey.setSortKeys(removeSortKeysWithDifferentOrder(primaryKey.getSortKeys()));
+				
+				List<SortKey> sortKeysToAdd = removeSortKeysWithDifferentOrder(primaryKey.getSortKeys());
+				sortKeysToAdd = removeDuplicatesFromSortKeys(primaryKey.getPartitionKeys(),sortKeysToAdd);
+				
+				primaryKey.setSortKeys(sortKeysToAdd);
 
 				collection.getBlock().setKey(primaryKey);
 
@@ -885,6 +977,9 @@ public class NoAmServiceImpl implements NoAmService {
 
 	private boolean haveSamePartitionKeys(List<PartitionKey> partitionKeys, List<PartitionKey> partitionKeys2) {
 		boolean same = false;
+		
+		if (partitionKeys.size() == 0 || partitionKeys2.size() ==0)
+			return true;
 		
 		if (partitionKeys.size() != partitionKeys2.size())
 			return same;

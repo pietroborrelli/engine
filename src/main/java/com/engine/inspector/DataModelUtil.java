@@ -1,5 +1,7 @@
 package com.engine.inspector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.engine.mapper.datamodel.DataModel;
@@ -8,6 +10,8 @@ import com.engine.mapper.datamodel.DataModel.Entity.Attribute;
 import com.engine.mapper.datamodel.DataModel.Relationship;
 import com.engine.mapper.datamodel.DataModel.Relationship.RelationshipRole1;
 import com.engine.mapper.datamodel.DataModel.Relationship.RelationshipRole2;
+import com.engine.domain.abstractmodel.SortKey;
+import com.engine.domain.enumeration.Ordering;
 
 public class DataModelUtil {
 
@@ -46,7 +50,7 @@ public class DataModelUtil {
 		return null;
 
 	}
-	
+
 	/**
 	 * @param relationship
 	 * @return relationship of the data model
@@ -114,23 +118,26 @@ public class DataModelUtil {
 		return null;
 
 	}
-	
+
 	/**
-	 * @param source entity
-	 * @param target entity
+	 * @param source
+	 *            entity
+	 * @param target
+	 *            entity
 	 * @return relationship of the data model by source and target entity
 	 */
 	public Relationship findRelationshipBySourceAndTarget(String sourceEntity, String targetEntity) {
 
 		for (Object r : dataModel.getEntityOrRelationshipOrDatabase()) {
-			if (isRelationship(r) && ((Relationship) r).getSourceEntity().equals(sourceEntity) && ((Relationship) r).getTargetEntity().equals(targetEntity) ) {
+			if (isRelationship(r) && ((Relationship) r).getSourceEntity().equals(sourceEntity)
+					&& ((Relationship) r).getTargetEntity().equals(targetEntity)) {
 				return (Relationship) r;
 			}
 		}
 		return null;
 
 	}
-	
+
 	/**
 	 * @param entity:
 	 *            used to access directly entity
@@ -139,7 +146,7 @@ public class DataModelUtil {
 	 * @return name of the attribute ; null if no name is found
 	 */
 	public String findAttributeName(Entity entity, String idDisplayAttribute) {
-//System.out.println(entity.getName()+"--"+idDisplayAttribute);
+		// System.out.println(entity.getName()+"--"+idDisplayAttribute);
 		return entity.getAttribute().stream().filter(an -> an.getId().equals(idDisplayAttribute))
 				.collect(Collectors.toList()).get(0).getName();
 
@@ -156,7 +163,7 @@ public class DataModelUtil {
 		return entity.getAttribute().stream().filter(an -> an.getId().equals(idDisplayAttribute))
 				.collect(Collectors.toList()).get(0).getType();
 	}
-	
+
 	/**
 	 * @param entity:
 	 *            used to access directly entity
@@ -164,14 +171,12 @@ public class DataModelUtil {
 	 *            id of the attribute name
 	 * @return attribute ; null if no type is found in the entity
 	 */
-	public Attribute findAttributesByEntityAndId(String entityName, String attributeName){
-		
+	public Attribute findAttributesByEntityAndId(String entityName, String attributeName) {
+
 		return findEntity(entityName).getAttribute().stream().filter(an -> an.getId().equals(attributeName))
-		.collect(Collectors.toList()).get(0);
-		
-		
+				.collect(Collectors.toList()).get(0);
+
 	}
-	
 
 	/**
 	 * @param entity
@@ -197,6 +202,30 @@ public class DataModelUtil {
 			return false;
 	}
 
+	/**
+	 * @param entity
+	 * @return lsit of sort keys extracted from the key attribute of the entity. 
+	 */
+	public List<SortKey> extractKeyAttributesIntoSortKeys(Entity entity) {
+
+		List<Attribute> attributesKey = entity.getAttribute().stream().filter(ak -> (ak.isKey()!=null && ak.isKey()==true))
+				.collect(Collectors.toList());
+		List<SortKey> sortKeys = new ArrayList<SortKey>();
+
+		for (Attribute attributeKey : attributesKey) {
+			SortKey sortKey = new SortKey(attributeKey.getId());
+			sortKey.setEntity(entity.getName());
+			sortKey.setName(attributeKey.getName());
+			sortKey.setOrdering(Ordering.ASCENDING);
+			sortKey.setType(attributeKey.getType());
+
+			sortKeys.add(sortKey);
+
+		}
+		return sortKeys;
+
+	}
+
 	public DataModel getDataModel() {
 		return dataModel;
 	}
@@ -204,7 +233,5 @@ public class DataModelUtil {
 	public void setDataModel(DataModel dataModel) {
 		this.dataModel = dataModel;
 	}
-
-
 
 }
