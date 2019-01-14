@@ -69,7 +69,8 @@ public class CassandraParser implements Parser {
 
 	@Override
 	public String getColumns(List<Entry> entries) {
-		return entries.stream().map(e -> "	" + e.getEntityName().toLowerCase() + "." + e.getName() + " " + e.getType()).collect(Collectors.joining(",\n"));
+		//remove duplicates
+		return entries.stream().distinct().map(e -> "	" + e.getEntityName().toLowerCase() + "." + e.getName() + " " + e.getType()).collect(Collectors.joining(",\n"));
 	}
 
 	/*

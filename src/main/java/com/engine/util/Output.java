@@ -3,6 +3,7 @@ package com.engine.util;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -54,7 +55,7 @@ public class Output {
 				+ collection.getBlock().getKey().getSortKeys().toString());
 		// entries
 		printWriter.println("\n\t\tEntries");
-		for (Entry entry : collection.getBlock().getEntries()) {
+		for (Entry entry : collection.getBlock().getEntries().stream().distinct().collect(Collectors.toList())) {
 			printWriter.println("\t\t\t" + entry.toString());
 		}
 
