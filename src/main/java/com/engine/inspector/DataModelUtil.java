@@ -10,6 +10,7 @@ import com.engine.mapper.datamodel.DataModel.Entity.Attribute;
 import com.engine.mapper.datamodel.DataModel.Relationship;
 import com.engine.mapper.datamodel.DataModel.Relationship.RelationshipRole1;
 import com.engine.mapper.datamodel.DataModel.Relationship.RelationshipRole2;
+import com.engine.domain.abstractmodel.PartitionKey;
 import com.engine.domain.abstractmodel.SortKey;
 import com.engine.domain.enumeration.Ordering;
 
@@ -226,6 +227,29 @@ public class DataModelUtil {
 
 	}
 
+	/**
+	 * @param entity
+	 * @return list of partition keys extracted from the key attribute of the entity. 
+	 */
+	public List<PartitionKey> extractKeyAttributesIntoPartitionKeys(Entity entity) {
+
+		List<Attribute> attributesKey = entity.getAttribute().stream().filter(ak -> (ak.isKey()!=null && ak.isKey()==true))
+				.collect(Collectors.toList());
+		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
+
+		for (Attribute attributeKey : attributesKey) {
+			PartitionKey partitionKey = new PartitionKey(attributeKey.getId());
+			partitionKey.setEntity(entity.getName());
+			partitionKey.setName(attributeKey.getName());
+			partitionKey.setType(attributeKey.getType());
+
+			partitionKeys.add(partitionKey);
+
+		}
+		return partitionKeys;
+
+	}
+	
 	public DataModel getDataModel() {
 		return dataModel;
 	}

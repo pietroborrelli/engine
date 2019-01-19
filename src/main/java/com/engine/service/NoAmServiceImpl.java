@@ -134,6 +134,13 @@ public class NoAmServiceImpl implements NoAmService {
 
 		}
 		
+		//path length = 1 with no partition keys
+		if (interactionFlowElements.size()==1 && entities.get(0) != null) {
+			partitionKeys.addAll(dataModelUtil.extractKeyAttributesIntoPartitionKeys(entities.get(0)));
+		}
+			
+			
+		
 		//extracted attributes keys as sort key needed to guarantee uniqueness to the record
 		List<SortKey> extractedEntitiesKeys = new ArrayList<SortKey>();
 		entities.stream().forEach(e -> extractedEntitiesKeys.addAll(dataModelUtil.extractKeyAttributesIntoSortKeys(e)));
