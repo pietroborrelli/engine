@@ -772,7 +772,7 @@ public class NoAmServiceImpl implements NoAmService {
 	 * Optimization on path scope
 	 */
 	@Override
-	public List<Collection> localOptimization(List<Collection> collections) {
+	public List<Collection> pathOptimization(List<Collection> collections) {
 
 		// entries aggregation
 		List<Collection> optimizedCollections = optimizeReadingAccessPaths(collections);
@@ -780,7 +780,7 @@ public class NoAmServiceImpl implements NoAmService {
 		// collection aggregation
 		optimizedCollections = optimizeCollections(collections);
 
-		return optimizedCollections;
+		return removeDuplicatesCollections(optimizedCollections);
 	}
 
 	@Override
@@ -793,18 +793,20 @@ public class NoAmServiceImpl implements NoAmService {
 
 		for (Collection collectionTemp : collectionsTemp) {
 
-			String name = collectionTemp.getName();
-			ArrayList<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
-			ArrayList<SortKey> sortKeys = new ArrayList<SortKey>();
-			ArrayList<Entry> entries = new ArrayList<Entry>();
+			String name = "("+collectionTemp.getName()+")";
+			Integer countCollection = 1;
+			ArrayList<PartitionKey> partitionKeys = new ArrayList<PartitionKey>(collectionTemp.getBlock().getKey().getPartitionKeys());
+			ArrayList<SortKey> sortKeys = new ArrayList<SortKey>(collectionTemp.getBlock().getKey().getSortKeys());
+			ArrayList<Entry> entries = new ArrayList<Entry>(collectionTemp.getBlock().getEntries());
 
+			
 			for (Collection collectionTemp2 : collectionsTemp2) {
-
+				
 				// comparing different collections
-				if (!collectionTemp.getName().equals(collectionTemp2.getName())) {
+				if (!collectionTemp.getName().equals(collectionTemp2.getName()) && !collectionTemp.getId().equals(collectionTemp2.getId())) {
 
-					if (haveSamePartitionKeys(collectionTemp.getBlock().getKey().getPartitionKeys(),
-							collectionTemp2.getBlock().getKey().getPartitionKeys())) {
+					if (haveSamePartitionKeys(collectionTemp2.getBlock().getKey().getPartitionKeys(),
+							partitionKeys.stream().distinct().collect(Collectors.toList()))) {
 
 						partitionKeys.addAll(collectionTemp2.getBlock().getKey().getPartitionKeys());
 
@@ -814,12 +816,13 @@ public class NoAmServiceImpl implements NoAmService {
 						entries.addAll(collectionTemp2.getBlock().getEntries());
 						entries.addAll(collectionTemp.getBlock().getEntries());
 
-						name = name + "-" + collectionTemp2.getName();
+						name = name + "-" + "(" + collectionTemp2.getName() +")";
+						countCollection++;
 					}
 				}
 			}
 
-			if (!partitionKeys.isEmpty()) {
+			if (!partitionKeys.isEmpty() && countCollection > 1) {
 
 				Collection collection = new Collection(collectionTemp.getId());
 				collection.setName(name);
@@ -851,7 +854,7 @@ public class NoAmServiceImpl implements NoAmService {
 
 		}
 
-		return removeDuplicatesCollections(optimizedCollections);
+		return optimizedCollections;
 	}
 
 	private List<Entry> removeDuplicatesEntries(List<Entry> entries) {
@@ -895,8 +898,8 @@ public class NoAmServiceImpl implements NoAmService {
 		for (Collection collectionTemp : collectionsTemp) {
 
 			for (Collection collectionTemp2 : collectionsTemp2) {
-
-				if (!collectionTemp.getName().equals(collectionTemp2.getName())
+				// comparing different collections
+				if (	!collectionTemp.getName().equals(collectionTemp2.getName()) && !collectionTemp.getId().equals(collectionTemp2.getId())
 						&& haveSamePartitionKeys(collectionTemp.getBlock().getKey().getPartitionKeys(),
 								collectionTemp2.getBlock().getKey().getPartitionKeys())
 						&& haveSameSortKeys(collectionTemp.getBlock().getKey().getSortKeys(),
@@ -905,12 +908,13 @@ public class NoAmServiceImpl implements NoAmService {
 								collectionTemp2.getBlock().getEntries())
 						&& !collectionHasAlreadyBeenAdded(collectionTemp2, newCollection)) {
 
-					collections.remove(collectionTemp2);
+					newCollection.add(collectionTemp2);
 
 				}
 
 			}
 		}
+		collections.removeAll(newCollection);
 		return collections;
 	}
 
@@ -959,6 +963,13 @@ public class NoAmServiceImpl implements NoAmService {
 
 	private boolean haveSameSortKeys(List<SortKey> sortKeys, List<SortKey> sortKeys2) {
 		boolean same = false;
+		
+		if (sortKeys.size() == 0 || sortKeys2.size() ==0)
+			return true;
+		
+		if (sortKeys.size() != sortKeys2.size())
+			return same;
+		
 		for (SortKey sortKey : sortKeys) {
 			same = false;
 
@@ -1217,6 +1228,16 @@ public class NoAmServiceImpl implements NoAmService {
 
 	public void setDataModelUtil(DataModelUtil dataModelUtil) {
 		this.dataModelUtil = dataModelUtil;
+	}
+
+	
+	
+	/* Optimization over page scope
+	 */
+	@Override
+	public List<Collection> pageOptimization(List<Collection> collectionsPageScope) {
+		// collection aggregation
+		return removeDuplicatesCollections(optimizeCollections(removeDuplicatesCollections(collectionsPageScope)));
 	}
 
 }

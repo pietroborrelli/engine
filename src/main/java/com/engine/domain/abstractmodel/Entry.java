@@ -51,7 +51,7 @@ public class Entry {
 		for (Entry entry : aggregateEntries) {
 			ids.append(entry.getId() + " ");
 			names.append(entry.getName() + "&");
-			this.type = entry.getType();
+			this.type = "string";
 			this.entityName = entry.getEntityName();
 			interactionFlowElementNames.append(entry.getInteractionFlowElementName() + " ");
 		}

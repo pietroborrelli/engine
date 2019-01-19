@@ -18,6 +18,7 @@ public interface NoAmService {
 	List<Entry> createEntries(List<InteractionFlowElement> interactionFlowElements);
 	Collection createCollection(List<InteractionFlowElement> interactionFlowElements, Path path, Block block,
 			List<Entry> entries);
-	List<Collection> localOptimization(List<Collection> collections);
 	List<Collection> optimizeCollections(List<Collection> collections);
+	List<Collection> pathOptimization(List<Collection> collections);
+	List<Collection> pageOptimization(List<Collection> collectionsPageScope);
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 
 import com.engine.domain.abstractmodel.Collection;
+import com.engine.domain.enumeration.OutputE;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Area;
 import com.engine.domain.interactionflowelement.viewelement.viewcontainer.Page;
@@ -53,8 +55,11 @@ public class EngineApplication implements CommandLineRunner {
 	static String OUTPUT_PM = "physical_model/";
 	static String OUTPUT_NOAM = "abstract_model/";
 
-	static String OUTPUT_PM_OPTIMIZATION = "physical_model/optimization/";
-	static String OUTPUT_NOAM_OPTIMIZATION = "abstract_model/optimization/";
+	static String OUTPUT_PM_PATH_OPT = "physical_model/path_optimization/";
+	static String OUTPUT_NOAM_PATH_OPT = "abstract_model/path_optimization/";
+	
+	static String OUTPUT_PM_PAGE_OPT = "physical_model/page_optimization/";
+	static String OUTPUT_NOAM_PAGE_OPT = "abstract_model/page_optimization/";
 
 	@Autowired
 	public EngineApplication(DataModelService dataModelService, AreaService areaService, PageService pageService,
@@ -87,7 +92,7 @@ public class EngineApplication implements CommandLineRunner {
 		System.out.println(" END SUCCESS ");
 	}
 
-	private void navigateFrontEnd(FrontEndInspector frontEndInspector) throws Exception {
+	public void navigateFrontEnd(FrontEndInspector frontEndInspector) throws Exception {
 
 		List<Area> areas = new ArrayList<Area>();
 		List<Page> pages = new ArrayList<Page>();
@@ -121,11 +126,17 @@ public class EngineApplication implements CommandLineRunner {
 				List<Path> paths = frontEndInspector.extractPaths(viewComponents);
 
 				paths.stream().forEach(p -> p.setCollections(noAmService.computeAbstractModels(p)));
-				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), false));
+				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.NO));
 
-				paths.stream().forEach(p -> p.setCollections(noAmService.localOptimization(p.getCollections())));
-				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), true));
-
+				paths.stream().forEach(p -> p.setCollections(noAmService.pathOptimization(p.getCollections())));
+				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.PATH_OPT));
+				
+				List<Collection> pageCollections =  paths.stream().flatMap(collections -> collections.getCollections().stream()).collect(Collectors.toList());
+				if (!pageCollections.isEmpty()) {
+ 					List<Collection> optimizedPageCollections = new ArrayList<Collection>(noAmService.pageOptimization(pageCollections));
+					if (!optimizedPageCollections.isEmpty())
+						paths.stream().forEach(p -> generateModels(p, optimizedPageCollections, page, area.getName(), OutputE.PAGE_OPT));
+				}
 				pages.add(page);
 
 			}
@@ -160,19 +171,31 @@ public class EngineApplication implements CommandLineRunner {
 		}
 	}
 
-	public void generateModels(Path path, List<Collection> collections, Page page, String area, boolean optimization) {
+	public void generateModels(Path path, List<Collection> collections, Page page, String area, OutputE optimization) {
 
 		String pageName = page.getName().substring(page.getName().lastIndexOf("#") + 1);
 
 		// create output folder according with the area
-		if (optimization) {
-			new File(outputPath + OUTPUT_PM_OPTIMIZATION + area + "/" + pageName + "/" + path.getIdPath()).mkdirs();
-			new File(outputPath + OUTPUT_NOAM_OPTIMIZATION + area + "/" + pageName + "/" + +path.getIdPath() + "/")
-					.mkdirs();
-		} else {
+		
+		if (optimization.equals(OutputE.NO)) {
+			String prova = path.getCollections().stream().map( n -> n.toString() ).collect( Collectors.joining( "_" ) ) ;
 			new File(outputPath + OUTPUT_NOAM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
 			new File(outputPath + OUTPUT_PM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
 		}
+		
+		if (optimization.equals(OutputE.PATH_OPT)) {
+			new File(outputPath + OUTPUT_PM_PATH_OPT + area + "/" + pageName + "/" + path.getIdPath()).mkdirs();
+			new File(outputPath + OUTPUT_NOAM_PATH_OPT + area + "/" + pageName + "/" + path.getIdPath() + "/")
+					.mkdirs();
+		} 
+		
+		if (optimization.equals(OutputE.PAGE_OPT)) {
+			new File(outputPath + OUTPUT_PM_PAGE_OPT + area + "/" + pageName + "/" ).mkdirs();
+			new File(outputPath + OUTPUT_NOAM_PAGE_OPT + area + "/" + pageName + "/")
+					.mkdirs();
+		} 
+		
+		
 
 		if (!collections.isEmpty()) {
 			System.out.println("----------- OUTPUT -------------");
