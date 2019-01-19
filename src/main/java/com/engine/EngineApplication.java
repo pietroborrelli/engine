@@ -57,7 +57,7 @@ public class EngineApplication implements CommandLineRunner {
 
 	static String OUTPUT_PM_PATH_OPT = "physical_model/path_optimization/";
 	static String OUTPUT_NOAM_PATH_OPT = "abstract_model/path_optimization/";
-	
+
 	static String OUTPUT_PM_PAGE_OPT = "physical_model/page_optimization/";
 	static String OUTPUT_NOAM_PAGE_OPT = "abstract_model/page_optimization/";
 
@@ -129,13 +129,17 @@ public class EngineApplication implements CommandLineRunner {
 				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.NO));
 
 				paths.stream().forEach(p -> p.setCollections(noAmService.pathOptimization(p.getCollections())));
-				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.PATH_OPT));
-				
-				List<Collection> pageCollections =  paths.stream().flatMap(collections -> collections.getCollections().stream()).collect(Collectors.toList());
+				paths.stream()
+						.forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.PATH_OPT));
+
+				List<Collection> pageCollections = paths.stream()
+						.flatMap(collections -> collections.getCollections().stream()).collect(Collectors.toList());
 				if (!pageCollections.isEmpty()) {
- 					List<Collection> optimizedPageCollections = new ArrayList<Collection>(noAmService.pageOptimization(pageCollections));
+					List<Collection> optimizedPageCollections = new ArrayList<Collection>(
+							noAmService.pageOptimization(pageCollections));
 					if (!optimizedPageCollections.isEmpty())
-						paths.stream().forEach(p -> generateModels(p, optimizedPageCollections, page, area.getName(), OutputE.PAGE_OPT));
+						paths.stream().forEach(p -> generateModels(p, optimizedPageCollections, page, area.getName(),
+								OutputE.PAGE_OPT));
 				}
 				pages.add(page);
 
@@ -173,29 +177,36 @@ public class EngineApplication implements CommandLineRunner {
 
 	public void generateModels(Path path, List<Collection> collections, Page page, String area, OutputE optimization) {
 
+		String folderNoAMPath = "";
+		String folderPhysicalPath="";
 		String pageName = page.getName().substring(page.getName().lastIndexOf("#") + 1);
 
 		// create output folder according with the area
-		
+
 		if (optimization.equals(OutputE.NO)) {
-			String prova = path.getCollections().stream().map( n -> n.toString() ).collect( Collectors.joining( "_" ) ) ;
-			new File(outputPath + OUTPUT_NOAM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
-			new File(outputPath + OUTPUT_PM + area + "/" + pageName + "/" + path.getIdPath() + "/").mkdirs();
+			folderNoAMPath = outputPath + OUTPUT_NOAM + area + "/" + pageName + "/"
+					+ path.getCollections().stream().map(n -> n.getName()).collect(Collectors.joining("_")) + "/";
+			folderPhysicalPath = outputPath + OUTPUT_PM + area + "/" + pageName + "/"
+					+ path.getCollections().stream().map(n -> n.getName()).collect(Collectors.joining("_")) + "/";
+			new File(folderNoAMPath).mkdirs();
+			new File(folderPhysicalPath).mkdirs();
 		}
-		
+
 		if (optimization.equals(OutputE.PATH_OPT)) {
-			new File(outputPath + OUTPUT_PM_PATH_OPT + area + "/" + pageName + "/" + path.getIdPath()).mkdirs();
-			new File(outputPath + OUTPUT_NOAM_PATH_OPT + area + "/" + pageName + "/" + path.getIdPath() + "/")
-					.mkdirs();
-		} 
-		
+			folderNoAMPath = outputPath + OUTPUT_NOAM_PATH_OPT + area + "/" + pageName + "/"
+					+ path.getCollections().stream().map(n -> n.getName()).collect(Collectors.joining("_"));
+			folderPhysicalPath = outputPath + OUTPUT_PM_PATH_OPT + area + "/" + pageName + "/"
+					+ path.getCollections().stream().map(n -> n.getName()).collect(Collectors.joining("_"));
+			new File(folderNoAMPath).mkdirs();
+			new File(folderPhysicalPath).mkdirs();
+		}
+
 		if (optimization.equals(OutputE.PAGE_OPT)) {
-			new File(outputPath + OUTPUT_PM_PAGE_OPT + area + "/" + pageName + "/" ).mkdirs();
-			new File(outputPath + OUTPUT_NOAM_PAGE_OPT + area + "/" + pageName + "/")
-					.mkdirs();
-		} 
-		
-		
+			folderNoAMPath = outputPath + OUTPUT_NOAM_PAGE_OPT + area + "/" + pageName + "/";
+			folderPhysicalPath = outputPath + OUTPUT_PM_PAGE_OPT + area + "/" + pageName + "/";
+			new File(folderNoAMPath).mkdirs();
+			new File(folderPhysicalPath).mkdirs();
+		}
 
 		if (!collections.isEmpty()) {
 			System.out.println("----------- OUTPUT -------------");
@@ -203,10 +214,9 @@ public class EngineApplication implements CommandLineRunner {
 			for (Collection collection : collections) {
 
 				// print noAM
-				output.printAbstractModel(collection, area, pageName, optimization);
+				output.printAbstractModel(collection, folderNoAMPath);
 				// print Physical Implementation
-				output.printPhysicalModel(collection, area, parser.buildPhysicalModel(collection), pageName,
-						optimization);
+				output.printPhysicalModel(collection, folderPhysicalPath, parser.buildPhysicalModel(collection));
 
 			}
 		}
