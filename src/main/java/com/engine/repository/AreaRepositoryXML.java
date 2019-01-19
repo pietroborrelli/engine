@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AreaRepositoryXML {
 	
+	private String[] blackListDirectories = { "CVS" };
+
 	
 	/*
 	 * Get Areas
@@ -37,13 +39,23 @@ public class AreaRepositoryXML {
 			  }
 			});
 			
-			System.out.println("Trovate " + subDirectories.length + " aree");
+			List<String> areas = new ArrayList<String>(Arrays.asList(subDirectories));
 			
-			if (subDirectories.length == 0) {
+			// remove if directory belongs to black list
+			for (String directory : subDirectories ) {
+			
+			if (Arrays.stream(blackListDirectories)
+					.anyMatch(directory::equals))
+				areas.remove(directory);
+			}
+			
+			System.out.println("Trovate " + areas.size() + " aree");
+			
+			if (areas.size() == 0) {
 				System.out.println("Nessuna area trovata!");
 				return null;
 			}else {
-				return new ArrayList<String>(Arrays.asList(subDirectories));
+				return areas;
 			}
 			
 		} catch (Exception e) {
