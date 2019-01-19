@@ -45,8 +45,8 @@ public class EngineApplication implements CommandLineRunner {
 	// input path
 	@Value("${input.path.datamodel}")
 	private String inputPathDataModel;
-	@Value("${input.path.areas}")
-	private String inputPathAreas;
+	@Value("${input.path.siteview}")
+	private String inputPathSiteView;
 
 	// output path
 	@Value("${output.path}")
@@ -98,7 +98,7 @@ public class EngineApplication implements CommandLineRunner {
 		List<Page> pages = new ArrayList<Page>();
 
 		// get areas
-		ArrayList<String> areaNames = (ArrayList<String>) areaService.loadAreas(inputPathAreas);
+		ArrayList<String> areaNames = (ArrayList<String>) areaService.loadAreas(inputPathSiteView);
 		if (areaNames == null)
 			throw new NullPointerException("Aree non presenti!");
 		else
@@ -107,7 +107,7 @@ public class EngineApplication implements CommandLineRunner {
 
 		// get pages
 		for (Area area : areas) {
-			ArrayList<Document> documents = (ArrayList<Document>) pageService.loadPages(inputPathAreas, area.getName());
+			ArrayList<Document> documents = (ArrayList<Document>) pageService.loadPages(inputPathSiteView, area.getName());
 			if (documents == null)
 				continue;
 
