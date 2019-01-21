@@ -7,8 +7,12 @@ import com.engine.domain.abstractmodel.PartitionKey;
 import com.engine.domain.abstractmodel.SortKey;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.KeyCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.RelationshipRoleCondition;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
+import com.engine.inspector.DataModelUtil;
+import com.engine.mapper.datamodel.DataModel.Entity;
 
 public interface BlockService {
 
@@ -57,8 +61,10 @@ public interface BlockService {
 	 * @return partition key computed from targets which express a condition. Are
 	 *         generated duplicates Return null if there is no binding parameter
 	 */
-	List<PartitionKey> retrievePartitionKey(InteractionFlowElement ife, InteractionFlowElement nextIfe);
+	List<PartitionKey> retrievePartitionKeysFromLink(InteractionFlowElement ife, InteractionFlowElement nextIfe);
 
+	List<PartitionKey> retrievePartitionKeysFromViewComponent(InteractionFlowElement ife);
+	
 	SortKey extractSortKeyFromApplicationModel(Attribute attribute);
 
 	SortKey extractSortKeyFromDataModel(AttributesCondition attributesCondition, WrapperAttribute wrapperAttribute);
@@ -76,5 +82,18 @@ public interface BlockService {
 	boolean haveSameSortKeys(List<SortKey> sortKeys, List<SortKey> sortKeys2) ;
 	
 	boolean haveSamePartitionKeys(List<PartitionKey> partitionKeys, List<PartitionKey> partitionKeys2);
+
+	PartitionKey extractAttributesIntoPartitionKeys(AttributesCondition attributesCondition,
+			WrapperAttribute wrapperAttribute);
+	
+
+	DataModelUtil getDataModelUtil();
+
+	void setDataModelUtil(DataModelUtil dataModelUtil);
+
+	List<PartitionKey> extractKeyAttributesIntoPartitionKeys(KeyCondition keyCondition, Entity entity);
+
+	PartitionKey extractRelationshipRoleIntoPartitionKeys(RelationshipRoleCondition relationshipRoleCondition,
+			String attributeId);
 
 }

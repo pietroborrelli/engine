@@ -63,7 +63,7 @@ public class FrontEndInspector {
 	public Page elaborateDocument() {
 
 		this.context = new Context(new PageExtractorImpl());
-		return new Page(context.extractPageName(getDocument()), context.extractPageId(getDocument()));
+		return new Page(context.extractPageId(getDocument()),context.extractPageName(getDocument()));
 	}
 
 	/**
@@ -230,7 +230,7 @@ public class FrontEndInspector {
 	/**
 	 * @param interactionFlow
 	 * @param document
-	 * @return an update binding parameter list with source ViewComponentParts
+	 * @return an update binding parameter list with target ViewComponentParts
 	 */
 	private List<ViewComponentPart> findTargetsOfBindingParameter(BindingParameter bindingParameter,
 			Document document) {

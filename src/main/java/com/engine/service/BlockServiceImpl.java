@@ -10,10 +10,13 @@ import com.engine.domain.abstractmodel.Entry;
 import com.engine.domain.abstractmodel.PartitionKey;
 import com.engine.domain.abstractmodel.SortKey;
 import com.engine.domain.enumeration.Ordering;
+import com.engine.domain.enumeration.Predicate;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.Condition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.KeyCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.RelationshipRoleCondition;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
@@ -21,59 +24,69 @@ import com.engine.domain.interactionflowelement.viewelement.viewcomponent.Detail
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.SelectorImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
+import com.engine.inspector.DataModelUtil;
+import com.engine.mapper.datamodel.DataModel.Entity;
 
 @Service
 public class BlockServiceImpl implements BlockService {
 
+	private DataModelUtil dataModelUtil;
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#guaranteeRecordUniqueness(java.util.List, java.util.List, java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.BlockService#guaranteeRecordUniqueness(java.util.List,
+	 * java.util.List, java.util.List)
 	 */
 	@Override
 	public List<SortKey> guaranteeRecordUniqueness(List<SortKey> sortKeys, List<PartitionKey> partitionKeys,
 			List<SortKey> distinctExtractedEntitiesKeys) {
-		
+
 		if (partitionKeys.isEmpty())
 			return sortKeys;
-		
+
 		List<SortKey> newSortKeys = new ArrayList<SortKey>(sortKeys);
-		
+
 		for (SortKey extractedSortKey : distinctExtractedEntitiesKeys) {
 			boolean foundInSortKeys = false;
 			boolean foundInPartitionKeys = false;
-			
+
 			for (SortKey sortKey : sortKeys) {
 				if (extractedSortKey.getId().equals(sortKey.getId()))
-					foundInSortKeys=true;
+					foundInSortKeys = true;
 			}
-			
+
 			for (PartitionKey partitionKey : partitionKeys) {
 				if (extractedSortKey.getId().equals(partitionKey.getId()))
-					foundInPartitionKeys=true;
+					foundInPartitionKeys = true;
 			}
-			
+
 			if (!foundInSortKeys && !foundInPartitionKeys)
 				newSortKeys.add(extractedSortKey);
-			
+
 		}
-	
+
 		return newSortKeys.stream().distinct().collect(Collectors.toList());
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#addEntriesFromKeys(java.util.List, java.util.List, java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.engine.service.BlockService#addEntriesFromKeys(java.util.List,
+	 * java.util.List, java.util.List)
 	 */
 	@Override
 	public List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys, List<SortKey> sortKeys,
 			List<Entry> entries) {
-	
+
 		List<Entry> entriesTemp = new ArrayList<Entry>(entries);
-	
+
 		// check on partition keys
 		for (PartitionKey partitionKey : partitionKeys) {
 			boolean found = false;
 			for (Entry entry : entriesTemp) {
-	
+
 				if (partitionKey.getId().equals(entry.getId()))
 					found = true;
 			}
@@ -81,12 +94,12 @@ public class BlockServiceImpl implements BlockService {
 				entries.add(new Entry(partitionKey.getId(), partitionKey.getName(), partitionKey.getType(),
 						partitionKey.getEntity(), "from_partition_key"));
 		}
-	
+
 		// check on sort keys
 		for (SortKey sortKey : sortKeys) {
 			boolean found = false;
 			for (Entry entry : entriesTemp) {
-	
+
 				if (sortKey.getId().equals(entry.getId()))
 					found = true;
 			}
@@ -94,76 +107,87 @@ public class BlockServiceImpl implements BlockService {
 				entries.add(new Entry(sortKey.getId(), sortKey.getName(), sortKey.getType(), sortKey.getEntity(),
 						"from_sort_key"));
 		}
-	
+
 		return entries;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#removeSortKeysWithDifferentOrder(java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.BlockService#removeSortKeysWithDifferentOrder(java.util.
+	 * List)
 	 */
 	@Override
 	public List<SortKey> removeSortKeysWithDifferentOrder(List<SortKey> sortKeys) {
-	
+
 		List<SortKey> tempSortKeys = new ArrayList<SortKey>(sortKeys);
 		List<SortKey> tempSortKeys2 = new ArrayList<SortKey>(sortKeys);
-	
+
 		for (SortKey sortKey : tempSortKeys) {
-	
+
 			for (SortKey sortKey2 : tempSortKeys2) {
-	
+
 				if (sortKey.getId().equals(sortKey2.getId()) && !sortKey.getOrdering().equals(sortKey2.getOrdering())) {
-	
+
 					if (sortKey.getOrdering().equals(Ordering.ASCENDING))
 						sortKeys.remove(sortKey);
 					else
 						sortKeys.remove(sortKey2);
-	
+
 				}
 			}
-	
+
 		}
-	
+
 		return sortKeys;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#removeDuplicatesFromPartitionKeys(java.util.List, java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.BlockService#removeDuplicatesFromPartitionKeys(java.util.
+	 * List, java.util.List)
 	 */
 	@Override
 	public List<PartitionKey> removeDuplicatesFromPartitionKeys(List<PartitionKey> partitionKeys,
 			List<SortKey> sortKeys) {
-	
+
 		List<PartitionKey> tempPartitionKeys = new ArrayList<PartitionKey>(partitionKeys);
-	
+
 		for (PartitionKey partitionKey : tempPartitionKeys) {
 			for (SortKey sortKey : sortKeys) {
-	
+
 				if (partitionKey.getId().equals(sortKey.getId()))
 					partitionKeys.remove(partitionKey);
 			}
 		}
-	
+
 		return partitionKeys;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#retrieveSortKey(com.engine.domain.interactionflowelement.InteractionFlowElement, java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.engine.service.BlockService#retrieveSortKey(com.engine.domain.
+	 * interactionflowelement.InteractionFlowElement, java.util.List)
 	 */
 	@Override
 	public List<SortKey> retrieveSortKey(InteractionFlowElement interactionFlowElement,
 			List<PartitionKey> partitionKeys) {
-	
+
 		List<SortKey> sortKeys = new ArrayList<SortKey>();
-	
+
 		// 1. In case is LIST
 		if (interactionFlowElement instanceof ListImpl) {
-	
+
 			if (((ListImpl) interactionFlowElement).getSortAttributes() != null) {
 				// get sort attributes if already in the group of the partition keys
 				for (Attribute sortAttribute : ((ListImpl) interactionFlowElement).getSortAttributes()) {
 					// if has been specified an ordering over the partition keys or attributes
 					// conditions
-	
+
 					// if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
 					SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
 					sortKeys.add(sortKey);
@@ -175,12 +199,12 @@ public class BlockServiceImpl implements BlockService {
 			for (ConditionalExpression conditionalExpression : ((ListImpl) interactionFlowElement)
 					.getConditionalExpressions()) {
 				for (Condition condition : conditionalExpression.getConditions()) {
-	
+
 					if (condition instanceof AttributesCondition) {
 						AttributesCondition attributesCondition = (AttributesCondition) condition;
 						if (attributesCondition.getAttributes() != null) {
 							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
-	
+
 								// if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
 								// attributesCondition)) {
 								SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
@@ -192,16 +216,16 @@ public class BlockServiceImpl implements BlockService {
 				}
 			}
 		}
-	
+
 		// 2. In case is SELECTOR
 		if (interactionFlowElement instanceof SelectorImpl) {
-	
+
 			if (((SelectorImpl) interactionFlowElement).getSortAttributes() != null) {
 				// get sort attributes if already in the group of the partition keys
 				for (Attribute sortAttribute : ((SelectorImpl) interactionFlowElement).getSortAttributes()) {
 					// if has been specified an ordering over the partition keys or attributes
 					// conditions
-	
+
 					// if (partitionKeysHaveSortAttribute(partitionKeys, sortAttribute)) {
 					SortKey sortKey = extractSortKeyFromApplicationModel(sortAttribute);
 					sortKeys.add(sortKey);
@@ -213,12 +237,12 @@ public class BlockServiceImpl implements BlockService {
 			for (ConditionalExpression conditionalExpression : ((SelectorImpl) interactionFlowElement)
 					.getConditionalExpressions()) {
 				for (Condition condition : conditionalExpression.getConditions()) {
-	
+
 					if (condition instanceof AttributesCondition) {
 						AttributesCondition attributesCondition = (AttributesCondition) condition;
 						if (attributesCondition.getAttributes() != null) {
 							for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
-	
+
 								// if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
 								// attributesCondition)) {
 								SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
@@ -230,20 +254,20 @@ public class BlockServiceImpl implements BlockService {
 				}
 			}
 		}
-	
+
 		// 3. In case is DETAIL
 		if (interactionFlowElement instanceof DetailImpl) {
-	
+
 			// get attributes of attributes conditions if already in the group of the
 			// partition keys
 			for (ConditionalExpression conditionalExpression : ((DetailImpl) interactionFlowElement)
 					.getConditionalExpressions()) {
 				for (Condition condition : conditionalExpression.getConditions()) {
-	
+
 					if (condition instanceof AttributesCondition) {
 						AttributesCondition attributesCondition = (AttributesCondition) condition;
 						for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
-	
+
 							// if (partitionKeysHaveAttributeConditions(partitionKeys, wrapperAttribute,
 							// attributesCondition)) {
 							SortKey sortKey = extractSortKeyFromDataModel(attributesCondition, wrapperAttribute);
@@ -254,61 +278,71 @@ public class BlockServiceImpl implements BlockService {
 				}
 			}
 		}
-	
+
 		return sortKeys;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#retrievePartitionKey(com.engine.domain.interactionflowelement.InteractionFlowElement, com.engine.domain.interactionflowelement.InteractionFlowElement)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.engine.service.BlockService#retrievePartitionKey(com.engine.domain.
+	 * interactionflowelement.InteractionFlowElement,
+	 * com.engine.domain.interactionflowelement.InteractionFlowElement)
 	 */
 	@Override
-	public List<PartitionKey> retrievePartitionKey(InteractionFlowElement ife, InteractionFlowElement nextIfe) {
-	
+	public List<PartitionKey> retrievePartitionKeysFromLink(InteractionFlowElement ife,
+			InteractionFlowElement nextIfe) {
+
 		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
-	
+
 		for (InteractionFlow inInteractionFlow : ife.getInInteractionFlows()) {
-	
+
 			// looks for the right pointing link to the next interaction flow element; if
 			// nextIfe is null, a leaf is reached
-			if (nextIfe == null || inInteractionFlow.getTo().equals(ife.getId() )) {
-	
+			if (nextIfe == null || inInteractionFlow.getTo().equals(ife.getId())) {
+
 				for (BindingParameter bindingParameter : inInteractionFlow.getBindingParameter()) {
-	
+
 					// TODO remove this condition when handle actions
 					if (bindingParameter.getSources() == null || bindingParameter.getTargets() == null)
 						return null;
-	
+
 					// get all targets of binding parameters
 					for (int y = 0; y < bindingParameter.getTargets().size(); y++) {
-	
+
 						if (bindingParameter.getTargets().get(y) instanceof Attribute) {
 							Attribute targetAttribute = (Attribute) bindingParameter.getTargets().get(y);
-	
+
 							if (targetAttribute.getId() != null) {
 								if (bindingParameter.getTargets().get(y) instanceof Attribute) {
 									PartitionKey partitionKey = new PartitionKey(targetAttribute.getId());
 									partitionKey.setName(targetAttribute.getName());
 									partitionKey.setType(targetAttribute.getType());
 									partitionKey.setEntity(targetAttribute.getEntity().getName());
-	
+
 									partitionKeys.add(partitionKey);
 								}
 							}
-	
+
 						}
-	
+
 					}
-	
+
 				}
 				return partitionKeys;
 			}
 		}
-	
+
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#extractSortKeyFromApplicationModel(com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.BlockService#extractSortKeyFromApplicationModel(com.engine
+	 * .domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.
+	 * Attribute)
 	 */
 	@Override
 	public SortKey extractSortKeyFromApplicationModel(Attribute attribute) {
@@ -320,8 +354,14 @@ public class BlockServiceImpl implements BlockService {
 		return sortKey;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.BlockService#extractSortKeyFromDataModel(com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition, com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.BlockService#extractSortKeyFromDataModel(com.engine.domain
+	 * .interactionflowelement.conditionalexpression.condition.AttributesCondition,
+	 * com.engine.domain.interactionflowelement.conditionalexpression.condition.
+	 * WrapperAttribute)
 	 */
 	@Override
 	public SortKey extractSortKeyFromDataModel(AttributesCondition attributesCondition,
@@ -338,7 +378,90 @@ public class BlockServiceImpl implements BlockService {
 
 		return sortKey;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.BlockService#extractSortKeyFromDataModel(com.engine.domain
+	 * .interactionflowelement.conditionalexpression.condition.AttributesCondition,
+	 * com.engine.domain.interactionflowelement.conditionalexpression.condition.
+	 * WrapperAttribute)
+	 */
+	@Override
+	public PartitionKey extractAttributesIntoPartitionKeys(AttributesCondition attributesCondition,
+			WrapperAttribute wrapperAttribute) {
+		PartitionKey partitionKey = new PartitionKey(wrapperAttribute.getId());
+		partitionKey.setName(wrapperAttribute.getAttribute().getName());
+		partitionKey.setType(wrapperAttribute.getAttribute().getType());
+		partitionKey.setEntity(wrapperAttribute.getEntity().getName());
+		
+		if (attributesCondition.getPredicate().equals("eq"))
+			partitionKey.setPredicate(Predicate.EQUAL);
+		
+		if (attributesCondition.getPredicate().equals("in"))
+			partitionKey.setPredicate(Predicate.IN);
+		
+		if (attributesCondition.getPredicate().equals("notIn"))
+			partitionKey.setPredicate(Predicate.NOT_IN);
+
+		return partitionKey;
+	}
+
+	@Override
+	public List<PartitionKey> extractKeyAttributesIntoPartitionKeys(KeyCondition keyCondition, Entity entity) {
+
+		
+		List<com.engine.mapper.datamodel.DataModel.Entity.Attribute> attributesKey = entity.getAttribute().stream()
+				.filter(ak -> (ak.isKey() != null && ak.isKey() == true)).collect(Collectors.toList());
+		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
+
+		for (com.engine.mapper.datamodel.DataModel.Entity.Attribute attributeKey : attributesKey) {
+			PartitionKey partitionKey = new PartitionKey(attributeKey.getId());
+			partitionKey.setEntity(entity.getName());
+			partitionKey.setName(attributeKey.getName());
+			partitionKey.setType(attributeKey.getType());
+			
+			if (keyCondition.getPredicate().equals("in"))
+				partitionKey.setPredicate(Predicate.IN);
+			
+			if (keyCondition.getPredicate().equals("notIn"))
+				partitionKey.setPredicate(Predicate.NOT_IN);
+			
+			partitionKeys.add(partitionKey);
+
+		}
+		return partitionKeys;
+
+	}
+
+	@Override
+	public PartitionKey extractRelationshipRoleIntoPartitionKeys(RelationshipRoleCondition relationshipRoleCondition,String attributeId) {
+
+		Entity entity = dataModelUtil.findEntity(attributeId.substring(0, attributeId.lastIndexOf("#")));
+		com.engine.mapper.datamodel.DataModel.Entity.Attribute attribute = dataModelUtil
+				.findAttributesByEntityAndId(entity.getId(), attributeId);
+
+		if (attribute == null)
+			return null;
+
+		PartitionKey partitionKey = new PartitionKey(attribute.getId());
+		partitionKey.setEntity(entity.getName());
+		partitionKey.setId(attribute.getId());
+		partitionKey.setType(attribute.getType());
+		partitionKey.setName(attribute.getName());
+
+
+		if (relationshipRoleCondition.getPredicate().equals("in"))
+			partitionKey.setPredicate(Predicate.IN);
+		
+		if (relationshipRoleCondition.getPredicate().equals("notIn"))
+			partitionKey.setPredicate(Predicate.NOT_IN);
+		
+		
+		return partitionKey;
+	}
+
 	/**
 	 * Sort keys with order = null comes from attributes conditions with "equal"
 	 * predicate
@@ -360,7 +483,7 @@ public class BlockServiceImpl implements BlockService {
 
 		return sortKeys;
 	}
-	
+
 	/**
 	 * @param partitionKeys
 	 * @param wrapperAttribute
@@ -397,14 +520,13 @@ public class BlockServiceImpl implements BlockService {
 		}
 		return found;
 	}
-	
+
 	/**
 	 * @param partitionKeys
 	 * @param sortKeys
 	 * @return new sort keys list without keys that are already partition keys
 	 */
-	public List<SortKey> removeDuplicatesFromSortKeys(List<PartitionKey> partitionKeys,
-			List<SortKey> sortKeys) {
+	public List<SortKey> removeDuplicatesFromSortKeys(List<PartitionKey> partitionKeys, List<SortKey> sortKeys) {
 
 		List<SortKey> tempSortKeys = new ArrayList<SortKey>(sortKeys);
 
@@ -418,20 +540,16 @@ public class BlockServiceImpl implements BlockService {
 
 		return sortKeys;
 	}
-	
-
-
-	
 
 	public boolean haveSameSortKeys(List<SortKey> sortKeys, List<SortKey> sortKeys2) {
 		boolean same = false;
-		
-		if (sortKeys.size() == 0 || sortKeys2.size() ==0)
+
+		if (sortKeys.size() == 0 || sortKeys2.size() == 0)
 			return true;
-		
+
 		if (sortKeys.size() != sortKeys2.size())
 			return same;
-		
+
 		for (SortKey sortKey : sortKeys) {
 			same = false;
 
@@ -450,13 +568,13 @@ public class BlockServiceImpl implements BlockService {
 
 	public boolean haveSamePartitionKeys(List<PartitionKey> partitionKeys, List<PartitionKey> partitionKeys2) {
 		boolean same = false;
-		
-		if (partitionKeys.size() == 0 || partitionKeys2.size() ==0)
+
+		if (partitionKeys.size() == 0 || partitionKeys2.size() == 0)
 			return true;
-		
+
 		if (partitionKeys.size() != partitionKeys2.size())
 			return same;
-		
+
 		for (PartitionKey partitionKey : partitionKeys) {
 			same = false;
 
@@ -473,5 +591,130 @@ public class BlockServiceImpl implements BlockService {
 		return same;
 	}
 
-	
+	@Override
+	public List<PartitionKey> retrievePartitionKeysFromViewComponent(InteractionFlowElement interactionFlowElement) {
+
+		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
+
+		// 1. In case is LIST
+		if (interactionFlowElement instanceof ListImpl) {
+			for (ConditionalExpression conditionalExpression : ((ListImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && condition.getPredicate().equals("eq")) {
+							AttributesCondition attributesCondition = (AttributesCondition) condition;
+
+							if (attributesCondition.getAttributes() != null) {
+
+								for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
+
+									partitionKeys.add(
+											extractAttributesIntoPartitionKeys(attributesCondition, wrapperAttribute));
+
+								}
+							}
+						}
+
+						// key condition
+						if (condition instanceof KeyCondition) {
+							KeyCondition keyCondition = (KeyCondition) condition;
+							
+							partitionKeys.addAll(extractKeyAttributesIntoPartitionKeys(keyCondition,
+									((ListImpl) interactionFlowElement).getEntity()));
+
+						}
+
+						// Relationship Role condition
+						if (condition instanceof RelationshipRoleCondition) {
+							String attributeId = "";
+							RelationshipRoleCondition relationshipRoleCondition = (RelationshipRoleCondition) condition;
+
+							if (relationshipRoleCondition.getRelationshipRole1() != null)
+								attributeId = relationshipRoleCondition.getRelationshipRole1().getJoinColumn()
+										.getAttribute();
+							else if (relationshipRoleCondition.getRelationshipRole2() != null)
+								attributeId = relationshipRoleCondition.getRelationshipRole2().getJoinColumn()
+										.getAttribute();
+
+							if (attributeId!="")
+								partitionKeys.add(extractRelationshipRoleIntoPartitionKeys(relationshipRoleCondition, attributeId));
+
+						}
+
+					}
+				}
+			}
+		}
+
+		// 1. In case is DETAIL
+		if (interactionFlowElement instanceof DetailImpl) {
+			for (ConditionalExpression conditionalExpression : ((DetailImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && condition.getPredicate().equals("eq")) {
+							AttributesCondition attributesCondition = (AttributesCondition) condition;
+
+							if (attributesCondition.getAttributes() != null) {
+
+								for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
+
+									partitionKeys.add(
+											extractAttributesIntoPartitionKeys(attributesCondition, wrapperAttribute));
+
+								}
+							}
+						}
+
+						// key condition
+						if (condition instanceof KeyCondition) {
+							KeyCondition keyCondition = (KeyCondition) condition;
+							partitionKeys.addAll(extractKeyAttributesIntoPartitionKeys(keyCondition,
+									((DetailImpl) interactionFlowElement).getEntity()));
+
+						}
+
+						// Relationship Role condition
+						if (condition instanceof RelationshipRoleCondition) {
+							String attributeId = "";
+							RelationshipRoleCondition relationshipRoleCondition = (RelationshipRoleCondition) condition;
+
+							if (relationshipRoleCondition.getRelationshipRole1() != null)
+								attributeId = relationshipRoleCondition.getRelationshipRole1().getJoinColumn()
+										.getAttribute();
+							else
+								attributeId = relationshipRoleCondition.getRelationshipRole2().getJoinColumn()
+										.getAttribute();
+
+							partitionKeys.add(extractRelationshipRoleIntoPartitionKeys(relationshipRoleCondition, attributeId));
+
+						}
+
+					}
+				}
+			}
+		}
+
+		return partitionKeys;
+	}
+
+	@Override
+	public DataModelUtil getDataModelUtil() {
+		return dataModelUtil;
+	}
+
+	@Override
+	public void setDataModelUtil(DataModelUtil dataModelUtil) {
+		this.dataModelUtil = dataModelUtil;
+	}
+
 }

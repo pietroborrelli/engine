@@ -12,6 +12,12 @@ public class WrapperAttribute {
 	public WrapperAttribute() {
 		super();
 	}
+	
+	public WrapperAttribute(String id) {
+		super();
+		this.id = id;
+	}
+	
 	public WrapperAttribute(String id, Entity entity, Attribute attribute) {
 		super();
 		this.id = id;

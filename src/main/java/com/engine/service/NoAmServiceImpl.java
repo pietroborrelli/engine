@@ -16,20 +16,12 @@ import com.engine.domain.abstractmodel.PartitionKey;
 import com.engine.domain.abstractmodel.PrimaryKey;
 import com.engine.domain.abstractmodel.SortKey;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
-import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
-import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.FormImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.SelectorImpl;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.Attribute;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.Field;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.FieldImpl;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.MultipleSelectionFieldImpl;
-import com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart.field.SelectionFieldImpl;
 import com.engine.domain.wrapper.Path;
 import com.engine.inspector.DataModelUtil;
-import com.engine.mapper.datamodel.DataModel.Relationship;
 
 @Service
 public class NoAmServiceImpl implements NoAmService {
@@ -49,6 +41,8 @@ public class NoAmServiceImpl implements NoAmService {
 	@Override
 	public List<Collection> computeAbstractModels(Path path) {
 
+		blockService.setDataModelUtil(dataModelUtil);
+		
 		List<Collection> collections = new ArrayList<Collection>();
 		System.out.println("--------- CREAZIONE DEL NO AM ---------");
 
@@ -106,7 +100,7 @@ public class NoAmServiceImpl implements NoAmService {
 		List<com.engine.mapper.datamodel.DataModel.Entity> entities = new ArrayList<com.engine.mapper.datamodel.DataModel.Entity>();
 		com.engine.mapper.datamodel.DataModel.Entity entity = null;
 
-		// get all partition keys
+		// get all partition keys from conditions on links
 		for (int i = 0; i < interactionFlowElements.size(); i++) {
 			InteractionFlowElement current = interactionFlowElements.get(i);
 			InteractionFlowElement next = null;
@@ -131,9 +125,14 @@ public class NoAmServiceImpl implements NoAmService {
 				entities.add(entity);
 			}
 
-			if (blockService.retrievePartitionKey(current, next) != null) {
-				partitionKeys.addAll(blockService.retrievePartitionKey(current, next));
+			if (blockService.retrievePartitionKeysFromLink(current, next) != null) {
+				partitionKeys.addAll(blockService.retrievePartitionKeysFromLink(current, next));
 			}
+			
+			if (blockService.retrievePartitionKeysFromViewComponent(current) != null) {
+				partitionKeys.addAll(blockService.retrievePartitionKeysFromViewComponent(current));
+			}
+			
 
 		}
 

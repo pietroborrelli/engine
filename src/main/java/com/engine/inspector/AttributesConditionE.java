@@ -51,10 +51,10 @@ public class AttributesConditionE implements ConditionExtractor {
 				
 				String[] idAttributes = attribute.getNodeValue().split(" ") ;
 				attributesCondition.setAttributes(new ArrayList<WrapperAttribute>());
-				WrapperAttribute wrapperAttributeTemp = new WrapperAttribute();
+
 				for (String key : idAttributes ) {
-					wrapperAttributeTemp.setId(key);
-					attributesCondition.getAttributes().add(wrapperAttributeTemp);
+
+					attributesCondition.getAttributes().add(new WrapperAttribute(key));
 				}
 				System.out.print("--> estratto\n");
 				break;

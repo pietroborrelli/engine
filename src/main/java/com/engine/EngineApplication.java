@@ -87,12 +87,12 @@ public class EngineApplication implements CommandLineRunner {
 
 		noAmService.setDataModelUtil(frontEndInspector.getDataModelUtil());
 
-		navigateFrontEnd(frontEndInspector);
+		inspectFrontEnd(frontEndInspector);
 
 		System.out.println(" END SUCCESS ");
 	}
 
-	public void navigateFrontEnd(FrontEndInspector frontEndInspector) throws Exception {
+	public void inspectFrontEnd(FrontEndInspector frontEndInspector) throws Exception {
 
 		List<Area> areas = new ArrayList<Area>();
 		List<Page> pages = new ArrayList<Page>();

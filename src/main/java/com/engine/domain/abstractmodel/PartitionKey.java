@@ -1,11 +1,14 @@
 package com.engine.domain.abstractmodel;
 
+import com.engine.domain.enumeration.Predicate;
+
 public class PartitionKey {
 
 	private String id;
 	private String name;
 	private String type;
 	private String entity;
+	private Predicate predicate;
 
 	// id contains reference to attribute of entity
 	public PartitionKey(String id) {
@@ -91,6 +94,14 @@ public class PartitionKey {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+
+	public Predicate getPredicate() {
+		return predicate;
+	}
+
+	public void setPredicate(Predicate predicate) {
+		this.predicate = predicate;
 	}
 	
 }

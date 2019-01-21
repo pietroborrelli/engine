@@ -13,6 +13,7 @@ import com.engine.mapper.datamodel.DataModel.Relationship.RelationshipRole2;
 import com.engine.domain.abstractmodel.PartitionKey;
 import com.engine.domain.abstractmodel.SortKey;
 import com.engine.domain.enumeration.Ordering;
+import com.engine.domain.enumeration.Predicate;
 
 public class DataModelUtil {
 
@@ -172,9 +173,9 @@ public class DataModelUtil {
 	 *            id of the attribute name
 	 * @return attribute ; null if no type is found in the entity
 	 */
-	public Attribute findAttributesByEntityAndId(String entityName, String attributeName) {
+	public Attribute findAttributesByEntityAndId(String entityName, String attributeId) {
 
-		return findEntity(entityName).getAttribute().stream().filter(an -> an.getId().equals(attributeName))
+		return findEntity(entityName).getAttribute().stream().filter(an -> an.getId().equals(attributeId))
 				.collect(Collectors.toList()).get(0);
 
 	}
@@ -242,7 +243,8 @@ public class DataModelUtil {
 			partitionKey.setEntity(entity.getName());
 			partitionKey.setName(attributeKey.getName());
 			partitionKey.setType(attributeKey.getType());
-
+			partitionKey.setPredicate(Predicate.EQUAL);
+			
 			partitionKeys.add(partitionKey);
 
 		}

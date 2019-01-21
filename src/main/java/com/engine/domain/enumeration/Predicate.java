@@ -1,11 +1,19 @@
 package com.engine.domain.enumeration;
 public enum Predicate {
 
-	GREATER_OR_EQUAL("gteq"),
+	GREATER_OR_EQUAL(">="),
 
-	LESS_OR_EQUAL("lteq"),
+	LESS_OR_EQUAL("<="),
+	
+	LESS("<"),
+	
+	GREATER(">"),
+	
+	EQUAL("="),
 
-	IN("in");
+	IN("in"),
+	
+	NOT_IN("not in");
 
 	
 	private String value;
