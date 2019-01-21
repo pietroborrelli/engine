@@ -10,8 +10,11 @@ import org.w3c.dom.Node;
 
 import com.engine.domain.abstractmodel.Entry;
 import com.engine.domain.enumeration.Ordering;
+import com.engine.domain.enumeration.Predicate;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.KeyCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.RelationshipRoleCondition;
 import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 import com.engine.domain.interactionflowelement.interactionflow.BindingParameter;
 import com.engine.domain.interactionflowelement.interactionflow.InteractionFlow;
@@ -241,6 +244,41 @@ public class FrontEndInspector {
 
 		// kcond / rcond cases, looking for attribute
 		if (bindingParameter.getTargetId().contains("ent")) {
+			
+			Predicate predicate = null;
+			
+			if (bindingParameter.getTargetId().contains("rcond")) {
+				RelationshipRoleConditionE relationshipRoleConditionE = new RelationshipRoleConditionE();
+				RelationshipRoleCondition relationshipRoleCondition = new RelationshipRoleCondition();
+				String rrId = bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("."));
+				
+				relationshipRoleCondition = (RelationshipRoleCondition) relationshipRoleConditionE
+					.mapCondition(xPathUtil.findRelationshipRoleConditionById(rrId, getDocument()));
+				
+				if (relationshipRoleCondition.getPredicate().equals("in"))
+					predicate = Predicate.IN;
+				
+				if (relationshipRoleCondition.getPredicate().equals("notIn"))
+					predicate = Predicate.NOT_IN;
+			}
+			
+			if (bindingParameter.getTargetId().contains("kcond")) {
+				KeyConditionE keyConditionE = new KeyConditionE();
+				KeyCondition keyCondition = new KeyCondition();
+				String kcId = bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("."));
+				
+				keyCondition = (KeyCondition) keyConditionE
+					.mapCondition(xPathUtil.findKeyConditionById(kcId, getDocument()));
+				
+				if (keyCondition.getPredicate().equals("in"))
+					predicate = Predicate.IN;
+				
+				if (keyCondition.getPredicate().equals("notIn"))
+					predicate = Predicate.NOT_IN;
+			}
+			
+			
+			
 			bindingParameter.setTargetId(
 					bindingParameter.getTargetId().substring(bindingParameter.getTargetId().lastIndexOf("ent")));
 
@@ -252,13 +290,16 @@ public class FrontEndInspector {
 			if (bindingParameter.getTargetId().equals("entityBean"))
 				return null;
 
+			
+			
 			attribute.setEntity(dataModelUtil.findEntity(
 					bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("#"))));
 			attribute.setId(bindingParameter.getTargetId());
 			attribute.setName(dataModelUtil.findAttributeName(attribute.getEntity(), bindingParameter.getTargetId()));
 			attribute.setType(dataModelUtil.findAttributeType(attribute.getEntity(), bindingParameter.getTargetId()));
 			attribute.setKey(true);
-
+			attribute.setPredicate(predicate);
+			
 			viewComponentParts.add(attribute);
 
 			return viewComponentParts;
@@ -294,6 +335,16 @@ public class FrontEndInspector {
 						|| attributesCondition.getPredicate().equals("gt"))
 					attributeApplication.setOrdering(Ordering.DESCENDING);
 
+				//set predicates here
+				if (attributesCondition.getPredicate().equals("lteq"))
+					attributeApplication.setPredicate(Predicate.LESS_OR_EQUAL);
+				if (attributesCondition.getPredicate().equals("lt"))
+					attributeApplication.setPredicate(Predicate.LESS);
+				if (attributesCondition.getPredicate().equals("gteq"))
+					attributeApplication.setPredicate(Predicate.GREATER);
+				if (attributesCondition.getPredicate().equals("gt"))
+					attributeApplication.setPredicate(Predicate.GREATER_OR_EQUAL);
+				
 				viewComponentParts.add(attributeApplication);
 			}
 
@@ -386,6 +437,39 @@ public class FrontEndInspector {
 
 		// kcond / rcond cases, looking for attribute
 		if (bindingParameter.getSourceId().contains("ent")) {
+			
+			Predicate predicate = null;
+			
+			if (bindingParameter.getTargetId().contains("rcond")) {
+				RelationshipRoleConditionE relationshipRoleConditionE = new RelationshipRoleConditionE();
+				RelationshipRoleCondition relationshipRoleCondition = new RelationshipRoleCondition();
+				String rrId = bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("."));
+				
+				relationshipRoleCondition = (RelationshipRoleCondition) relationshipRoleConditionE
+					.mapCondition(xPathUtil.findRelationshipRoleConditionById(rrId, getDocument()));
+				
+				if (relationshipRoleCondition.getPredicate().equals("in"))
+					predicate = Predicate.IN;
+				
+				if (relationshipRoleCondition.getPredicate().equals("notIn"))
+					predicate = Predicate.NOT_IN;
+			}
+			
+			if (bindingParameter.getTargetId().contains("kcond")) {
+				KeyConditionE keyConditionE = new KeyConditionE();
+				KeyCondition keyCondition = new KeyCondition();
+				String kcId = bindingParameter.getTargetId().substring(0, bindingParameter.getTargetId().lastIndexOf("."));
+				
+				keyCondition = (KeyCondition) keyConditionE
+					.mapCondition(xPathUtil.findKeyConditionById(kcId, getDocument()));
+				
+				if (keyCondition.getPredicate().equals("in"))
+					predicate = Predicate.IN;
+				
+				if (keyCondition.getPredicate().equals("notIn"))
+					predicate = Predicate.NOT_IN;
+			}
+			
 			bindingParameter.setSourceId(
 					bindingParameter.getSourceId().substring(bindingParameter.getSourceId().lastIndexOf("ent")));
 
@@ -403,7 +487,8 @@ public class FrontEndInspector {
 			attribute.setName(dataModelUtil.findAttributeName(attribute.getEntity(), bindingParameter.getSourceId()));
 			attribute.setType(dataModelUtil.findAttributeType(attribute.getEntity(), bindingParameter.getSourceId()));
 			attribute.setKey(true);
-
+			attribute.setPredicate(predicate);
+			
 			viewComponentParts.add(attribute);
 
 			return viewComponentParts;
@@ -439,6 +524,16 @@ public class FrontEndInspector {
 						|| attributesCondition.getPredicate().equals("gt"))
 					attributeApplication.setOrdering(Ordering.DESCENDING);
 
+				//set predicates here
+				if (attributesCondition.getPredicate().equals("lteq"))
+					attributeApplication.setPredicate(Predicate.LESS_OR_EQUAL);
+				if (attributesCondition.getPredicate().equals("lt"))
+					attributeApplication.setPredicate(Predicate.LESS);
+				if (attributesCondition.getPredicate().equals("gteq"))
+					attributeApplication.setPredicate(Predicate.GREATER);
+				if (attributesCondition.getPredicate().equals("gt"))
+					attributeApplication.setPredicate(Predicate.GREATER_OR_EQUAL);
+				
 				viewComponentParts.add(attributeApplication);
 			}
 

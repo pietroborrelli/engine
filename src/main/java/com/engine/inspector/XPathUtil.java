@@ -505,6 +505,28 @@ public class XPathUtil {
 		}
 		return node;		
 	}
+	
+	public Node findRelationshipRoleConditionById(String relationshipRoleConditionId,Document document) {
+		Node node = null;
+		try {
+			node = (Node) getxPath().compile("//RelationshipRoleCondition[@id='" + relationshipRoleConditionId + "']").evaluate(document,
+					XPathConstants.NODE);
+		} catch (XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		return node;		
+	}
+	
+	public Node findKeyConditionById(String keyConditionId,Document document) {
+		Node node = null;
+		try {
+			node = (Node) getxPath().compile("//KeyCondition[@id='" + keyConditionId + "']").evaluate(document,
+					XPathConstants.NODE);
+		} catch (XPathExpressionException xe) {
+			xe.printStackTrace();
+		}
+		return node;		
+	}
 
 	public Node findFieldById(String fieldType, String fieldId, Document document) {
 		

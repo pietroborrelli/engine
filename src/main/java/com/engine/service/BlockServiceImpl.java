@@ -320,6 +320,9 @@ public class BlockServiceImpl implements BlockService {
 									partitionKey.setType(targetAttribute.getType());
 									partitionKey.setEntity(targetAttribute.getEntity().getName());
 
+									if (targetAttribute.getPredicate()!=null)
+										partitionKey.setPredicate(targetAttribute.getPredicate());
+									
 									partitionKeys.add(partitionKey);
 								}
 							}

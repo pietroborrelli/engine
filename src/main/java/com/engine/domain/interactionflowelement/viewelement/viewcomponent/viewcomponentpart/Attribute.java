@@ -1,6 +1,7 @@
 package com.engine.domain.interactionflowelement.viewelement.viewcomponent.viewcomponentpart;
 
 import com.engine.domain.enumeration.Ordering;
+import com.engine.domain.enumeration.Predicate;
 import com.engine.mapper.datamodel.DataModel.Entity;
 
 public class Attribute extends ViewComponentPart {
@@ -8,6 +9,7 @@ public class Attribute extends ViewComponentPart {
 	private Entity entity;
 	private Ordering ordering;
 	private Boolean key;
+	private Predicate predicate;
 	
 	public Attribute(String id) {
 		setId(id);
@@ -39,6 +41,14 @@ public class Attribute extends ViewComponentPart {
 
 	public void setKey(Boolean key) {
 		this.key = key;
+	}
+
+	public Predicate getPredicate() {
+		return predicate;
+	}
+
+	public void setPredicate(Predicate predicate) {
+		this.predicate = predicate;
 	}
 
 }
