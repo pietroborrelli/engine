@@ -206,7 +206,6 @@ public class NoAmServiceImpl implements NoAmService {
 				entries.addAll(entryService.retrieveFormAttributes((FormImpl) interactionFlowElement));
 
 		}
-
 		return entries;
 	}
 

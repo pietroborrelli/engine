@@ -5,6 +5,7 @@ import java.util.List;
 
 public final class AttributesCondition extends Condition {
 
+	private String value;
 	private String booleanOperator;
 	private List<WrapperAttribute> attributes;
 
@@ -22,6 +23,14 @@ public final class AttributesCondition extends Condition {
 
 	public void setAttributes(List<WrapperAttribute> attributes) {
 		this.attributes = attributes;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 

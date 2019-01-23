@@ -2,6 +2,8 @@ package com.engine.domain.abstractmodel;
 
 import java.util.List;
 
+import com.engine.domain.enumeration.Predicate;
+
 public class Entry {
 
 	private String id;
@@ -9,6 +11,8 @@ public class Entry {
 	private String type;
 	private String entityName;
 	private String interactionFlowElementName;
+	private Predicate predicate;
+	private String valueCondition;
 
 	public Entry() {
 		super();
@@ -166,6 +170,22 @@ public class Entry {
 		}
 		
 		return found;
+	}
+
+	public Predicate getPredicate() {
+		return predicate;
+	}
+
+	public void setPredicate(Predicate predicate) {
+		this.predicate = predicate;
+	}
+
+	public String getValueCondition() {
+		return valueCondition;
+	}
+
+	public void setValueCondition(String valueCondition) {
+		this.valueCondition = valueCondition;
 	}
 	
 }

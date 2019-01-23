@@ -654,7 +654,7 @@ public class BlockServiceImpl implements BlockService {
 			}
 		}
 
-		// 1. In case is DETAIL
+		// 2. In case is DETAIL
 		if (interactionFlowElement instanceof DetailImpl) {
 			for (ConditionalExpression conditionalExpression : ((DetailImpl) interactionFlowElement)
 					.getConditionalExpressions()) {
@@ -707,6 +707,59 @@ public class BlockServiceImpl implements BlockService {
 			}
 		}
 
+		// 3. In case is SELECTOR
+				if (interactionFlowElement instanceof SelectorImpl) {
+					for (ConditionalExpression conditionalExpression : ((SelectorImpl) interactionFlowElement)
+							.getConditionalExpressions()) {
+
+						if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+							for (Condition condition : conditionalExpression.getConditions()) {
+
+								// attributes condition
+								if (condition instanceof AttributesCondition && condition.getPredicate().equals("eq")) {
+									AttributesCondition attributesCondition = (AttributesCondition) condition;
+
+									if (attributesCondition.getAttributes() != null) {
+
+										for (WrapperAttribute wrapperAttribute : attributesCondition.getAttributes()) {
+
+											partitionKeys.add(
+													extractAttributesIntoPartitionKeys(attributesCondition, wrapperAttribute));
+
+										}
+									}
+								}
+
+								// key condition
+								if (condition instanceof KeyCondition) {
+									KeyCondition keyCondition = (KeyCondition) condition;
+									partitionKeys.addAll(extractKeyAttributesIntoPartitionKeys(keyCondition,
+											((SelectorImpl) interactionFlowElement).getEntity()));
+
+								}
+
+								// Relationship Role condition
+								if (condition instanceof RelationshipRoleCondition) {
+									String attributeId = "";
+									RelationshipRoleCondition relationshipRoleCondition = (RelationshipRoleCondition) condition;
+
+									if (relationshipRoleCondition.getRelationshipRole1() != null)
+										attributeId = relationshipRoleCondition.getRelationshipRole1().getJoinColumn()
+												.getAttribute();
+									else
+										attributeId = relationshipRoleCondition.getRelationshipRole2().getJoinColumn()
+												.getAttribute();
+
+									partitionKeys.add(extractRelationshipRoleIntoPartitionKeys(relationshipRoleCondition, attributeId));
+
+								}
+
+							}
+						}
+					}
+				}
+		
 		return partitionKeys;
 	}
 

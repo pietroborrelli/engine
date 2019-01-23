@@ -3,6 +3,8 @@ package com.engine.service;
 import java.util.List;
 
 import com.engine.domain.abstractmodel.Entry;
+import com.engine.domain.enumeration.Predicate;
+import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.FormImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
@@ -42,5 +44,9 @@ public interface EntryService {
 	boolean aggregateHasBeenAlreadyAdded(Entry aggregateEntry, List<Entry> entries);
 	
 	boolean checkPresence(List<Entry> candidateAggregateEntries, Path path);
+
+	Predicate findPredicate(InteractionFlowElement interactionFlowElement, String idAttribute);
+
+	String findValueCondition(InteractionFlowElement interactionFlowElement, String idAttribute);
 
 }

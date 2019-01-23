@@ -7,7 +7,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.engine.domain.abstractmodel.Entry;
+import com.engine.domain.enumeration.Predicate;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
+import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.AttributesCondition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.Condition;
+import com.engine.domain.interactionflowelement.conditionalexpression.condition.WrapperAttribute;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.FormImpl;
 import com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl;
@@ -22,8 +27,12 @@ import com.engine.domain.wrapper.Path;
 @Service
 public class EntryServiceImpl implements EntryService {
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.EntryService#retrieveFormAttributes(com.engine.domain.interactionflowelement.viewelement.viewcomponent.FormImpl)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.EntryService#retrieveFormAttributes(com.engine.domain.
+	 * interactionflowelement.viewelement.viewcomponent.FormImpl)
 	 */
 	@Override
 	public List<Entry> retrieveFormAttributes(FormImpl formImpl) {
@@ -47,8 +56,12 @@ public class EntryServiceImpl implements EntryService {
 		return entries;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.EntryService#retrieveListDisplayAttributes(com.engine.domain.interactionflowelement.viewelement.viewcomponent.ListImpl)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.EntryService#retrieveListDisplayAttributes(com.engine.
+	 * domain.interactionflowelement.viewelement.viewcomponent.ListImpl)
 	 */
 	@Override
 	public List<Entry> retrieveListDisplayAttributes(ListImpl listImpl) {
@@ -68,14 +81,21 @@ public class EntryServiceImpl implements EntryService {
 			if (displayAttribute.getEntity() != null)
 				entry.setEntityName(displayAttribute.getEntity().getName());
 
+			entry.setPredicate(findPredicate(listImpl, entry.getId()));
+			entry.setValueCondition(findValueCondition(listImpl, entry.getId()));
+
 			entries.add(entry);
 
 		}
 		return entries;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.EntryService#retrieveDetailDisplayAttributes(com.engine.domain.interactionflowelement.viewelement.viewcomponent.DetailImpl)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.EntryService#retrieveDetailDisplayAttributes(com.engine.
+	 * domain.interactionflowelement.viewelement.viewcomponent.DetailImpl)
 	 */
 	@Override
 	public List<Entry> retrieveDetailDisplayAttributes(DetailImpl detailImpl) {
@@ -94,14 +114,21 @@ public class EntryServiceImpl implements EntryService {
 			if (displayAttribute.getEntity() != null)
 				entry.setEntityName(displayAttribute.getEntity().getName());
 
+			entry.setPredicate(findPredicate(detailImpl, entry.getId()));
+			entry.setValueCondition(findValueCondition(detailImpl, entry.getId()));
+
 			entries.add(entry);
 
 		}
 		return entries;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.engine.service.EntryService#retrieveSelectorAttributes(com.engine.domain.interactionflowelement.viewelement.viewcomponent.SelectorImpl)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.engine.service.EntryService#retrieveSelectorAttributes(com.engine.domain.
+	 * interactionflowelement.viewelement.viewcomponent.SelectorImpl)
 	 */
 	@Override
 	public List<Entry> retrieveSelectorAttributes(SelectorImpl selectorImpl) {
@@ -120,12 +147,15 @@ public class EntryServiceImpl implements EntryService {
 			if (selectorImpl.getEntity() != null)
 				entry.setEntityName(selectorImpl.getEntity().getName());
 
+			entry.setPredicate(findPredicate(selectorImpl, entry.getId()));
+			entry.setValueCondition(findValueCondition(selectorImpl, entry.getId()));
+
 			entries.add(entry);
 
 		}
 		return entries;
 	}
-	
+
 	public List<Entry> removeDuplicatesEntries(List<Entry> entries) {
 
 		entries = entries.stream().distinct().collect(Collectors.toList());
@@ -152,7 +182,7 @@ public class EntryServiceImpl implements EntryService {
 		}
 		return entries;
 	}
-	
+
 	public boolean haveSameEntries(List<Entry> entries, List<Entry> entries2) {
 		boolean same = false;
 		for (Entry entry : entries) {
@@ -170,7 +200,7 @@ public class EntryServiceImpl implements EntryService {
 
 		return same;
 	}
-	
+
 	/**
 	 * @param aggregateEntry
 	 * @param entries
@@ -212,7 +242,7 @@ public class EntryServiceImpl implements EntryService {
 		return found;
 
 	}
-	
+
 	/**
 	 * @param candidateAggregateEntries
 	 * @param path
@@ -316,4 +346,225 @@ public class EntryServiceImpl implements EntryService {
 		}
 		return aggregable;
 	}
+
+	/**
+	 * @param interactionFlowElement
+	 * @return predicate otherwise null if no predicate is set
+	 */
+	@Override
+	public Predicate findPredicate(InteractionFlowElement interactionFlowElement, String idAttribute) {
+
+		// 1. In case is LIST
+		if (interactionFlowElement instanceof ListImpl) {
+			for (ConditionalExpression conditionalExpression : ((ListImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && hasAttributeACondition(
+								((AttributesCondition) condition).getAttributes(), idAttribute)) {
+
+							return switchPredicates(condition);
+
+						}
+					}
+				}
+			}
+		}
+
+		// 2. In case is DETAIL
+		if (interactionFlowElement instanceof DetailImpl) {
+			for (ConditionalExpression conditionalExpression : ((DetailImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && hasAttributeACondition(
+								((AttributesCondition) condition).getAttributes(), idAttribute)) {
+
+							return switchPredicates(condition);
+
+						}
+					}
+				}
+			}
+		}
+
+		// 3. In case is SELECTOR
+		if (interactionFlowElement instanceof SelectorImpl) {
+			for (ConditionalExpression conditionalExpression : ((SelectorImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && hasAttributeACondition(
+								((AttributesCondition) condition).getAttributes(), idAttribute)) {
+
+							return switchPredicates(condition);
+
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private Predicate switchPredicates(Condition condition) {
+		if (condition.getPredicate().equals("beginWith")) {
+			return Predicate.BEGIN_WITH;
+		}
+		if (condition.getPredicate().equals("contains"))
+			return Predicate.CONTAINS;
+
+		if (condition.getPredicate().equals("endsWith"))
+			return Predicate.END_WITH;
+
+		if (condition.getPredicate().equals("empty"))
+			return Predicate.IS_EMPTY;
+
+		if (condition.getPredicate().equals("notEmpty"))
+			return Predicate.IS_NOT_EMPTY;
+
+		if (condition.getPredicate().equals("notNull"))
+			return Predicate.IS_NOT_NULL;
+
+		if (condition.getPredicate().equals("null"))
+			return Predicate.NULL;
+
+		if (condition.getPredicate().equals("notBeginWith"))
+			return Predicate.NOT_BEGIN_WITH;
+
+		if (condition.getPredicate().equals("notContains"))
+			return Predicate.NOT_CONTAINS;
+
+		if (condition.getPredicate().equals("notEndsWith"))
+			return Predicate.NOT_END_WITH;
+
+		if (condition.getPredicate().equals("notEqual"))
+			return Predicate.NOT_EQUAL;
+
+		return null;
+	}
+
+	private boolean hasAttributeACondition(List<WrapperAttribute> attributes, String idAttribute) {
+
+		for (WrapperAttribute wrapperAttribute : attributes) {
+			if (wrapperAttribute.getId().equals(idAttribute))
+				return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public String findValueCondition(InteractionFlowElement interactionFlowElement, String idAttribute) {
+
+		// 1. In case is LIST
+		if (interactionFlowElement instanceof ListImpl) {
+			for (ConditionalExpression conditionalExpression : ((ListImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && hasAttributeACondition(
+								((AttributesCondition) condition).getAttributes(), idAttribute)) {
+
+							return switchValueCondition(condition);
+						}
+					}
+				}
+			}
+		}
+
+		// 2. In case is DETAIL
+		if (interactionFlowElement instanceof DetailImpl) {
+			for (ConditionalExpression conditionalExpression : ((DetailImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && hasAttributeACondition(
+								((AttributesCondition) condition).getAttributes(), idAttribute)) {
+
+							return switchValueCondition(condition);
+						}
+					}
+				}
+			}
+		}
+
+		// 3. In case is SELECTOR
+		if (interactionFlowElement instanceof SelectorImpl) {
+			for (ConditionalExpression conditionalExpression : ((SelectorImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition && hasAttributeACondition(
+								((AttributesCondition) condition).getAttributes(), idAttribute)) {
+
+							return switchValueCondition(condition);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private String switchValueCondition(Condition condition) {
+		if (condition.getPredicate().equals("beginWith"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("contains"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("endsWith"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("empty"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("notEmpty"))
+			return "";
+
+		if (condition.getPredicate().equals("notNull"))
+			return "";
+
+		if (condition.getPredicate().equals("null"))
+			return "";
+
+		if (condition.getPredicate().equals("notBeginWith"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("notContains"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("notEndsWith"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("notEqual"))
+			return ((AttributesCondition) condition).getValue();
+		return null;
+	}
+
 }

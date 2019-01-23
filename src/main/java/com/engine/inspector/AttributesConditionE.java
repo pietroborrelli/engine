@@ -41,6 +41,13 @@ public class AttributesConditionE implements ConditionExtractor {
 				System.out.print("--> estratto\n");
 				break;
 			}
+			
+			case "value": {
+				attributesCondition.setValue(attribute.getNodeValue());
+				System.out.print("--> estratto\n");
+				break;
+			}
+			
 			case "booleanOperator":{
 				attributesCondition.setPredicate(attribute.getNodeValue());
 				System.out.print("--> estratto\n");
