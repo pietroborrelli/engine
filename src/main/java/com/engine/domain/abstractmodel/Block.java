@@ -10,6 +10,7 @@ public class Block {
 
 	private PrimaryKey key;
 	private List<Entry> entries;
+	private List<Entry> entriesConditions;
 	
 	public Block() {
 		super();
@@ -53,6 +54,14 @@ public class Block {
 		entries.addAll(set);
 		Collections.sort(entries, (e1, e2) -> (e1.getEntityName()+"."+e1.getName()).compareTo(e2.getEntityName()+"."+e2.getName()));
 		
+	}
+
+	public List<Entry> getEntriesConditions() {
+		return entriesConditions;
+	}
+
+	public void setEntriesConditions(List<Entry> entriesConditions) {
+		this.entriesConditions = entriesConditions;
 	}
 
 	

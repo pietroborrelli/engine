@@ -25,7 +25,7 @@ public class Output {
 		String outputPath = folderPath + collection.getName()+".txt";
 		
 
-		System.out.println("Output on: " + outputPath);
+		System.out.println("Output on NoAm: " + outputPath);
 
 		FileWriter fileWriter = null;
 		try {
@@ -66,7 +66,7 @@ public class Output {
 		
 		String outputPath = folderPath + collection.getName()+".txt";
 
-		System.out.println("Output on: " + outputPath);
+		System.out.println("Output Physical model on: " + outputPath);
 
 		FileWriter fileWriter = null;
 		try {
@@ -77,6 +77,25 @@ public class Output {
 		PrintWriter printWriter = new PrintWriter(fileWriter);
 		// script
 		printWriter.println(script);
+
+		printWriter.close();
+	}
+
+	public void printSelectQuery(String query, String queryName, String folderPhysicalPath) {
+		
+		String outputPath = folderPhysicalPath + queryName+".txt";
+
+		System.out.println("Output Select Query on: " + outputPath);
+
+		FileWriter fileWriter = null;
+		try {
+			fileWriter = new FileWriter(outputPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		PrintWriter printWriter = new PrintWriter(fileWriter);
+		// script
+		printWriter.println(query);
 
 		printWriter.close();
 	}

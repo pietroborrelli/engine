@@ -18,4 +18,5 @@ public interface Parser {
 	public String getSortKeys(Block block);
 	public String getPartitionKeys(List<PartitionKey> partitionKeys);
 	public String getSortKeys(List<SortKey> sortKeys);
+	public String createSelectQuery(Collection collection);
 }

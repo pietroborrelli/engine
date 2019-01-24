@@ -217,6 +217,10 @@ public class EngineApplication implements CommandLineRunner {
 				output.printAbstractModel(collection, folderNoAMPath);
 				// print Physical Implementation
 				output.printPhysicalModel(collection, folderPhysicalPath, parser.buildPhysicalModel(collection));
+				
+				//print query
+				String queryName = "SELECT_" + collection.getName().toLowerCase().replaceAll(" ", "_");
+				output.printSelectQuery(parser.createSelectQuery(collection),queryName, folderPhysicalPath);
 
 			}
 		}

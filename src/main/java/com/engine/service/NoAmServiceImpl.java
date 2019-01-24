@@ -47,6 +47,7 @@ public class NoAmServiceImpl implements NoAmService {
 		System.out.println("--------- CREAZIONE DEL NO AM ---------");
 
 		List<Entry> entries = new ArrayList<Entry>();
+		List<Entry> entriesConditions = new ArrayList<Entry>();
 		List<InteractionFlowElement> interactionFlowElements = new ArrayList<InteractionFlowElement>();
 
 		// create a collection for each VC of the path
@@ -54,8 +55,12 @@ public class NoAmServiceImpl implements NoAmService {
 			interactionFlowElements.add(interactionFlowElement);
 
 			entries = createEntries(interactionFlowElements);
+			entriesConditions = createEntriesConditions(interactionFlowElements);
+			
 			System.out.println(entries.size() + " entries");
-			Block block = createBlock(interactionFlowElements, entries);
+			System.out.println(entriesConditions.size() + "conditions on entries");
+			
+			Block block = createBlock(interactionFlowElements, entries, entriesConditions);
 			System.out.println(block.getKey().getPartitionKeys().size() + " partition keys");
 			System.out.println(block.getKey().getSortKeys().size() + " sort keys");
 
@@ -89,7 +94,7 @@ public class NoAmServiceImpl implements NoAmService {
 	}
 
 	@Override
-	public Block createBlock(List<InteractionFlowElement> interactionFlowElements, List<Entry> entries) {
+	public Block createBlock(List<InteractionFlowElement> interactionFlowElements, List<Entry> entries,  List<Entry> entriesConditions) {
 
 		Block block = new Block();
 		List<PartitionKey> partitionKeys = new ArrayList<PartitionKey>();
@@ -178,8 +183,10 @@ public class NoAmServiceImpl implements NoAmService {
 		// add partition keys in entries if does not exist
 		entries = entryService.addEntriesFromKeys(partitionKeys, sortKeys, entries);
 
+		//TODO: remove entries for which is specified a condition and is also primary keys.
+		
 		block.setEntries(entries);
-
+		block.setEntriesConditions(entriesConditions);
 		return block;
 	}
 
@@ -204,6 +211,29 @@ public class NoAmServiceImpl implements NoAmService {
 
 		}
 		return entries;
+	}
+	
+	@Override
+	public List<Entry> createEntriesConditions(List<InteractionFlowElement> interactionFlowElements) {
+
+		List<Entry> entriesConditions = new ArrayList<Entry>();
+
+		for (InteractionFlowElement interactionFlowElement : interactionFlowElements) {
+
+			if (interactionFlowElement instanceof ListImpl)
+				entriesConditions.addAll(entryService.findEntriesConditions((ListImpl) interactionFlowElement));
+
+			if (interactionFlowElement instanceof DetailImpl)
+				entriesConditions.addAll(entryService.findEntriesConditions((DetailImpl) interactionFlowElement));
+
+			if (interactionFlowElement instanceof SelectorImpl)
+				entriesConditions.addAll(entryService.findEntriesConditions((SelectorImpl) interactionFlowElement));
+
+			if (interactionFlowElement instanceof FormImpl)
+				entriesConditions.addAll(entryService.findEntriesConditions((FormImpl) interactionFlowElement));
+
+		}
+		return entriesConditions;
 	}
 
 	/*

@@ -17,11 +17,11 @@ public enum Predicate {
 	
 	NOT_IN("not in"), //notIn
 	
-	BEGIN_WITH("LIKE '%"), //beginsWith
+	BEGIN_WITH("LIKE"), //beginsWith
 	
-	CONTAINS("LIKE '%"), //contains
+	CONTAINS("LIKE"), //contains
 	
-	END_WITH("LIKE '"), //endsWith
+	END_WITH("LIKE"), //endsWith
 	
 	IS_EMPTY("IS EMPTY"), //empty
 	
@@ -31,11 +31,11 @@ public enum Predicate {
 	
 	IS_NOT_NULL("IS NOT NULL"), //notNull
 	
-	NOT_BEGIN_WITH("NOT LIKE '%"), //notBeginsWith
+	NOT_BEGIN_WITH("NOT LIKE"), //notBeginsWith
 	
-	NOT_CONTAINS("NOT LIKE '%"), //notContains
+	NOT_CONTAINS("NOT LIKE"), //notContains
 	
-	NOT_END_WITH("NOT LIKE '"); //notEndsWith
+	NOT_END_WITH("NOT LIKE"); //notEndsWith
 
 	
 	private String value;

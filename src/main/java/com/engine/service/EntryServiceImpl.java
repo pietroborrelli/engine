@@ -29,6 +29,104 @@ import com.engine.domain.wrapper.Path;
 @Service
 public class EntryServiceImpl implements EntryService {
 
+	/**
+	 * @param interactionFlowElement
+	 * @return list of entries for which is specified a condition
+	 */
+	@Override
+	public List<Entry> findEntriesConditions(InteractionFlowElement interactionFlowElement) {
+
+		List<Entry> entries = new ArrayList<Entry>();
+
+		// 1. In case is LIST
+		if (interactionFlowElement instanceof ListImpl) {
+			for (ConditionalExpression conditionalExpression : ((ListImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition) {
+
+							for (WrapperAttribute wrapperAttribute : ((AttributesCondition) condition)
+									.getAttributes()) {
+								Entry entry = new Entry(wrapperAttribute.getAttribute().getId());
+								entry.setEntityName(((ListImpl) interactionFlowElement).getEntity().getName());
+								entry.setName(wrapperAttribute.getAttribute().getName());
+								entry.setType(wrapperAttribute.getAttribute().getType());
+								entry.setPredicate(switchPredicates(condition));
+								entry.setValueCondition(switchValueCondition(condition));
+								
+								entries.add(entry);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 2. In case is DETAIL
+		if (interactionFlowElement instanceof DetailImpl) {
+			for (ConditionalExpression conditionalExpression : ((DetailImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition) {
+
+							for (WrapperAttribute wrapperAttribute : ((AttributesCondition) condition)
+									.getAttributes()) {
+								Entry entry = new Entry(wrapperAttribute.getAttribute().getId());
+								entry.setEntityName(((DetailImpl) interactionFlowElement).getEntity().getName());
+								entry.setName(wrapperAttribute.getAttribute().getName());
+								entry.setType(wrapperAttribute.getAttribute().getType());
+								entry.setPredicate(switchPredicates(condition));
+								entry.setValueCondition(switchValueCondition(condition));
+								
+								entries.add(entry);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 3. In case is SELECTOR
+		if (interactionFlowElement instanceof SelectorImpl) {
+			for (ConditionalExpression conditionalExpression : ((SelectorImpl) interactionFlowElement)
+					.getConditionalExpressions()) {
+
+				if (conditionalExpression.getBooleanOperator().equals("and")) {
+
+					for (Condition condition : conditionalExpression.getConditions()) {
+
+						// attributes condition
+						if (condition instanceof AttributesCondition) {
+
+							for (WrapperAttribute wrapperAttribute : ((AttributesCondition) condition)
+									.getAttributes()) {
+								Entry entry = new Entry(wrapperAttribute.getAttribute().getId());
+								entry.setEntityName(((SelectorImpl) interactionFlowElement).getEntity().getName());
+								entry.setName(wrapperAttribute.getAttribute().getName());
+								entry.setType(wrapperAttribute.getAttribute().getType());
+								entry.setPredicate(switchPredicates(condition));
+								entry.setValueCondition(switchValueCondition(condition));
+								
+								entries.add(entry);
+							}
+						}
+					}
+				}
+			}
+		}
+		return entries;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -83,8 +181,8 @@ public class EntryServiceImpl implements EntryService {
 			if (displayAttribute.getEntity() != null)
 				entry.setEntityName(displayAttribute.getEntity().getName());
 
-			entry.setPredicate(findPredicate(listImpl, entry.getId()));
-			entry.setValueCondition(findValueCondition(listImpl, entry.getId()));
+//			entry.setPredicate(findPredicate(listImpl, entry.getId()));
+//			entry.setValueCondition(findValueCondition(listImpl, entry.getId()));
 
 			entries.add(entry);
 
@@ -116,8 +214,8 @@ public class EntryServiceImpl implements EntryService {
 			if (displayAttribute.getEntity() != null)
 				entry.setEntityName(displayAttribute.getEntity().getName());
 
-			entry.setPredicate(findPredicate(detailImpl, entry.getId()));
-			entry.setValueCondition(findValueCondition(detailImpl, entry.getId()));
+//			entry.setPredicate(findPredicate(detailImpl, entry.getId()));
+//			entry.setValueCondition(findValueCondition(detailImpl, entry.getId()));
 
 			entries.add(entry);
 
@@ -149,8 +247,8 @@ public class EntryServiceImpl implements EntryService {
 			if (selectorImpl.getEntity() != null)
 				entry.setEntityName(selectorImpl.getEntity().getName());
 
-			entry.setPredicate(findPredicate(selectorImpl, entry.getId()));
-			entry.setValueCondition(findValueCondition(selectorImpl, entry.getId()));
+//			entry.setPredicate(findPredicate(selectorImpl, entry.getId()));
+//			entry.setValueCondition(findValueCondition(selectorImpl, entry.getId()));
 
 			entries.add(entry);
 
@@ -454,7 +552,17 @@ public class EntryServiceImpl implements EntryService {
 
 		if (condition.getPredicate().equals("notEqual"))
 			return Predicate.NOT_EQUAL;
+		if (condition.getPredicate().equals("lt")) {
+			return Predicate.LESS;
+		}
+		if (condition.getPredicate().equals("lteq"))
+			return Predicate.LESS_OR_EQUAL;
 
+		if (condition.getPredicate().equals("gt"))
+			return Predicate.GREATER;
+
+		if (condition.getPredicate().equals("gteq"))
+			return Predicate.GREATER_OR_EQUAL;
 		return null;
 	}
 
@@ -535,13 +643,13 @@ public class EntryServiceImpl implements EntryService {
 
 	private String switchValueCondition(Condition condition) {
 		if (condition.getPredicate().equals("beginWith"))
-			return ((AttributesCondition) condition).getValue();
+			return "'" + ((AttributesCondition) condition).getValue() +"%'";
 
 		if (condition.getPredicate().equals("contains"))
-			return ((AttributesCondition) condition).getValue();
+			return "'%" +((AttributesCondition) condition).getValue() + "%'";
 
 		if (condition.getPredicate().equals("endsWith"))
-			return ((AttributesCondition) condition).getValue();
+			return "'%" +((AttributesCondition) condition).getValue()+ "'";
 
 		if (condition.getPredicate().equals("empty"))
 			return ((AttributesCondition) condition).getValue();
@@ -556,16 +664,33 @@ public class EntryServiceImpl implements EntryService {
 			return "";
 
 		if (condition.getPredicate().equals("notBeginWith"))
-			return ((AttributesCondition) condition).getValue();
+			return "'" +((AttributesCondition) condition).getValue()+"%'";
 
 		if (condition.getPredicate().equals("notContains"))
-			return ((AttributesCondition) condition).getValue();
+			return "'%" +((AttributesCondition) condition).getValue()+ "%'";
 
 		if (condition.getPredicate().equals("notEndsWith"))
-			return ((AttributesCondition) condition).getValue();
+			return "'%" +((AttributesCondition) condition).getValue()+ "'";
 
 		if (condition.getPredicate().equals("notEqual"))
 			return ((AttributesCondition) condition).getValue();
+		
+		if (condition.getPredicate().equals("lt")) {
+			return ((AttributesCondition) condition).getValue();
+		}
+		if (condition.getPredicate().equals("lteq"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("gt"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("gteq"))
+			return ((AttributesCondition) condition).getValue();
+		
+		if (condition.getPredicate().equals("eq"))
+			return ((AttributesCondition) condition).getValue();
+
+		
 		return null;
 	}
 

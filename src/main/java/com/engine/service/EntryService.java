@@ -59,4 +59,6 @@ public interface EntryService {
 	 */
 	List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys, List<SortKey> sortKeys, List<Entry> entries);
 
+	List<Entry> findEntriesConditions(InteractionFlowElement interactionFlowElement);
+
 }
