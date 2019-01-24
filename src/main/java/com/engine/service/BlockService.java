@@ -25,13 +25,7 @@ public interface BlockService {
 	List<SortKey> guaranteeRecordUniqueness(List<SortKey> sortKeys, List<PartitionKey> partitionKeys,
 			List<SortKey> distinctExtractedEntitiesKeys);
 
-	/**
-	 * @param partitionKeys
-	 * @param entries
-	 * @return entries enriched with partition keys and sort keys, needed for the
-	 *         script of the physical model
-	 */
-	List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys, List<SortKey> sortKeys, List<Entry> entries);
+
 
 	/**
 	 * @param sortKeys

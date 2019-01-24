@@ -9,6 +9,7 @@ public class PartitionKey {
 	private String type;
 	private String entity;
 	private Predicate predicate;
+	private String valueCondition;
 
 	// id contains reference to attribute of entity
 	public PartitionKey(String id) {
@@ -102,6 +103,14 @@ public class PartitionKey {
 
 	public void setPredicate(Predicate predicate) {
 		this.predicate = predicate;
+	}
+
+	public String getValueCondition() {
+		return valueCondition;
+	}
+
+	public void setValueCondition(String valueCondition) {
+		this.valueCondition = valueCondition;
 	}
 	
 }

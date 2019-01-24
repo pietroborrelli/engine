@@ -70,46 +70,7 @@ public class BlockServiceImpl implements BlockService {
 		return newSortKeys.stream().distinct().collect(Collectors.toList());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.engine.service.BlockService#addEntriesFromKeys(java.util.List,
-	 * java.util.List, java.util.List)
-	 */
-	@Override
-	public List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys, List<SortKey> sortKeys,
-			List<Entry> entries) {
 
-		List<Entry> entriesTemp = new ArrayList<Entry>(entries);
-
-		// check on partition keys
-		for (PartitionKey partitionKey : partitionKeys) {
-			boolean found = false;
-			for (Entry entry : entriesTemp) {
-
-				if (partitionKey.getId().equals(entry.getId()))
-					found = true;
-			}
-			if (!found)
-				entries.add(new Entry(partitionKey.getId(), partitionKey.getName(), partitionKey.getType(),
-						partitionKey.getEntity(), "from_partition_key"));
-		}
-
-		// check on sort keys
-		for (SortKey sortKey : sortKeys) {
-			boolean found = false;
-			for (Entry entry : entriesTemp) {
-
-				if (sortKey.getId().equals(entry.getId()))
-					found = true;
-			}
-			if (!found)
-				entries.add(new Entry(sortKey.getId(), sortKey.getName(), sortKey.getType(), sortKey.getEntity(),
-						"from_sort_key"));
-		}
-
-		return entries;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -378,6 +339,9 @@ public class BlockServiceImpl implements BlockService {
 			sortKey.setOrdering(Ordering.ASCENDING);
 		if (attributesCondition.getPredicate().equals("gt") || attributesCondition.getPredicate().equals("gteq"))
 			sortKey.setOrdering(Ordering.DESCENDING);
+		
+		sortKey.setPredicate(switchPredicates(attributesCondition));	
+		sortKey.setValueCondition(switchValueCondition(attributesCondition));	
 
 		return sortKey;
 	}
@@ -399,14 +363,13 @@ public class BlockServiceImpl implements BlockService {
 		partitionKey.setType(wrapperAttribute.getAttribute().getType());
 		partitionKey.setEntity(wrapperAttribute.getEntity().getName());
 		
-		if (attributesCondition.getPredicate().equals("eq"))
+		if (attributesCondition.getPredicate().equals("eq") && attributesCondition.getBooleanOperator().equals("and"))
 			partitionKey.setPredicate(Predicate.EQUAL);
 		
-		if (attributesCondition.getPredicate().equals("in"))
+		if (attributesCondition.getPredicate().equals("eq") && attributesCondition.getBooleanOperator().equals("or") )
 			partitionKey.setPredicate(Predicate.IN);
 		
-		if (attributesCondition.getPredicate().equals("notIn"))
-			partitionKey.setPredicate(Predicate.NOT_IN);
+		partitionKey.setValueCondition(switchValueCondition(attributesCondition));
 
 		return partitionKey;
 	}
@@ -771,6 +734,42 @@ public class BlockServiceImpl implements BlockService {
 	@Override
 	public void setDataModelUtil(DataModelUtil dataModelUtil) {
 		this.dataModelUtil = dataModelUtil;
+	}
+	
+	private Predicate switchPredicates(Condition condition) {
+		
+		if (condition.getPredicate().equals("lt")) {
+			return Predicate.LESS;
+		}
+		if (condition.getPredicate().equals("lteq"))
+			return Predicate.LESS_OR_EQUAL;
+
+		if (condition.getPredicate().equals("gt"))
+			return Predicate.GREATER;
+
+		if (condition.getPredicate().equals("gteq"))
+			return Predicate.GREATER_OR_EQUAL;
+
+		return null;
+	}
+	
+	private String switchValueCondition(Condition condition) {
+		if (condition.getPredicate().equals("lt")) {
+			return ((AttributesCondition) condition).getValue();
+		}
+		if (condition.getPredicate().equals("lteq"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("gt"))
+			return ((AttributesCondition) condition).getValue();
+
+		if (condition.getPredicate().equals("gteq"))
+			return ((AttributesCondition) condition).getValue();
+		
+		if (condition.getPredicate().equals("eq"))
+			return ((AttributesCondition) condition).getValue();
+
+		return null;
 	}
 
 }

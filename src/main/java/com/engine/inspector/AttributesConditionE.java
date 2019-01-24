@@ -49,7 +49,7 @@ public class AttributesConditionE implements ConditionExtractor {
 			}
 			
 			case "booleanOperator":{
-				attributesCondition.setPredicate(attribute.getNodeValue());
+				attributesCondition.setBooleanOperator(attribute.getNodeValue());
 				System.out.print("--> estratto\n");
 				break;
 			}

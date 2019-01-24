@@ -169,9 +169,6 @@ public class NoAmServiceImpl implements NoAmService {
 		// update sort list to guarantee uniqueness
 		sortKeys = blockService.guaranteeRecordUniqueness(sortKeys, partitionKeys, distinctExtractedEntitiesKeys);
 
-		// update partition key list by removing partition keys related to "weak"
-		// entities (handled 1:N case)
-		// partitionKeys = removeWeakPartitionKeys(partitionKeys);
 
 		primaryKey.setPartitionKeys(partitionKeys);
 		primaryKey.setSortKeys(sortKeys);
@@ -179,7 +176,7 @@ public class NoAmServiceImpl implements NoAmService {
 		block.setKey(primaryKey);
 
 		// add partition keys in entries if does not exist
-		entries = blockService.addEntriesFromKeys(partitionKeys, sortKeys, entries);
+		entries = entryService.addEntriesFromKeys(partitionKeys, sortKeys, entries);
 
 		block.setEntries(entries);
 

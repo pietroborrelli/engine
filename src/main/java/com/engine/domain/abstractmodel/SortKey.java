@@ -1,6 +1,7 @@
 package com.engine.domain.abstractmodel;
 
 import com.engine.domain.enumeration.Ordering;
+import com.engine.domain.enumeration.Predicate;
 
 public class SortKey {
 
@@ -9,6 +10,8 @@ public class SortKey {
 	private String type;
 	private String entity;
 	private Ordering ordering;
+	private Predicate predicate;
+	private String valueCondition;
 	
 	public SortKey(String id, String entity, Ordering ordering) {
 		super();
@@ -86,6 +89,22 @@ public class SortKey {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Predicate getPredicate() {
+		return predicate;
+	}
+
+	public void setPredicate(Predicate predicate) {
+		this.predicate = predicate;
+	}
+
+	public String getValueCondition() {
+		return valueCondition;
+	}
+
+	public void setValueCondition(String valueCondition) {
+		this.valueCondition = valueCondition;
 	}
 	
 

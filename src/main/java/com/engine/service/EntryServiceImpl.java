@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.engine.domain.abstractmodel.Entry;
+import com.engine.domain.abstractmodel.PartitionKey;
+import com.engine.domain.abstractmodel.SortKey;
 import com.engine.domain.enumeration.Predicate;
 import com.engine.domain.interactionflowelement.InteractionFlowElement;
 import com.engine.domain.interactionflowelement.conditionalexpression.ConditionalExpression;
@@ -567,4 +569,44 @@ public class EntryServiceImpl implements EntryService {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.engine.service.BlockService#addEntriesFromKeys(java.util.List,
+	 * java.util.List, java.util.List)
+	 */
+	@Override
+	public List<Entry> addEntriesFromKeys(List<PartitionKey> partitionKeys, List<SortKey> sortKeys,
+			List<Entry> entries) {
+
+		List<Entry> entriesTemp = new ArrayList<Entry>(entries);
+
+		// check on partition keys
+		for (PartitionKey partitionKey : partitionKeys) {
+			boolean found = false;
+			for (Entry entry : entriesTemp) {
+
+				if (partitionKey.getId().equals(entry.getId()))
+					found = true;
+			}
+			if (!found)
+				entries.add(new Entry(partitionKey.getId(), partitionKey.getName(), partitionKey.getType(),
+						partitionKey.getEntity(), "from_partition_key"));
+		}
+
+		// check on sort keys
+		for (SortKey sortKey : sortKeys) {
+			boolean found = false;
+			for (Entry entry : entriesTemp) {
+
+				if (sortKey.getId().equals(entry.getId()))
+					found = true;
+			}
+			if (!found)
+				entries.add(new Entry(sortKey.getId(), sortKey.getName(), sortKey.getType(), sortKey.getEntity(),
+						"from_sort_key"));
+		}
+
+		return entries;
+	}
 }
