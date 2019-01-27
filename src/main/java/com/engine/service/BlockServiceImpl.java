@@ -389,7 +389,7 @@ public class BlockServiceImpl implements BlockService {
 			partitionKey.setType(attributeKey.getType());
 			
 			if (keyCondition.getPredicate().equals("in"))
-				partitionKey.setPredicate(Predicate.IN);
+				partitionKey.setPredicate(Predicate.EQUAL);
 			
 			if (keyCondition.getPredicate().equals("notIn"))
 				partitionKey.setPredicate(Predicate.NOT_IN);
@@ -419,7 +419,7 @@ public class BlockServiceImpl implements BlockService {
 
 
 		if (relationshipRoleCondition.getPredicate().equals("in"))
-			partitionKey.setPredicate(Predicate.IN);
+			partitionKey.setPredicate(Predicate.EQUAL);
 		
 		if (relationshipRoleCondition.getPredicate().equals("notIn"))
 			partitionKey.setPredicate(Predicate.NOT_IN);

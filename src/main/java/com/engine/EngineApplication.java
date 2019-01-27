@@ -127,11 +127,12 @@ public class EngineApplication implements CommandLineRunner {
 
 				paths.stream().forEach(p -> p.setCollections(noAmService.computeAbstractModels(p)));
 				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.NO));
-
+				/*
 				paths.stream().forEach(p -> p.setCollections(noAmService.pathOptimization(p.getCollections())));
 				paths.stream()
 						.forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.PATH_OPT));
 
+				
 				List<Collection> pageCollections = paths.stream()
 						.flatMap(collections -> collections.getCollections().stream()).collect(Collectors.toList());
 				if (!pageCollections.isEmpty()) {
@@ -141,6 +142,7 @@ public class EngineApplication implements CommandLineRunner {
 						paths.stream().forEach(p -> generateModels(p, optimizedPageCollections, page, area.getName(),
 								OutputE.PAGE_OPT));
 				}
+				*/
 				pages.add(page);
 
 			}

@@ -121,7 +121,7 @@ public class CassandraParser implements Parser {
 		if (collection.getBlock().getEntries().isEmpty())
 			targetList = "*";
 		else
-			targetList = collection.getBlock().getEntries().stream()
+			targetList = collection.getBlock().getEntries().stream().distinct()
 					.map(e -> e.getEntityName().toLowerCase() + "." + e.getName()).collect(Collectors.joining(", "))
 					.toString();
 
@@ -130,10 +130,11 @@ public class CassandraParser implements Parser {
 		String partitionKeyConditions = collection.getBlock().getKey().getPartitionKeys().stream().map(pk -> {
 
 			String partitionKey = pk.getEntity().toLowerCase() + "." + pk.getName() + " " + pk.getPredicate().value();
+			
 			if (pk.getValueCondition() == null)
-				return partitionKey + " ?";
+				return partitionKey + " ? ";
 			else
-				return partitionKey + " " + pk.getValueCondition();
+				return partitionKey + " (" + pk.getValueCondition() + ")";
 
 		}).collect(Collectors.joining(" AND ")).toString();
 
@@ -195,7 +196,7 @@ public class CassandraParser implements Parser {
 		return "SELECT " + targetList + " FROM " + columnFamily + " WHERE " + partitionKeyConditions
 		// + ((!sortKeyConditions.isEmpty()) ? (" AND "+ sortKeyConditions ) :
 		// (sortKeyConditions))
-				+ ((!entryConditions.isEmpty()) ? (" AND " + entryConditions) : (entryConditions)) + allowFiltering;
+				+ ((!entryConditions.isEmpty()) ? (" AND " + entryConditions) : (entryConditions)) + allowFiltering + ";";
 	}
 
 }

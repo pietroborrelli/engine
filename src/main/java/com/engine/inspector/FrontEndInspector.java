@@ -256,7 +256,7 @@ public class FrontEndInspector {
 					.mapCondition(xPathUtil.findRelationshipRoleConditionById(rrId, getDocument()));
 				
 				if (relationshipRoleCondition.getPredicate().equals("in"))
-					predicate = Predicate.IN;
+					predicate = Predicate.EQUAL;
 				
 				if (relationshipRoleCondition.getPredicate().equals("notIn"))
 					predicate = Predicate.NOT_IN;
@@ -271,7 +271,7 @@ public class FrontEndInspector {
 					.mapCondition(xPathUtil.findKeyConditionById(kcId, getDocument()));
 				
 				if (keyCondition.getPredicate().equals("in"))
-					predicate = Predicate.IN;
+					predicate = Predicate.EQUAL;
 				
 				if (keyCondition.getPredicate().equals("notIn"))
 					predicate = Predicate.NOT_IN;
