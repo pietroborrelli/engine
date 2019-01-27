@@ -105,7 +105,7 @@ public class NoAmServiceImpl implements NoAmService {
 		List<com.engine.mapper.datamodel.DataModel.Entity> entities = new ArrayList<com.engine.mapper.datamodel.DataModel.Entity>();
 		com.engine.mapper.datamodel.DataModel.Entity entity = null;
 
-		// get all partition keys from conditions on links
+		// get all partition keys from target conditions on links and conditions on view components
 		for (int i = 0; i < interactionFlowElements.size(); i++) {
 			InteractionFlowElement current = interactionFlowElements.get(i);
 			InteractionFlowElement next = null;

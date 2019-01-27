@@ -384,9 +384,11 @@ public class FrontEndInspector {
 				selectionFieldAttribute.setType(dataModelUtil.findAttributeType(selectionFieldAttribute.getEntity(),
 						selectionFieldAttribute.getId()));
 				selectionFieldAttribute.setKey(true);
-				}else if (((SelectionFieldImpl) field).getAttribute()!=null)
+				selectionFieldAttribute.setPredicate(Predicate.EQUAL);
+				}else if (((SelectionFieldImpl) field).getAttribute()!=null) {
 					selectionFieldAttribute = ((SelectionFieldImpl) field).getAttribute();
-				
+					selectionFieldAttribute.setPredicate(Predicate.EQUAL);
+				}
 				viewComponentParts.add(selectionFieldAttribute);
 			}
 
@@ -413,7 +415,7 @@ public class FrontEndInspector {
 				multipleSelectionFieldAttribute.setType(dataModelUtil.findAttributeType(
 						multipleSelectionFieldAttribute.getEntity(), multipleSelectionFieldAttribute.getId()));
 				multipleSelectionFieldAttribute.setKey(true);
-
+				multipleSelectionFieldAttribute.setPredicate(Predicate.EQUAL);
 				viewComponentParts.add(multipleSelectionFieldAttribute);
 			}
 
