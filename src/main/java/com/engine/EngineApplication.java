@@ -127,6 +127,7 @@ public class EngineApplication implements CommandLineRunner {
 
 				paths.stream().forEach(p -> p.setCollections(noAmService.computeAbstractModels(p)));
 				paths.stream().forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.NO));
+				
 				/*
 				paths.stream().forEach(p -> p.setCollections(noAmService.pathOptimization(p.getCollections())));
 				paths.stream()

@@ -267,7 +267,9 @@ public class NoAmServiceImpl implements NoAmService {
 					collectionTemp.getBlock().getKey().getPartitionKeys());
 			ArrayList<SortKey> sortKeys = new ArrayList<SortKey>(collectionTemp.getBlock().getKey().getSortKeys());
 			ArrayList<Entry> entries = new ArrayList<Entry>(collectionTemp.getBlock().getEntries());
-
+			ArrayList<Entry> entriesConditions = new ArrayList<Entry>(collectionTemp.getBlock().getEntriesConditions());
+			
+			
 			for (Collection collectionTemp2 : collectionsTemp2) {
 
 				// comparing different collections
@@ -285,6 +287,9 @@ public class NoAmServiceImpl implements NoAmService {
 						entries.addAll(collectionTemp2.getBlock().getEntries());
 						entries.addAll(collectionTemp.getBlock().getEntries());
 
+						entriesConditions.addAll(collectionTemp2.getBlock().getEntriesConditions());
+						entriesConditions.addAll(collectionTemp.getBlock().getEntriesConditions());
+						
 						name = name + "-" + "(" + collectionTemp2.getName() + ")";
 						countCollection++;
 					}
@@ -315,9 +320,14 @@ public class NoAmServiceImpl implements NoAmService {
 				collection.getBlock().setEntries(collectionTemp.getBlock().getEntries());
 				collection.getBlock().getEntries().addAll(entries);
 
+				collection.getBlock().setEntriesConditions(collectionTemp.getBlock().getEntriesConditions());
+				collection.getBlock().getEntriesConditions().addAll(entriesConditions);
+				
 				collection.getBlock()
 						.setEntries(entryService.removeDuplicatesEntries(collection.getBlock().getEntries()));
-
+				collection.getBlock()
+						.setEntriesConditions(entryService.removeDuplicatesEntries(collection.getBlock().getEntriesConditions()));
+				
 				optimizedCollections.add(collection);
 
 			}
