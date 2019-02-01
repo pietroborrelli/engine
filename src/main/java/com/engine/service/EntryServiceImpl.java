@@ -285,6 +285,10 @@ public class EntryServiceImpl implements EntryService {
 
 	public boolean haveSameEntries(List<Entry> entries, List<Entry> entries2) {
 		boolean same = false;
+		
+		if (entries.size() != entries2.size())
+			return same;
+		
 		for (Entry entry : entries) {
 			same = false;
 

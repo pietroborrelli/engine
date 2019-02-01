@@ -510,7 +510,7 @@ public class BlockServiceImpl implements BlockService {
 	public boolean haveSameSortKeys(List<SortKey> sortKeys, List<SortKey> sortKeys2) {
 		boolean same = false;
 
-		if (sortKeys.size() == 0 || sortKeys2.size() == 0)
+		if (sortKeys.isEmpty() && sortKeys2.isEmpty() )
 			return true;
 
 		if (sortKeys.size() != sortKeys2.size())
@@ -535,8 +535,8 @@ public class BlockServiceImpl implements BlockService {
 	public boolean haveSamePartitionKeys(List<PartitionKey> partitionKeys, List<PartitionKey> partitionKeys2) {
 		boolean same = false;
 
-		if (partitionKeys.size() == 0 || partitionKeys2.size() == 0)
-			return true;
+//		if (partitionKeys.size() == 0 || partitionKeys2.size() == 0)
+//			return true;
 
 		if (partitionKeys.size() != partitionKeys2.size())
 			return same;

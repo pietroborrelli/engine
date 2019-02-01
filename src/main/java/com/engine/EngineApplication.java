@@ -133,17 +133,16 @@ public class EngineApplication implements CommandLineRunner {
 				paths.stream()
 						.forEach(p -> generateModels(p, p.getCollections(), page, area.getName(), OutputE.PATH_OPT));
 
-				
-				List<Collection> pageCollections = paths.stream()
-						.flatMap(collections -> collections.getCollections().stream()).collect(Collectors.toList());
-				if (!pageCollections.isEmpty()) {
+				*/
+				for (Path path : paths) {
+				if (!path.getCollections().isEmpty()) {
 					List<Collection> optimizedPageCollections = new ArrayList<Collection>(
-							noAmService.pageOptimization(pageCollections));
+							noAmService.pageOptimization(path.getCollections()));
 					if (!optimizedPageCollections.isEmpty())
 						paths.stream().forEach(p -> generateModels(p, optimizedPageCollections, page, area.getName(),
 								OutputE.PAGE_OPT));
 				}
-				*/
+				}
 				pages.add(page);
 
 			}

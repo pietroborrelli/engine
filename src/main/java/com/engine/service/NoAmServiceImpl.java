@@ -277,12 +277,14 @@ public class NoAmServiceImpl implements NoAmService {
 						&& !collectionTemp.getId().equals(collectionTemp2.getId())) {
 
 					if (blockService.haveSamePartitionKeys(collectionTemp2.getBlock().getKey().getPartitionKeys(),
-							partitionKeys.stream().distinct().collect(Collectors.toList()))) {
+							partitionKeys.stream().distinct().collect(Collectors.toList()))
+							&&
+						blockService.haveSameSortKeys(collectionTemp2.getBlock().getKey().getSortKeys(),
+							sortKeys.stream().distinct().collect(Collectors.toList()))) {
 
 						partitionKeys.addAll(collectionTemp2.getBlock().getKey().getPartitionKeys());
 
 						sortKeys.addAll(collectionTemp2.getBlock().getKey().getSortKeys());
-						sortKeys.addAll(collectionTemp.getBlock().getKey().getSortKeys());
 
 						entries.addAll(collectionTemp2.getBlock().getEntries());
 						entries.addAll(collectionTemp.getBlock().getEntries());
