@@ -330,10 +330,10 @@ public class FrontEndInspector {
 				// candidate to be sort key of NOAM
 				if (attributesCondition.getPredicate().equals("lteq")
 						|| attributesCondition.getPredicate().equals("lt"))
-					attributeApplication.setOrdering(Ordering.ASCENDING);
+					attributeApplication.setOrdering(Ordering.ASC);
 				if (attributesCondition.getPredicate().equals("gteq")
 						|| attributesCondition.getPredicate().equals("gt"))
-					attributeApplication.setOrdering(Ordering.DESCENDING);
+					attributeApplication.setOrdering(Ordering.DESC);
 
 				//set predicates here
 				if (attributesCondition.getPredicate().equals("lteq"))
@@ -521,10 +521,10 @@ public class FrontEndInspector {
 				// candidate to be sort key of NOAM
 				if (attributesCondition.getPredicate().equals("lteq")
 						|| attributesCondition.getPredicate().equals("lt"))
-					attributeApplication.setOrdering(Ordering.ASCENDING);
+					attributeApplication.setOrdering(Ordering.ASC);
 				if (attributesCondition.getPredicate().equals("gteq")
 						|| attributesCondition.getPredicate().equals("gt"))
-					attributeApplication.setOrdering(Ordering.DESCENDING);
+					attributeApplication.setOrdering(Ordering.DESC);
 
 				//set predicates here
 				if (attributesCondition.getPredicate().equals("lteq"))

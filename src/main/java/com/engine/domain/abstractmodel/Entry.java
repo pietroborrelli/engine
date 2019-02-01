@@ -99,7 +99,7 @@ public class Entry {
 	@Override
 	public String toString() {
 		if (entityName != null)
-			return "Entry [name=" + entityName.toLowerCase() + "." + name + ", type=" + type + "]";
+			return "Entry [name=" + entityName.toLowerCase() + "_" + name + ", type=" + type + "]";
 		else
 			return "Entry [name=" + name + ", type=" + type + "]";
 	}

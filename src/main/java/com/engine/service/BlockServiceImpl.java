@@ -91,7 +91,7 @@ public class BlockServiceImpl implements BlockService {
 
 				if (sortKey.getId().equals(sortKey2.getId()) && !sortKey.getOrdering().equals(sortKey2.getOrdering())) {
 
-					if (sortKey.getOrdering().equals(Ordering.ASCENDING))
+					if (sortKey.getOrdering().equals(Ordering.ASC))
 						sortKeys.remove(sortKey);
 					else
 						sortKeys.remove(sortKey2);
@@ -336,9 +336,9 @@ public class BlockServiceImpl implements BlockService {
 		sortKey.setEntity(wrapperAttribute.getEntity().getName());
 
 		if (attributesCondition.getPredicate().equals("lt") || attributesCondition.getPredicate().equals("lteq"))
-			sortKey.setOrdering(Ordering.ASCENDING);
+			sortKey.setOrdering(Ordering.ASC);
 		if (attributesCondition.getPredicate().equals("gt") || attributesCondition.getPredicate().equals("gteq"))
-			sortKey.setOrdering(Ordering.DESCENDING);
+			sortKey.setOrdering(Ordering.DESC);
 		
 		sortKey.setPredicate(switchPredicates(attributesCondition));	
 		sortKey.setValueCondition(switchValueCondition(attributesCondition));	

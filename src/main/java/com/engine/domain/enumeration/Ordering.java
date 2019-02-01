@@ -2,8 +2,8 @@ package com.engine.domain.enumeration;
 
 public enum Ordering {
 
-	ASCENDING("ascending"),
-	DESCENDING("descending");
+	ASC("ascending"),
+	DESC("descending");
 	
 	private String value;
 	

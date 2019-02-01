@@ -121,10 +121,10 @@ public final class SelectorUnit implements ViewComponentExtractor {
 						}
 					
 					case "order": {
-						if (attribute.getValue().equals(Ordering.ASCENDING.value()))
-							sortAttribute.setOrdering(Ordering.ASCENDING);
+						if (attribute.getValue().equals(Ordering.ASC.value()))
+							sortAttribute.setOrdering(Ordering.ASC);
 						else
-							sortAttribute.setOrdering(Ordering.DESCENDING);
+							sortAttribute.setOrdering(Ordering.DESC);
 						break;
 						}
 					

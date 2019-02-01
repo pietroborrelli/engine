@@ -49,7 +49,7 @@ public class CassandraParser implements Parser {
 		String sortKeys = "";
 		if (!block.getKey().getSortKeys().isEmpty())
 			sortKeys = block.getKey().getSortKeys().stream()
-					.map(sk -> sk.getEntity().toLowerCase() + "." + sk.getName() + " " + sk.getOrdering().toString())
+					.map(sk -> sk.getEntity().toLowerCase() + "_" + sk.getName() + " " + sk.getOrdering().toString())
 					.collect(Collectors.joining(","));
 		return sortKeys;
 	}
@@ -61,21 +61,32 @@ public class CassandraParser implements Parser {
 
 		if (!block.getKey().getPartitionKeys().isEmpty())
 			partitionKeys = block.getKey().getPartitionKeys().stream()
-					.map(pk -> pk.getEntity().toLowerCase() + "." + pk.getName()).collect(Collectors.joining(","));
+					.map(pk -> pk.getEntity().toLowerCase() + "_" + pk.getName()).collect(Collectors.joining(","));
 
 		if (!block.getKey().getSortKeys().isEmpty())
 			sortKeys = block.getKey().getSortKeys().stream()
-					.map(sk -> sk.getEntity().toLowerCase() + "." + sk.getName()).collect(Collectors.joining(","));
+					.map(sk -> sk.getEntity().toLowerCase() + "_" + sk.getName()).collect(Collectors.joining(","));
 
-		return "(" + partitionKeys + "),(" + sortKeys + ")";
+		if (!sortKeys.isEmpty())
+			return "(" + partitionKeys + ")," + sortKeys + "";
+		else
+			return "(" + partitionKeys + ")";
 	}
 
 	@Override
 	public String getColumns(List<Entry> entries) {
 		// remove duplicates
-		return entries.stream().distinct()
-				.map(e -> "	" + e.getEntityName().toLowerCase() + "." + e.getName() + " " + e.getType())
-				.collect(Collectors.joining(",\n"));
+		return entries.stream().distinct().map(e -> {
+			String type = e.getType();
+
+			if (type.equals("string"))
+				type = "text";
+
+			if (type.equals("integer"))
+				type = "int";
+
+			return "	" + e.getEntityName().toLowerCase() + "_" + e.getName() + " " + type;
+		}).collect(Collectors.joining(",\n")) + ",";
 	}
 
 	/*
@@ -89,16 +100,16 @@ public class CassandraParser implements Parser {
 				+ getPrimaryKey(collection.getBlock()) + ")\n" + ")" +
 				// jump clustering order by if there are no sort keys
 				((getSortKeys(collection.getBlock()) == "") ? ""
-						: (WITH_CLUSTERING_ORDER_BY + "(" + getSortKeys(collection.getBlock()) + ")\n"))
-				+ OPTIONS;
+						: (WITH_CLUSTERING_ORDER_BY + "(" + getSortKeys(collection.getBlock()) + ")\n"));
+		// + OPTIONS;
 	}
 
 	@Override
 	public String getPartitionKeys(List<PartitionKey> partitionKeys) {
 		String partitionKeysTemp = "";
 		if (!partitionKeys.isEmpty())
-			partitionKeysTemp = partitionKeys.stream().map(pk -> "	" + pk.getEntity().toLowerCase() + "."
-					+ pk.getName() + " " + (pk.getType() == null ? "string" : pk.getType()))
+			partitionKeysTemp = partitionKeys.stream().map(pk -> "	" + pk.getEntity().toLowerCase() + "_"
+					+ pk.getName() + " " + (pk.getType() == null ? "text" : pk.getType()))
 					.collect(Collectors.joining(",\n"));
 		return partitionKeysTemp;
 	}
@@ -108,7 +119,7 @@ public class CassandraParser implements Parser {
 		String sortKeysTemp = "";
 		if (!sortKeys.isEmpty())
 			sortKeysTemp = sortKeys.stream()
-					.map(sk -> "	" + sk.getEntity().toLowerCase() + "." + sk.getName() + " " + sk.getType())
+					.map(sk -> "	" + sk.getEntity().toLowerCase() + "_" + sk.getName() + " " + sk.getType())
 					.collect(Collectors.joining(",\n"));
 		return sortKeysTemp;
 	}
@@ -122,15 +133,15 @@ public class CassandraParser implements Parser {
 			targetList = "*";
 		else
 			targetList = collection.getBlock().getEntries().stream().distinct()
-					.map(e -> e.getEntityName().toLowerCase() + "." + e.getName()).collect(Collectors.joining(", "))
+					.map(e -> e.getEntityName().toLowerCase() + "_" + e.getName()).collect(Collectors.joining(", "))
 					.toString();
 
 		String columnFamily = collection.getName().toLowerCase().replaceAll(" ", "_");
 
 		String partitionKeyConditions = collection.getBlock().getKey().getPartitionKeys().stream().map(pk -> {
 
-			String partitionKey = pk.getEntity().toLowerCase() + "." + pk.getName() + " " + pk.getPredicate().value();
-			
+			String partitionKey = pk.getEntity().toLowerCase() + "_" + pk.getName() + " " + pk.getPredicate().value();
+
 			if (pk.getValueCondition() == null)
 				return partitionKey + " ? ";
 			else
@@ -163,7 +174,7 @@ public class CassandraParser implements Parser {
 		for (Entry e : collection.getBlock().getEntriesConditions()) {
 			if (e.getPredicate() != null) {
 
-				String entry = " " + e.getEntityName().toLowerCase() + "." + e.getName() + " "
+				String entry = " " + e.getEntityName().toLowerCase() + "_" + e.getName() + " "
 						+ e.getPredicate().value();
 				if (e.getValueCondition() == null)
 					entryConditions += entry + " ?";
@@ -178,25 +189,22 @@ public class CassandraParser implements Parser {
 
 		String allowFiltering = "";
 		if (!entryConditions.isEmpty()) {
-			for (Entry entry : collection.getBlock().getEntriesConditions() ) {
-				//it's not a sort key
-				if (entry.getPredicate()!= null && !entry.getPredicate().equals(Predicate.LESS)
+			for (Entry entry : collection.getBlock().getEntriesConditions()) {
+				// it's not a sort key
+				if (entry.getPredicate() != null && !entry.getPredicate().equals(Predicate.LESS)
 						&& !entry.getPredicate().equals(Predicate.LESS_OR_EQUAL)
 						&& !entry.getPredicate().equals(Predicate.GREATER)
 						&& !entry.getPredicate().equals(Predicate.GREATER_OR_EQUAL))
 					allowFiltering = "ALLOW FILTERING";
-				
-				
-				
+
 			}
 		}
 
-		
-		
 		return "SELECT " + targetList + " FROM " + columnFamily + " WHERE " + partitionKeyConditions
 		// + ((!sortKeyConditions.isEmpty()) ? (" AND "+ sortKeyConditions ) :
 		// (sortKeyConditions))
-				+ ((!entryConditions.isEmpty()) ? (" AND " + entryConditions) : (entryConditions)) + allowFiltering + ";";
+				+ ((!entryConditions.isEmpty()) ? (" AND " + entryConditions) : (entryConditions)) + allowFiltering
+				+ ";";
 	}
 
 }

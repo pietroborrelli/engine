@@ -218,7 +218,7 @@ public class DataModelUtil {
 			SortKey sortKey = new SortKey(attributeKey.getId());
 			sortKey.setEntity(entity.getName());
 			sortKey.setName(attributeKey.getName());
-			sortKey.setOrdering(Ordering.ASCENDING);
+			sortKey.setOrdering(Ordering.ASC);
 			sortKey.setType(attributeKey.getType());
 
 			sortKeys.add(sortKey);

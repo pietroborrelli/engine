@@ -52,7 +52,7 @@ public class Block {
 		Set<Entry> set = new HashSet<>(entries);
 		entries.clear();
 		entries.addAll(set);
-		Collections.sort(entries, (e1, e2) -> (e1.getEntityName()+"."+e1.getName()).compareTo(e2.getEntityName()+"."+e2.getName()));
+		Collections.sort(entries, (e1, e2) -> (e1.getEntityName()+"_"+e1.getName()).compareTo(e2.getEntityName()+"_"+e2.getName()));
 		
 	}
 
