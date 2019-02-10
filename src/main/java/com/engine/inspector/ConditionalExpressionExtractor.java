@@ -116,8 +116,14 @@ public class ConditionalExpressionExtractor {
 						if (temp.getRole() != null)
 							temp.setRelationship(dataModelUtil
 									.findRelationship(temp.getRole().substring(0, temp.getRole().indexOf("#"))));
-						temp.setRelationshipRole1(dataModelUtil.findRelationshipRole1(temp.getRole()));
-						temp.setRelationshipRole2(dataModelUtil.findRelationshipRole2(temp.getRole()));
+						
+						String role = temp.getRole();
+						//fix for concatenated relationship role 
+						if (role.contains("."))
+							role = temp.getRole().substring(0, temp.getRole().indexOf("."));
+						
+						temp.setRelationshipRole1(dataModelUtil.findRelationshipRole1(role));
+						temp.setRelationshipRole2(dataModelUtil.findRelationshipRole2(role));
 
 						conditions.add(temp);
 					}

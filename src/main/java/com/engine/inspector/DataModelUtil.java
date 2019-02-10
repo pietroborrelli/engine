@@ -149,6 +149,7 @@ public class DataModelUtil {
 	 */
 	public String findAttributeName(Entity entity, String idDisplayAttribute) {
 		// System.out.println(entity.getName()+"--"+idDisplayAttribute);
+		
 		return entity.getAttribute().stream().filter(an -> an.getId().equals(idDisplayAttribute))
 				.collect(Collectors.toList()).get(0).getName();
 
@@ -162,6 +163,7 @@ public class DataModelUtil {
 	 * @return type of the attribute ; null if no type is found in the entity
 	 */
 	public String findAttributeType(Entity entity, String idDisplayAttribute) {
+		
 		return entity.getAttribute().stream().filter(an -> an.getId().equals(idDisplayAttribute))
 				.collect(Collectors.toList()).get(0).getType();
 	}

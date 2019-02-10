@@ -54,9 +54,12 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 			case "displayAttributes": {
 				ArrayList<Attribute> displayAttributes = new ArrayList<Attribute>();
 				for (String idDisplayAttribute : Arrays.asList(attribute.getValue().split(" "))) {
-					if (idDisplayAttribute != null)
+					if (idDisplayAttribute != null) {
+						//fix if display attribute is a relationship role condition
+						if (idDisplayAttribute.contains("role"))
+							idDisplayAttribute = idDisplayAttribute.substring(idDisplayAttribute.lastIndexOf(".") + 1);
 						displayAttributes.add(new Attribute(idDisplayAttribute));
-					else {
+					}else {
 						System.out.println("--> scartato - Attenzione displayAttribute null\n");
 						break;
 					}
@@ -92,15 +95,16 @@ public final class PowerIndexUnit implements ViewComponentExtractor {
 		if (list.getDisplayAttributes() != null) {
 			// set names of attributes from entity
 			list.getDisplayAttributes().stream()
-					.forEach(d -> d.setName(dataModelUtil.findAttributeName(list.getEntity(), d.getId())));
+					.forEach(d -> d.setName(dataModelUtil.findAttributeName(dataModelUtil.findEntity(d.getId().substring(0, d.getId().lastIndexOf("#"))), d.getId())));
 
 			// set types of attributes from entity
 			list.getDisplayAttributes().stream()
-					.forEach(d -> d.setType(dataModelUtil.findAttributeType(list.getEntity(), d.getId())));
+					.forEach(d -> d.setType(dataModelUtil.findAttributeType(dataModelUtil.findEntity(d.getId().substring(0, d.getId().lastIndexOf("#"))), d.getId())));
 
 			// set entity on attribute
-			list.getDisplayAttributes().stream().forEach(d -> d.setEntity(list.getEntity()));
-
+			//list.getDisplayAttributes().stream().forEach(d -> d.setEntity(list.getEntity()));
+			list.getDisplayAttributes().stream().forEach(d -> d.setEntity(dataModelUtil.findEntity(d.getId().substring(0, d.getId().lastIndexOf("#")))));
+			
 			// find existing sortable attributes
 			list.setSortAttributes(extractSortableAttributes(node, list));
 
