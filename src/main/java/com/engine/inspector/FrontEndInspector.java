@@ -243,7 +243,7 @@ public class FrontEndInspector {
 		Attribute attribute = new Attribute();
 
 		// kcond / rcond cases, looking for attribute
-		if (bindingParameter.getTargetId().contains("ent")) {
+		if (bindingParameter.getTargetId() != null && bindingParameter.getTargetId().contains("ent")) {
 			
 			Predicate predicate = null;
 			
@@ -307,7 +307,7 @@ public class FrontEndInspector {
 		}
 
 		// acond case, looks for attributes
-		if (bindingParameter.getTargetId().contains("acond")) {
+		if (bindingParameter.getTargetId() != null && bindingParameter.getTargetId().contains("acond")) {
 
 			AttributesConditionE attributesConditionExtractor = new AttributesConditionE();
 			AttributesCondition attributesCondition = new AttributesCondition();
@@ -352,7 +352,7 @@ public class FrontEndInspector {
 		}
 
 		// fields cases
-		if (bindingParameter.getTargetId().contains("fld")) {
+		if (bindingParameter.getTargetId() != null &&  bindingParameter.getTargetId().contains("fld")) {
 			EntryUnit entryUnitExtractor = new EntryUnit(getDataModel());
 
 			Field field = (Field) entryUnitExtractor
@@ -438,7 +438,7 @@ public class FrontEndInspector {
 		Attribute attribute = new Attribute();
 
 		// kcond / rcond cases, looking for attribute
-		if (bindingParameter.getSourceId().contains("ent")) {
+		if (bindingParameter.getSourceId() != null && bindingParameter.getSourceId().contains("ent")) {
 			
 			Predicate predicate = null;
 			
@@ -498,7 +498,7 @@ public class FrontEndInspector {
 		}
 
 		// acond case, looks for attribute
-		if (bindingParameter.getSourceId().contains("acond")) {
+		if (bindingParameter.getSourceId() != null && bindingParameter.getSourceId().contains("acond")) {
 
 			AttributesConditionE attributesConditionExtractor = new AttributesConditionE();
 			AttributesCondition attributesCondition = new AttributesCondition();
@@ -543,7 +543,7 @@ public class FrontEndInspector {
 		}
 
 		// fields cases
-		if (bindingParameter.getSourceId().contains("fld")) {
+		if (bindingParameter.getSourceId() != null && bindingParameter.getSourceId().contains("fld")) {
 			EntryUnit entryUnitExtractor = new EntryUnit(getDataModel());
 
 			Field field = (Field) entryUnitExtractor
