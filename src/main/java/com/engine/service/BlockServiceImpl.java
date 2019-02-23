@@ -62,9 +62,10 @@ public class BlockServiceImpl implements BlockService {
 					foundInPartitionKeys = true;
 			}
 
-			if (!foundInSortKeys && !foundInPartitionKeys)
+			if (!foundInSortKeys && !foundInPartitionKeys) {
+				extractedSortKey.setGuaranteeUniqueness(true);
 				newSortKeys.add(extractedSortKey);
-
+			}
 		}
 
 		return newSortKeys.stream().distinct().collect(Collectors.toList());

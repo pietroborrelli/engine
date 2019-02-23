@@ -12,17 +12,20 @@ public class SortKey {
 	private Ordering ordering;
 	private Predicate predicate;
 	private String valueCondition;
+	private Boolean guaranteeUniqueness;
 	
 	public SortKey(String id, String entity, Ordering ordering) {
 		super();
 		this.id = id;
 		this.ordering = ordering;
 		this.entity=entity;
+		this.guaranteeUniqueness=false;
 	}
 	
 	public SortKey(String id) {
 		super();
 		this.id = id;
+		this.guaranteeUniqueness=false;
 	}
 	
 	public String getName() {
@@ -82,7 +85,10 @@ public class SortKey {
 	}
 	@Override
 	public String toString() {
-		return "{Optional} SortKey [name=" + entity.toLowerCase() + "_" + name + ", ordering=" + ordering + "]";
+		String uniqueness = "";
+		if (this.guaranteeUniqueness)
+			uniqueness="{Uniqueness} ";
+		return uniqueness + "SortKey [name=" + entity.toLowerCase() + "_" + name + ", ordering=" + ordering + "]";
 	}
 	public String getType() {
 		return type;
@@ -105,6 +111,14 @@ public class SortKey {
 
 	public void setValueCondition(String valueCondition) {
 		this.valueCondition = valueCondition;
+	}
+
+	public Boolean getGuaranteeUniqueness() {
+		return guaranteeUniqueness;
+	}
+
+	public void setGuaranteeUniqueness(Boolean guaranteeUniqueness) {
+		this.guaranteeUniqueness = guaranteeUniqueness;
 	}
 	
 
