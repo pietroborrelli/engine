@@ -55,6 +55,7 @@ public class NoAmServiceImpl implements NoAmService {
 			interactionFlowElements.add(interactionFlowElement);
 
 			entries = createEntries(interactionFlowElements);
+			//form has no predicates on fields
 			entriesConditions = createEntriesConditions(interactionFlowElements);
 			
 			System.out.println(entries.size() + " entries");
